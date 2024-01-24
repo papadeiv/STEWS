@@ -12,7 +12,7 @@ end
 x0 = [[0.00, -0.50], [-1.00, -1.00]]
 # Define the parameter values
 mu = 1.00
-r = 0.50
+r = 0.90
 p = [mu, r]
 # Define the temporal parameters
 T1 = 20.00
@@ -39,7 +39,7 @@ lines!(ax1, t, x, color = :red, linewidth = 1.5)
 ax2 = Axis(fig1[2, 1],
     #backgroundcolor = :transparent,
     xlabel = L"t",
-    ylabel = L"y(t)",
+    ylabel = L"\lambda(t)",
     limits = ((t[1],t[end]), (nothing,nothing))
 )
 lines!(ax2, t, y, color = :blue, linewidth = 1.5)
@@ -51,7 +51,7 @@ ax3 = Axis(fig2[1, 1],
     #backgroundcolor = :transparent,
     title = L"r = %$r",
     xlabel = L"x",
-    ylabel = L"y",
+    ylabel = L"\lambda",
     limits = ((-2.00,2.00), (-2.00,2.00))
 )
 lines!(ax3, x, y, color = :green, linewidth = 1.5)
@@ -67,7 +67,7 @@ y = Xt[:,2]
 lines!(ax1, t, x, color = :red, linewidth = 1.5, linestyle = :dash)
 lines!(ax2, t, y, color = :blue, linewidth = 1.5, linestyle = :dash)
 # Plot the trajectory in state space
-lines!(ax3, x, y, color = :yellow, linewidth = 1.5)
+lines!(ax3, x, y, color = :orange, linewidth = 1.5)
 scatter!(ax3, x0[2][1], x0[2][2], color = :blue, strokecolor = :black, strokewidth = 1.5, markersize = 9)
 
 # Plot the critical manifold
@@ -76,6 +76,10 @@ attracting = sqrt(mu-r) .- y_values
 repelling = -sqrt(mu-r) .- y_values
 lines!(ax3, y_values, attracting, color = :blue, linewidth = 0.75)
 lines!(ax3, y_values, repelling, color = :red, linewidth = 0.75)
+attracting1 = sqrt(mu+r) .- y_values
+repelling1 = -sqrt(mu+r) .- y_values
+lines!(ax3, y_values, attracting1, color = :blue, linewidth = 0.75, linestyle = :dash)
+lines!(ax3, y_values, repelling1, color = :red, linewidth = 0.75, linestyle = :dash)
 
 #Plot the isoclines
 unstable = sqrt(mu) .- y_values

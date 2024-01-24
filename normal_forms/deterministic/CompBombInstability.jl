@@ -14,11 +14,11 @@ x0 = [[0.00, -0.50, 0.10], [1.00, -1.00, 0.10]]
 # Define the parameter values
 ε = 0.02
 R = 1/2 + 1/4 + 1/8 + 1/16 + 1/32
-r = R 
+r = 1.2 
 p = [ε, r]
 # Define the temporal parameters
-T1 = 5.00
-T2 = 5.00
+T1 = 1.20
+T2 = 1.20
 δt = 1e-2
 
 # Evolve the dynamical system from the first initial condition
@@ -52,7 +52,7 @@ CairoMakie.activate!()
 fig2 = Figure(; size = (600, 400), backgroundcolor = :transparent)
 ax3 = Axis(fig2[1, 1],
     #backgroundcolor = :transparent,
-    title = L"r = %$r < r_c = %$R",
+    title = L"r = 1.2 > r_c = %$R",
     xlabel = L"x_1",
     ylabel = L"x_2",
     limits = ((-2.00,2.00), (-2.00,2.00))
@@ -78,6 +78,10 @@ scatter!(ax3, x0[2][1], x0[2][2], color = :blue, strokecolor = :black, strokewid
 x1_values = LinRange(-10.0,10.0,1000)
 x2_values = -x3[1] .- x1_values.*(x1_values .- 1.0)
 lines!(ax3, x1_values, x2_values, color = :black, linewidth = 0.75)
+invariant = 0.5594.*ones(Float64, 1000)
+lines!(ax3, invariant, x1_values, color = :red, linewidth = 1.0)
+qse = zeros(Float64, 1000)
+lines!(ax3, qse, x1_values, color = :black, linestyle = :dash, linewidth = 1.0)
 
 # Export the figures
 save("../results/CompBombTraj.png", fig1)
@@ -86,7 +90,7 @@ save("../results/CompBombState.png", fig2)
 # Create animation
 fig = Figure(; size = (600,400))
 ax = Axis(fig[1,1],
-          title = L"r = %$r < r_c = %$R",
+          title = L"r = 1.2 > r_c = %$R",
           xlabel = L"x_1",
           ylabel = L"x_2",
           limits = ((-2.00,2.00), (-2.00,2.00))
@@ -94,6 +98,8 @@ ax = Axis(fig[1,1],
 scatter!(ax, x0[1][1], x0[1][2], color = :blue, strokecolor = :black, strokewidth = 1.5, markersize = 9)
 scatter!(ax, x0[2][1], x0[2][2], color = :blue, strokecolor = :black, strokewidth = 1.5, markersize = 9)
 lines!(ax, x1_values, x2_values, color = :black, linewidth = 0.75, linestyle = :dash)
+lines!(ax, invariant, x1_values, color = :red, linewidth = 1.0)
+lines!(ax, qse, x1_values, color = :black, linestyle = :dash, linewidth = 1.0)
 
 frames = 1:size(x1)[1] 
 framerate = 60
@@ -104,7 +110,7 @@ time = Observable(x0[1][3])
 x2_values = @lift(-$time .- x1_values.*(x1_values .- 1.0))
 lines!(ax, x1_values, x2_values, color = :black, linewidth = 0.75)
 lambda = @lift(-$time)
-scatter!(ax, 0.0, lambda, color = :red, markersize = 9)
+scatter!(ax, 0.0, lambda, color = :black, markersize = 9)
 text!(ax, 0.95, 0.95, text = @lift("λ = " .* string.(round($time + 0.0, digits = 3))))
 
 record(fig, "../results/CompBombState.gif", frames; framerate=framerate) do frame 
