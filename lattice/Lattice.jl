@@ -32,11 +32,14 @@ end
 function show(L::Lattice, states::Vector{Vector{Float64}})
         CairoMakie.activate!()
         for j=1:length(states)
-                state = states[j]
+                timestep = states[j]
+                state = timestep[1:end-1]
+                parameter = timestep[end]
                 state = reshape(state, L.Nx, L.Ny)
 
                 fig = Figure(; size = (600, 400))
                 ax = Axis(fig[1, 1],
+                          title = L"k = %$parameter",
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
