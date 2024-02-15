@@ -2,8 +2,8 @@ using CairoMakie
 
 function neighbours(I::Tuple{Int,Int})
     neigh = Array{Int,2}(undef,4,prod(I))
-    rows = I[1] # Number of rows
-    cols = I[2] # Number of columns
+    rows = I[1]
+    cols = I[2]
     ctr = 0
     for ix in 1:cols
         for iy in 1:rows
@@ -32,9 +32,12 @@ end
 function show(L::Lattice, states::Vector{Vector{Float64}})
         CairoMakie.activate!()
         for j=1:length(states)
-                snapshot = states[j][1:end-1]
-                parameter = states[j][end]
+                snapshot = states[j][1:end-3]
                 snapshot = reshape(snapshot, (L.rows, L.cols))
+
+                parameter = round(states[j][end-2], digits=3)
+                noise = states[j][end-1]
+                drift = states[j][end]
 
                 state = Array{Float64}(undef, L.rows, L.cols)
                 for k=0:(L.rows-1)
@@ -43,7 +46,7 @@ function show(L::Lattice, states::Vector{Vector{Float64}})
 
                 fig = Figure(; size = (600, 400))
                 ax = Axis(fig[1, 1],
-                          title = L"ε = 1,\; σ = 0.01,\; k = %$parameter",
+                          title = L"ε = %$drift,\; σ = %$noise,\; k = %$parameter",
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
@@ -53,11 +56,7 @@ function show(L::Lattice, states::Vector{Vector{Float64}})
                 Colorbar(fig[:, end+1], 
                          ticks = [0,1]
                 )
-                heatmap!(ax, state', colorrange = (0,1))#highclip = :green, lowclip = :red, colorrange = (0.0,1.0))
-
-                for k=1:length(state)
-                        #text!(0, 0, text = "center", align = (:center, :center))
-                end
+                heatmap!(ax, state', colorrange = (0,1))
 
                 save("../results/lattice/lung_ventilation/$j.png", fig)
         end

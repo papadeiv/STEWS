@@ -11,10 +11,13 @@ L = Lattice(n, m)
 x0 = 1.0::Float64.*ones(Float64, length(L.grid))
 # Initial condition of the bifurcation parameter (degree of smooth muscle activation)
 push!(x0, 0.0::Float64)
+# SDE's parameters
+σ = 0.05::Float64 # noise level
+push!(x0, σ)
+ε = 0.10::Float64 # parameter's drift
+push!(x0, ε)
 
 # Model's parameters
-σ = 0.01::Float64 # noise level
-ε = 1.00::Float64 # parameter's drift
 k = 14.1::Float64 # (airway) smooth muscle mass
 A = 0.63::Float64 # inter-airway coupling
 Pi = 0.96::Float64 # inflection point of pressure-radius interdependence
@@ -22,9 +25,12 @@ Pb = 0.0::Float64 # breathing pressure
 Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
-T = 01.50
-δt = 1e-3
+T = 15.00
+δt = 1e-2
 
+# Definition of the dynamics (lung ventilation) function
+sigmoid(x::Real) = one(x)/(one(x) + exp(-x))
+# Definition of the SDE - deterministic part
 function iip_det!(f, x, neigh, t)
         sum = 0.0::Float64
         for j=1:N
@@ -32,12 +38,13 @@ function iip_det!(f, x, neigh, t)
         end
         Pb = (Pb0*N)/(sum)
         for j=1:N
-                den = 1.0::Float64 + exp(-Pb + x[N+1]*(k/x[j]) + Pb*A*(x[j]^4 + x[neigh[1,j]]^4 + x[neigh[2,j]]^4 + x[neigh[3,j]]^4 + x[neigh[4,j]]^4)*(1.0::Float64 - x[j] + 1.5::Float64*(1-x[j])^2) + Pi)
-                f[j] = 1.0::Float64/den - x[j]
+                r = -Pb + x[N+1]*(k/x[j]) - Pb*A*(x[j]^4 + x[neigh[1,j]]^4 + x[neigh[2,j]]^4 + x[neigh[3,j]]^4 + x[neigh[4,j]]^4)*(1.0::Float64 - x[j] + 1.5::Float64*(1-x[j])^2) + Pi
+                f[j] = sigmoid(-r) - x[j]
         end
         f[N+1] = ε
         return nothing
 end
+# Definition of the SDE - stochastic part
 function iip_stoc!(f, x, neigh, t)
         for j=1:N
                 f[j] = σ
@@ -46,8 +53,9 @@ function iip_stoc!(f, x, neigh, t)
         return nothing
 end
 problem = SDEProblem(iip_det!, iip_stoc!, x0, (0.0, T), L.connectivity)
-solution = solve(problem, EM(), dt=δt)
 
+# Compute the forward-time trajectory
+solution = solve(problem, EM(), dt=δt)
 time = solution.t
 states = solution.u
 
