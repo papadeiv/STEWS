@@ -2,18 +2,19 @@ using DifferentialEquations, LaTeXStrings, ProgressMeter
 include("lattice.jl")
 
 # Define the lattice
-n = 1000
-m = 1000
+n = 15
+m = 20
 N = n*m
 L = Lattice(n, m)
 
 # Initial condition of the lattice
-x0 = 1.0::Float64.*ones(Float64, length(L.grid))
+x0 = 0.0::Float64.*ones(Float64, length(L.grid))
+x0[50] = 1.0::Float64
 # Initial condition of the bifurcation parameter (degree of smooth muscle activation)
 push!(x0, 0.0::Float64)
 
 # Model's parameters
-σ = 0.01::Float64 # noise level
+σ = 0.50::Float64 # noise level
 ε = 1.00::Float64 # parameter's drift
 k = 14.1::Float64 # (airway) smooth muscle mass
 A = 0.63::Float64 # inter-airway coupling
@@ -22,7 +23,7 @@ Pb = 0.0::Float64 # breathing pressure
 Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
-T = 01.50
+T = 2.000
 δt = 1e-3
 
 function iip_det!(f, x, neigh, t)
@@ -31,9 +32,16 @@ function iip_det!(f, x, neigh, t)
                 sum += x[j]^4
         end
         Pb = (Pb0*N)/(sum)
+        println("\n")
+        #println(sum)
         for j=1:N
-                den = 1.0::Float64 + exp(-Pb + x[N+1]*(k/x[j]) + Pb*A*(x[j]^4 + x[neigh[1,j]]^4 + x[neigh[2,j]]^4 + x[neigh[3,j]]^4 + x[neigh[4,j]]^4)*(1.0::Float64 - x[j] + 1.5::Float64*(1-x[j])^2) + Pi)
-                f[j] = 1.0::Float64/den - x[j]
+                r = x[j]
+                No = x[neigh[1,j]]
+                W = x[neigh[2,j]]
+                S = x[neigh[3,j]]
+                E = x[neigh[4,j]] 
+                #println("$(j):  x = $(r), N($(neigh[1,j])) = $(No), E($(neigh[4,j])) = $(E), S($(neigh[3,j])) = $(S), W($(neigh[2,j])) = $(W)")
+                f[j] = x[N+1]*(No + W + S + E)
         end
         f[N+1] = ε
         return nothing
