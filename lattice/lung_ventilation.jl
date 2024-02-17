@@ -2,8 +2,8 @@ using DifferentialEquations, LaTeXStrings, ProgressMeter
 include("lattice.jl")
 
 # Define the lattice
-n = 1000
-m = 1000
+n = 3
+m = 3
 N = n*m
 L = Lattice(n, m)
 
@@ -25,8 +25,9 @@ Pb = 0.0::Float64 # breathing pressure
 Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
-T = 15.00
+T = 01.00
 δt = 1e-2
+width = 20
 
 # Definition of the dynamics (lung ventilation) function
 sigmoid(x::Real) = one(x)/(one(x) + exp(-x))
@@ -59,4 +60,19 @@ solution = solve(problem, EM(), dt=δt)
 time = solution.t
 states = solution.u
 
-show(L, states)
+# Dynamic Mode Decomposition
+for j=1:(length(time)-width)
+        # Assemble snapshot matrices
+        idx = 1::Int
+        X = Array{Float64,2}(undef, N, width)
+        for k=j:(j-1)+width
+                X[:,idx] = states[k][1:N]
+                idx += 1
+        end
+        println(j)
+        println(X)
+        println("\n")
+end
+
+# Export images of the lattice time evolution
+#show(L, states)
