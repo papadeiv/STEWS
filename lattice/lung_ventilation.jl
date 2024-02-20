@@ -2,8 +2,8 @@ using DifferentialEquations, LinearAlgebra, LaTeXStrings, ProgressMeter
 include("lattice.jl")
 
 # Define the lattice
-n = 100
-m = 100
+n = 500
+m = 500
 N = n*m
 L = Lattice(n, m)
 
@@ -14,7 +14,7 @@ push!(x0, 0.0::Float64)
 # SDE's parameters
 σ = 0.05::Float64 # noise level
 push!(x0, σ)
-ε = 0.50::Float64 # parameter's drift
+ε = 1.00::Float64 # parameter's drift
 push!(x0, ε)
 
 # Model's parameters
@@ -26,7 +26,7 @@ Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
 T = 03.00
-δt = 1e-3
+δt = 1e-2
 width = 20
 
 # Definition of the dynamics (lung ventilation) function
@@ -61,7 +61,11 @@ time = solution.t
 states = solution.u
 
 # Dynamic Mode Decomposition
+EWS = zeros(Float64, (length(time)-width))
+Mode = Array{Float64,2}(undef, N, (length(time)-width))
 for j=1:(length(time)-width)
+        #println("$(j)) t in.=$(time[j]), t fin.=$(time[(j-1)+width])")
+
         # Assemble the first snapshot matrix
         idx = 1::Int
         X = Array{Float64,2}(undef, N, width)
@@ -82,10 +86,10 @@ for j=1:(length(time)-width)
         S = (F.U)'*Y*(F.Vt)'*inv(diagm(F.S)) 
         Λ = eigvals(S)
         Q = eigvecs(S)
-        # Get leading eigenvalue as spatial EWS
-        EWS = (findmax(real(Λ)))[1]
-        display(EWS)
+        # Get leading eigenvalue and eigenvector as spatial EWS
+        EWS[j] = (findmax(real(Λ)))[1]
+        Mode[:,j] = F.U*real(Q[:,(findmax(real(Λ)))[2]])
 end
 
 # Export images of the lattice time evolution
-#show(L, states)
+show(L, states, EWS, Mode)
