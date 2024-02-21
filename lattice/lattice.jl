@@ -64,7 +64,7 @@ function show(L::Lattice, states::Vector{Vector{Float64}}, eigenvalues::Vector{F
                 fig = Figure(; size = (600, 400))
                 # Plot the lattice dynamical system evolution
                 ax1 = Axis(fig[1, 1],
-                          title = L"ε = %$drift,\; σ = %$noise,\; k = %$parameter",
+                          title = L"ε = %$drift,\; σ = %$noise,\; c = %$parameter",
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
@@ -90,12 +90,12 @@ function show(L::Lattice, states::Vector{Vector{Float64}}, eigenvalues::Vector{F
                 heatmap!(ax2, mode', colorrange = ((findmin(mode))[1],(findmax(mode))[1]))
                 # Plot the leading eigenvalue evolution 
                 ax3 = Axis(fig[2, 1:2],
-                           limits = ((0, dt*(length(eigenvalues)-width)), (0.98, 1.0))
+                           limits = ((0, dt*(length(eigenvalues)-width)),((findmin(eigenvalues))[1],(findmax(eigenvalues))[1])) #(0.98, 1.0))
                 )
                 lines!(ax3, LinRange(0.0, time, length(ews)), ews)
 
                 # Export the figure
-                save("../results/lattice/lung_ventilation/$ctr.png", fig)
+                save("../results/lattice/vegetation_turbidity/$ctr.png", fig)
 
                 # Update the time variable
                 time += dt
