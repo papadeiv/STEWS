@@ -1,11 +1,20 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 \newpage
-\section{Detecting temporal B- and N-tipping in stochastic dynamical systems}\label{sec2}
-     In the first $3$ months of the PhD I reviewed the seminal work \cite{Kuehn11} which proposes the fast-slow framework to derive potential EWSs in temporal SDSs. What follows is a series of observations which I obtained when reviewing and attempting to replicate key results from said paper. 
-     This activity has been carried out partly in order to meet the first part of the conditions set by \textit{Milestone 2}.
+\section{Critical transitions in low-dimensional dynamical systems}\label{sec2}
+Critical transitions, or tipping points, in temporal dynamical systems are abrupt changes in the qualitative properties and time evolution of the system that may cause the departure of a state from an attracting equilibria. In those low-dimensional systems there are multiple causes that may drive the dynamics to tip towards different regimes; during the years they have been classified in either of the following three types:
+\begin{itemize}
+     \item bifurcation-induced (B-tipping): also known as dynamic bifurcations, they are the result of open systems (i.e. dynamical systems with time-varying parameters) passing through a bifurcation point of their parameters causing one or multiple attractors to loose their stability;
+     \item noise-induced (N-tipping): affecting those, potentially close, dynamical systems (i.e. systems whose parameters have fixed values in time) perturbed by (usually gaussian) noise which causes a trajectory to depart far enough from a neighborhood of stable equilibria that it eventually escapes the attractor;
+     \item rate-induced (R-tipping): when the evolution of an open system fails to track the time-changing attractor caused by the rate of change of the parameters of the system rather than their values.
+\end{itemize}
+In must be emphasized that given any open system, critical transitions may occur because of one or multiple of the causes described above and in general it is non-trivial to identify the source of such tipping.
+In studying critical transitions an important and increasingly fundamental area of investigation is the derivation of robust early-warning signals (EWS) that can consistently predict the upcoming tipping point so that it can be used to inform decision and policy-making to avoid those catastrophic changes in the applications. 
+An analytical framework based on multiscale dynamics, or fast-slow dynamical systems was introduced in \cite{Kuehn11} to establish a theoretical background to more rigorously characterise those transitions that are induced by bifurcations in and noise in both open and closed systems.
+The analysis of R-tipping was then shortly thereafter introduced in \cite{Ashwin12} thereby providing us with a comprehensive starting point to fully characterise critical transitions in low-dimensional dynamical systems.
+
 \subsection{The fast-slow framework}\label{subsec2.1}
-Usually in dynamical systems, important qualitative properties are derived by considering fixed values of the parameter or with a parameter that evolves with the same temporal scale of the state variable. Whenever the state variable's and the parameter's dynamics evolve according to different timescale we identify a multiscale evolution that is studied within the framework of fast-slow dynamical systems. 
+In dynamical systems theory, important qualitative properties such as $\dots$ are derived by considering fixed values of the parameter (closed systems) or with a parameter that evolves with the same temporal scale of the state variable (open systems). Whenever the state variable's and the parameter's dynamics evolve according to different timescale we identify a multiscale evolution that is studied within the framework of fast-slow dynamical systems. 
 \begin{definition}[\hl{Fast-slow system}]\label{def1.1}
      Let $x\in \mathbb{R}^{n}$ be a state variable, $y\in \mathbb{R}^{m}$ a parameter and $0<\epsilon<<1$ representing the timescale separation between the evolution of $x$ and $y$, then
      \begin{equation}\label{eq1.1}
@@ -25,7 +34,7 @@ By defining the slow timescale $\tau := \epsilon\,t$ we can derive from $(\ref{e
         \end{cases}
 \end{equation}
 \begin{interpretation*}{}
-     From now one we will adopt the following notation concerning time-derivatives in fast-slow system. Considering an arfbitrary time-dependent variable $x$ we denote by
+     From now one we will adopt the following notation concerning time-derivatives in fast-slow system. Considering an arbitrary time-dependent variable $x$ we denote by
      \begin{equation*}
          \newprime{x}(t):=\frac{d}{dt}x(t)\,,
      \end{equation*}
@@ -35,14 +44,15 @@ By defining the slow timescale $\tau := \epsilon\,t$ we can derive from $(\ref{e
      \end{equation*}
      as the time derivative w.r.t. the slow timescale.
 \end{interpretation*}
-To simplify the dynamics of $(\ref{eq1.1})-(\ref{eq1.2})$ one usually considers the singular limit for the fast-slow system as $\epsilon\to0$. The equation in fast timescale $(\ref{eq1.1})$ reduces to a traditional dynamical system with fixed parameter
+To simplify the dynamics of $(\ref{eq1.1})-(\ref{eq1.2})$ one usually considers the singular limit of the fast-slow system as $\epsilon\to0$. 
+The equation in the fast timescale $(\ref{eq1.1})$ reduces to a closed dynamical system 
 \begin{equation}\label{eq1.3}
    \begin{cases}
       \newprime{x}(t) = f(x,y) \,, \\
       \newprime{y}(t) = 0\,. 
    \end{cases}
 \end{equation}
-The fast subsystem $(\ref{eq1.3})$, usually referred as the layer equation, realises the fast flow of the system and is completely decoupled from the slow subsystem which is instead derived by taking the singular limit of Equation $(\ref{eq1.2})$ giving
+The fast subsystem $(\ref{eq1.3})$, usually referred as the layer equation, realises the fast flow of the state variable and is completely decoupled from the slow subsystem which is instead derived by taking the singular limit of $(\ref{eq1.2})$ yielding 
 \begin{equation}\label{eq1.4}
    \begin{cases}
       0 = f(x,y) \,, \\
@@ -50,7 +60,7 @@ The fast subsystem $(\ref{eq1.3})$, usually referred as the layer equation, real
    \end{cases}
 \end{equation}
 which is referred to as the reduced equation.
-Equation $(\ref{eq1.4})$ realises the slow flow which is constrained by those points in phase space that satisfy the condition $f(x,y)=0$.
+Equation $(\ref{eq1.4})$ realises the slow flow of the system which is constrained by those points in phase space that satisfy the condition $f(x,y)=0$.
 \begin{definition}[\hl{Critical manifold}]\label{def1.2}
      Let $(\ref{eq1.2})$ be a fast-slow system in the slow timescale and consider $(\ref{eq1.4})$ as its slow subsystem in the singular limit then the set
      \begin{equation}\label{eq1.5}
@@ -58,8 +68,8 @@ Equation $(\ref{eq1.4})$ realises the slow flow which is constrained by those po
      \end{equation}
      is called the critical manifold of the fast-slow system and it coincides with the set of fixed points of the fast subsystem $(\ref{eq1.3})$.
 \end{definition}
-It is easy to see that the fast flow, intended as the solution of the layer equation $(\ref{eq1.3})$, is realised outside $C$ whereas the slow flow is constrained to be realised onto such manifold.
-The whole dynamics can thus be approximated by considering $(\ref{eq1.3})$ and $(\ref{eq1.4})$ separately and the resulting fast and slow trajectories then chained together to reconstruct the fast-slow state flow in $\mathbb{R}^{n+m}$. The following example illustrates this approach. 
+It is easy to see that the fast flow, intended as the solution of the layer equation $(\ref{eq1.3})$, is realised outside $C$ whereas the slow flow is constrained on such manifold.
+The whole dynamics can thus be approximated by considering $(\ref{eq1.3})$ and $(\ref{eq1.4})$ separately and the resulting fast and slow trajectories are then chained together to reconstruct an approximation of the real fast-slow state flow in $\mathbb{R}^{n+m}$. The following example illustrates this approach. 
 \begin{example}[label=ex1.1]{}{}
      Consider the following $1-$dimensional fast-slow dynamical system
      \begin{equation*}
@@ -68,22 +78,22 @@ The whole dynamics can thus be approximated by considering $(\ref{eq1.3})$ and $
             \newprime{y}(t) = \epsilon \,, 
         \end{cases}
      \end{equation*}
-     with the slow parameter $y$ varying linearly with the fast timescale $t$. We also immediately note that the fast subsystem (singular limit of the above) gives us exactly the fold bifurcation normal form for fixed values of $y=y_0$
+     with the slow parameter $y$ varying linearly with the fast timescale $t$. We notice that the fast subsystem (singular limit of the above) gives us exactly the fold bifurcation normal form for fixed values of $y=y_0$
      \begin{equation*}
           \newprime{x}(t) = -y_0 - x^{2}\,.
      \end{equation*}
-    To derive the critical manifold we simply compute the fixed points for the above fast dynamics which will give us indeed the fold bifurcation
+    To derive the critical manifold we simply compute the fixed points of the above fast dynamics which will give us the fold bifurcation at $x=0$
     \begin{equation*}\label{eq}
             C=\{(x,y)\in \mathbb{R}^{2}\;:\; y=-x^{2}\}\,.
     \end{equation*}
-    With a trivial analysis of the Jacobian $D_{x}f$ we can also easily determine the attracting $C^{(a)}=\{C\,\cap\,\{x>0\}\}$ and repelling $C^{(r)}=\{C\,\cap\,\{x<0\}\}$ submanifolds which will aid us in determining the directions of the fast dynamics from any given initial condition as illustrated in Figure \ref{fig1.1}. 
+    With a trivial analysis of the Jacobian $D_{x}f$ we can also easily determine the attracting $C^{(a)}=\{C\,\cap\,\{x>0\}\}$ and repelling $C^{(r)}=\{C\,\cap\,\{x<0\}\}$ submanifolds which will aid us in specifying the directions of the flow of the fast dynamics from any given initial condition $(x_{0},\,y_0)$ as illustrated in Figure \ref{fig1.1}. 
     \newline
-    By choosing any point on $C^{(a)}$ as an initial condition we then can also identify the slow dynamics by tracking the evolution of $y$ onto the submanifold.
+    By choosing any point on $C^{(a)}$ as an initial condition we can then also identify the slow dynamics by tracking the evolution of the system on such submanifold.
     By setting such initial condition for the slow flow to coincide with the final state of a previous fast trajectory we can then simply glue those endpoints together to reconstruct an approximation of the fast-slow dynamics in the singular limit as depicted in Figure \ref{fig1.2}.
     \newline
-    Finally we can follow the slow dynamics until the very end of the critical manifold and by repeating the similar concatenation of final state with the initial condition of a new fast trajectory we are able of build a complete rappresentation of the fast-slow dynamics in the singular limit.
+    Finally we can follow the slow dynamics until the very end of the critical manifold and by repeating the similar concatenation of the final state with the initial condition of a new fast trajectory we are able to build an approximate rappresentation of the fast-slow dynamics in the singular limit.
     \newline
-    Further below in Figure \ref{fig1.3} we reconstruct such analytical approximation and compare it the numerical trajectory obtained for the non-singular case.
+    Further below in Figure \ref{fig1.3} we reconstruct such analytical approximation and compare it with the numerical trajectory obtained for the non-singular case.
 \end{example}
 \begin{example_continued}{}{}
         \begin{figure}[H]
@@ -95,7 +105,7 @@ The whole dynamics can thus be approximated by considering $(\ref{eq1.3})$ and $
    \begin{figure}[H]
         \centering 
         \includegraphics[keepaspectratio, width=0.75\textwidth]{../figures/Fold.png}
-        \caption{Trajectory of the layer equation (blue dots) starting at initial condition $(x=-0.5,y=-1)$ (purple dot) and ending on the attracting submanifold (yellow dot); such final state $(x=1,y=-1)$ is then chosen as the initial condition for the evolution of the reduced equation whose trajectory (red dots) stay on the critical manifold for until reaching the final state (green dot).}
+        \caption{Trajectory of the layer equation (blue dots) starting at initial condition $(x=-0.5,y=-1)$ (purple dot) and ending on the attracting submanifold (yellow dot). The resulting final state $(x=1,y=-1)$ is then chosen as the initial condition for the evolution of the reduced equation whose trajectory (red dots) stay on the critical manifold for until reaching the final state (green dot).}
         \label{fig1.2}
     \end{figure}
  \end{example_continued}
@@ -103,7 +113,7 @@ The whole dynamics can thus be approximated by considering $(\ref{eq1.3})$ and $
    \begin{figure}[H]
        \centering 
        \includegraphics[keepaspectratio, width=\textwidth]{../figures/FoldFastSlow.png}
-       \caption{Comparison between a concatenation of fast (blue dots) and slow (red dots) subtrajectories in the singular limit with a fast-slow trajectory in the non-singular regime (yellow solid line) computed with a timescale value of $\epsilon=1\cdot10^{-2}$. Note how the subtrajectories in the singular constitute an ideal approximation of the numerical fast-slow trajectory with the latter featuring a delay in the critical transition (which for the fold bifurcation coincides with the origin) which is predicted and can be quantified by Theorem \ref{thm1.2} and \ref{thm1.2}.}
+       \caption{Comparison between a concatenation of fast (blue dots) and slow (red dots) subtrajectories in the singular limit with a fast-slow trajectory in the non-singular regime (yellow solid line) computed with a timescale value of $\epsilon=1\cdot10^{-2}$. Note how the subtrajectories in the singular limit constitute an ideal approximation of the real (numerically computed) fast-slow trajectory with the latter featuring a delay in the critical transition (fold bifurcation at $x=0$) which can be quantified using Theorem \ref{thm1.2} and \ref{thm1.2}.}
        \label{fig1.3}
    \end{figure}
  \end{example_continued}
@@ -114,7 +124,7 @@ Sometimes, depending on the fast dynamics, it is even possible to reconstruct th
 \begin{theorem}[label=thm1.2]{Fenichel's $(1^{st})$ Theorem}{}
      Let $C$ be a compact, normally hyperbolic manifold then for $\epsilon>0$ sufficiently small there exists $C_{\epsilon}$ locally invariant and diffeomorphic to $C$ that lies at a Hausdorff distance $O(\epsilon)$ from $C$.
 \end{theorem}
-Those results therefore allow us to fully characherize the critical manifold in terms of both the fast and slow variables
+Those results allow us to fully characherize the critical manifold in terms of both the fast and slow variables
 \begin{equation}\label{eq1.6}
         C=\{(x,y)\in \mathbb{R}^{n+m}\;:\;h(y)=x\,,\;f(h(y),y)=0\}\,,
 \end{equation}
@@ -122,15 +132,15 @@ while also at the same time providing us with a convenient way to construct (inf
 \begin{equation}\label{eq1.6.2}
         C_{\epsilon}=\{(x,y)\in \mathbb{R}^{n+m}\;:\;x=h_{\epsilon}(y)=h(y)+O(\epsilon)\}\,
 \end{equation}
-to which the critical manifold $C$ perturbs to in the singular limit $\epsilon\to0$.
+to which the critical manifold $C$ deforms to in the singular limit $\epsilon\to0$.
 Finally we observe that, as briefly mentioned in Example $(\ref{ex1.1})$, in the singular limit we can derive an approximation of the fast-slow dynamics by chaining together fast and slow trajectories, the latter being constrained onto the critical manifold while the former being a trivial evolution of the layer equation for fixed values of the parameter $y$.
 These links between fast and slow trajectories do in fact provide us an initial albeit intuitive definition of transitions in the fast-slow dynamical system in which we can observe an abrupt switch between fast and slow evolution and viceversa.  
-By remarking that any trajectory onto the critical manifold is, by definition, a slow flow solving the reduced equation, then we can easily deduce that a transition between a slow to fast (repelling) dynamics is necessarily a critical transition for the dynamical system. Therefore any concatenation of a slow flow final state with a fast flow initial condition uniquely identifies a critical transition.
+By remarking that any trajectory onto the critical manifold is, by definition, a slow flow solving the reduced equation, we can then easily deduce that a transition between a slow to fast (repelling) dynamics is necessarily a critical transition for the dynamical system. As such any concatenation of a slow flow final state with a fast flow initial condition uniquely identifies a critical transition.
 \begin{definition}[\hl{Critical transition}]\label{def1.3}
-        Let $\gamma(t)$ be a homeomorphic image of the real subset $(a,b)$ s.t. for each partitioning ${a=t_{0}<t_1,\dots,t_{N-1}<t_N=b}$ the image $\gamma(t_{j-1},t_j)$ is an orientation preserving trajectory of either the layer \eqref{eq1.3} or the reduced equation \eqref{eq1.4} and let $p\in C$ be point where the critical manifold loses its normal hyperbolicity, then $p$ is a critical transition if there exist a candidate trajectory $\gamma$ s.t. $p = \gamma(t_j)$ is a transition between fast and slow regimes and $\gamma(t_{j-1},t_j)$ is normally hyperbolic and attracting.
+        Let $\gamma(t)$ be a homeomorphic image of the real subset $(a,b)$ s.t. for each partitioning ${a=t_{0}<t_1,\dots,t_{N-1}<t_N=b}$ the image $\gamma(t_{j-1},t_j)$ is an orientation preserving trajectory of either the layer \eqref{eq1.3} or the reduced equation \eqref{eq1.4} and let $p\in C$ be a point where the critical manifold loses its normal hyperbolicity, then $p$ is a critical transition if there exist a candidate trajectory $\gamma$ s.t. $p = \gamma(t_j)$ is a transition between fast and slow regimes and $\gamma(t_{j-1},t_j)$ is normally hyperbolic and attracting.
 \end{definition}
-\subsection{Embedding stochasticity}\label{subsec2.2}
-Motivated by many physical applications, in which the underlying dynamical systems appear to be affected by noise, we will now consider stochastic differential equations (SDEs) as our starting point in deriving EWSs for temporal critical transitions.
+\subsection{Embedding stochasticity in the system}\label{subsec2.2}
+Motivated by many physical applications, in which the underlying dynamical system appears to be perturbed by noise, we will now consider stochastic differential equations (SDEs) as our starting point in dealing with temporal critical transitions.
 \begin{definition}[\hl{Stochastic fast-slow system}]\label{def1.4}
      Let $V:=(\Omega,\mathcal{F},\mathbb{P})$ be a probability space and $W=(W_1, \dots, W_n)$ a $n-$dimensional Brownian motion with components in $V$ then
      \begin{equation}\label{eq1.7}
@@ -141,7 +151,7 @@ Motivated by many physical applications, in which the underlying dynamical syste
      \end{equation}
      is a stochastic fast-slow system in the slow timescale $\tau:=\epsilon t$ with deterministic dynamics $f,g$ and stochastic dynamics $\sigma_f,\sigma_g$. 
 \end{definition}
-The system in \eqref{eq1.7} is in Itô differential form; if both the fast $\sigma_f(x,y)=\sigma_f\in\mathbb{R}$ and slow $\sigma_g(x,y)=\sigma_g\in \mathbb{R}$ stochastic dynamics are constants then we are dealing with an Itp's SDE with additive noise, otherwise it will be characterised by multiplicative noise.
+The system in \eqref{eq1.7} is said to be in Itô differential form; if both the fast $\sigma_f(x,y)=\sigma_f\in\mathbb{R}$ and slow $\sigma_g(x,y)=\sigma_g\in \mathbb{R}$ stochastic dynamics are constants then we are dealing with an Ito's SDE with additive noise, otherwise it will be characterised by multiplicative noise.
 Let us first consider the former case for which the stochastic fast-slow system reads
 \begin{equation}\label{eq1.8}
    \begin{cases}
@@ -150,8 +160,8 @@ Let us first consider the former case for which the stochastic fast-slow system 
    \end{cases}
 \end{equation}
 where we notice the scaling of the noise for the fast equation due to the scaling law of Brownian motion i.e. $W(\tau)=W(\epsilon t)=\sqrt{\epsilon}W(t)$.
-For \eqref{eq1.8} we would like to use the results derive in the previous subsection for deterministic fast-slow systems and in particular our aim is to characterise the whole evolution in terms of concatenation of separated fast and slow trajectories.
-To that end let us use Definition \ref{def1.3} and analyse the stochastic fast-slow systems in order to identify the regions of $y$ close to a critical transition from those that are far away. 
+For \eqref{eq1.8} we would like to use the results derived in the previous subsection for the deterministic case and in particular our aim is to characterise the time evolution in terms of concatenations of separated fast and slow trajectories.
+To that end let us use Definition \ref{def1.3} and analyse the stochastic fast-slow system in order to identify the regions of $y$ close to a critical transition from those that are far away. 
 Accordining to the definition, a sample path realised from \eqref{eq1.8} is away from a critical transition as long as it stays close (in probabilistic terms) to the portion of the critical manifold $C$ that is normally hyperbolic and attracting, i.e. $C^{(a)}$.
 From Theorem \ref{thm1.2} we can uniquely identify the slow manifold $C_{\epsilon}$, as reported in \eqref{eq1.6.2}, by constructing the map $h_{\epsilon}(y)=h(y) + O(\epsilon)$; it is thus intuitive to define a new stochastic process $\xi(\tau)=x(\tau)-h_{\epsilon}(y)$ which quantifies the concentrations of realizations of the sample path from \eqref{eq1.8} that stay close to $C^{(a)}$. We then apply Ito's formula to this new process to derive the associated SDE; after that we define once again a new stochastic process $X(\tau):=\sigma_f^{-2} \text{Var}(\xi)$ which satisfies the following deterministic fast-slow system
 \begin{equation}\label{eq1.9}
@@ -160,7 +170,7 @@ From Theorem \ref{thm1.2} we can uniquely identify the slow manifold $C_{\epsilo
       \dot{y} = g(h_{\epsilon}(y),y) \,, 
    \end{cases}
 \end{equation}
-with $A_{\epsilon}(y)=(D_x f)(h_{\epsilon}(y),y) - \epsilon (D_y h_{\epsilon})(y) (D_x g)(h_{\epsilon}(y),y)$. Applying Theorem \ref{thm1.2} again for \eqref{eq1.9} we can construct a new slow manifold for the sample paths of the stochastic fast-slow system
+with $A_{\epsilon}(y)=(D_x f)(h_{\epsilon}(y),y) - \epsilon (D_y h_{\epsilon})(y) (D_x g)(h_{\epsilon}(y),y)$. Applying Theorem \ref{thm1.2} again for \eqref{eq1.9} we can construct a new slow manifold for the sample paths of the new stochastic fast-slow system
 \begin{equation}\label{eq1.10}
         C_{\epsilon}^{(X)}:=\{(X,y)\in \mathbb{R}^2\;:\;X=H_{\epsilon}(y):=- \frac{1}{2A_{\epsilon}(y)+O(\epsilon)}\}\,,
 \end{equation}
@@ -172,9 +182,9 @@ This object provides us with a convenient criterion to discriminate the sample p
 \begin{theorem}[label=thm1.3]{}{}
     Let \eqref{eq1.8} be a stochastic fast-slow system with additive noise then its sample paths whose initial conditions are on the slow manifold $C_{\epsilon}$ stay bounded within the neighborhood $N(\rho;C_{\epsilon})$ with high probability. 
 \end{theorem}
-We are now capable to characterising noise-induced critical transitions (i.e. N-tipping) with an equivalent relation to the deterministic case (i.e. B-tipping) derived in the previous section.
+We are now able to charactere noise-induced critical transitions (N-tipping) with an equivalent relation to the deterministic case (i.e. B-tipping) derived in the previous section.
 \begin{interpretation*}{}
-     According to Definition \ref{def1.3} the slow subtrajectory of the sample paths will stay bounded within $N(\rho;C_{\epsilon})$ as it will pass through a region of $y$ close to a normally hyperbolic and attracting submanifold $C^{(a)}$ while approaching a critical transition when the regime shifts from slow attracting to fast repelling. Since $N(\rho;C_{\epsilon})$ scales with the variance we are expecing the sample paths to escape such region, as they approach a critical transition, with higher probabilities, meaning that the variance should increase the closer the paths get to the tipping point. This provides us with an initial EWS for B- and N-tipping affecting stochastic fast-slow systems with additive noise.
+     According to Definition \ref{def1.3} the slow subtrajectory of the sample paths will stay bounded within $N(\rho;C_{\epsilon})$ as it will pass through a region of $y$ close to a normally hyperbolic and attracting submanifold $C^{(a)}$ while approaching a critical transition when the regime shifts from slow attracting to fast repelling. Since $N(\rho;C_{\epsilon})$ scales with the variance we are expecing the sample paths to escape such region, as they approach a critical transition, with higher probabilities, meaning that the variance should increase the closer the paths get to the tipping point. This increase in variance can thus be interpreted as an EWS for B- and N-tipping affecting stochastic fast-slow systems with additive noise.
 \end{interpretation*}
 Finally we notice that a trivial rescaling and coordinate transformation will allow us to recast any sample path away from the critical transitions in the following stochastic fast-slow system
 \begin{equation}\label{eq1.12}
@@ -184,7 +194,7 @@ Finally we notice that a trivial rescaling and coordinate transformation will al
    \end{cases}
 \end{equation}
 which is the Ornstein-Uhlenbeck process (OUP) with linear drift $(0<\alpha=0(1))$ and constant diffusion $(\sigma_f=:\sigma>0)$.
-With these results we are now capable to fully distinguish states of the sample paths of stochastic fast-slow systems that are on normally hyperbolic and attracting submanifolds as stable regimes that are far away from the critical transitions. It will become fundamental later, when deriving stochastic indicators for such transitions, how to choose an appropriate criterion that will count a sample path as escaped fron the slow manifold $C_{\epsilon}$ and therefore linking together such indicators with the OUP normal form derived in this section. 
+With these results we are now capable to fully distinguish states of the sample paths of stochastic fast-slow systems that are on normally hyperbolic and attracting submanifolds as stable regimes that are far away from the critical transitions. It will become fundamental later, when deriving stochastic indicators for such transitions, how we choose an appropriate criterion that will count a sample path as escaped fron the slow manifold $C_{\epsilon}$ and therefore linking together such indicators with the OUP normal form derived in this section. 
 \begin{example}[label=ex1.2]{}{}
         Let us consider a sample path realised by the OUP in \eqref{eq1.12} with drift constant $\alpha=1$, timescale constant $\epsilon=2\cdot10^{-2}$ and noise level $\sigma=0.1$. 
         We want to construct the neighborhood $N(\rho;C_{\epsilon})$ in \eqref{eq1.11} for such case and confirm that the numerical sample paths stay in fact bounded within such neighborhood with high probability. 
@@ -193,8 +203,8 @@ With these results we are now capable to fully distinguish states of the sample 
         \begin{equation*}
             C=\{(x,y)\in \mathbb{R}^{2}\;:\;f(x,y)=-\alpha x = 0\:\Rightarrow\: x=0\;\forall \alpha\neq0,\,\forall y\in \mathbb{R}\}\,,
         \end{equation*}
-        we can easily check that the existance of $h:y\mapsto x$ is guranteed by the implicit function Theorem \ref{thm1.1} given that $C$ is normally hyperbolic at any point.
-        It follows similarly easy that the only map $x=h(y)=0,\:\forall y\in \mathbb{R}$ is the null function itself which results in
+        we can easily check that the existance of $h:y\mapsto x$ is guranteed by Theorem \ref{thm1.1} given that $C$ is normally hyperbolic at any point.
+        It follows similarly that the only map $x=h(y)=0,\:\forall y\in \mathbb{R}$ is the null function yielding 
         \begin{equation*}
                 h_{\epsilon}(y) = h(y) + O(\epsilon) = O(\epsilon)\quad\Longrightarrow\quad C_{\epsilon}=\{(x,y)\in \mathbb{R}^{2}\;:\;x=O(\epsilon)\}\,.
         \end{equation*}
@@ -212,17 +222,17 @@ With these results we are now capable to fully distinguish states of the sample 
         \begin{equation}\label{eq1.13}
                 N(\rho;C_{\epsilon})=\{\frac{\sigma^{-2}\text{Var}(x)+O_{2}(\epsilon)}{\frac{1}{2 \alpha}+O_{1}(\epsilon)}<\rho^{2}\}=\{\frac{\sigma^{-2}\text{Var}(x)+M_{2}\epsilon}{\frac{1}{2 \alpha}+M_{1}\epsilon}<\rho^{2}\}\,,
         \end{equation}
-        for which $M_{1}, M_{2}$ are both positive constants that need to be quantified in order to compute $\rho$ which will give us the boundaries $\partial N(\rho;C_{\epsilon})=\sqrt{\rho^{2}}$.
+        for which $M_{1}, M_{2}$ are two distinct, positive constants that need to be quantified in order to compute $\rho$ which will give us the boundaries $\partial N(\rho;C_{\epsilon})=\sqrt{\rho^{2}}$.
         To do so let's observe that $X=H_{\epsilon}(y)=\frac{1}{2A_{\epsilon}(y)}+O_{1}(\epsilon)\;\Rightarrow\;|X|=|\sigma^{-2}\text{Var}(x)|< M_{1}\epsilon$.
         We recall that $x(\tau)$ is in fact an OUP for which we have an analytical expression for its variance readily available
         \begin{equation}\label{eq1.14}
              \text{Var}(x(\tau)) = (x_0 - \frac{\sigma^2}{2 \alpha})e^{-2\frac{\alpha\tau}{\epsilon}}\,.
         \end{equation}
-        We can the plug in the values for $\alpha,\,\sigma$ and $\epsilon$ back in \eqref{eq1.14} to get $M_{1}=225$.
+        We can the plug in the values for $\alpha,\,\sigma$ and $\epsilon$ in \eqref{eq1.14} to get $M_{1}=225$.
         Similarly for the other constant we get $x=h_{\epsilon}(y)=O_{2}\;\Rightarrow\;|x|<M_{2}\epsilon$; here we assume that $\underset{\tau\in \mathbb{R}^{+}}{\text{max}}|x(\tau)|=0.25$ which lead us to the value $M_{2}=12.5$. Putting al together into \eqref{eq1.13} finally gives us $\rho = \pm 0.35$.
 \end{example}
 \begin{example_continued}{}{}
-        We are now enabled to compute the closure of the neighborhood $N(\rho;C_{\epsilon})$ of the critical manifold $C_{\epsilon}$ within which our sample paths realizations $x(\tau)$ for the OUP (which we recall are normally distributed) will stay bounded with high probability.
+        We are now able to compute the closure of the neighborhood $N(\rho;C_{\epsilon})$ of the critical manifold $C_{\epsilon}$ within which our sample paths $x(\tau)$ for the OUP (which are normally distributed) will stay bounded with high probability.
      \begin{figure}[H]
          \centering 
          \includegraphics[keepaspectratio, width=\textwidth]{../figures/OUP.png}
@@ -237,20 +247,20 @@ With these results we are now capable to fully distinguish states of the sample 
      \end{figure}
 \end{example_continued}
 \subsection{Predicting noise-induced critical transitions}\label{subsec2.3}
-We are now concerned with concluding the previously established criterion by deriving consistent and robust EWS for systems that are instead close or approaching the tipping point. Theorem \ref{thm1.3} already gives us a first hint in the increase in variance as the neighborhood $N(\rho;C_{\epsilon})$ grows in size. 
-To deal with this problem in more general terms let us abandon the sample path point of view and consider instead possibile qualitative changes in the Fokker-planck distribution associated to an ensemble of stochastic processes in the form \eqref{eq1.7}.
+We are now concerned in characterising the sample paths for those stochastic fast-slow systems that are instead close to or approaching the tipping point. Theorem \ref{thm1.3} already gives us a first hint by identifying the increase in variance of the time-series as the neighborhood $N(\rho;C_{\epsilon})$ grows in size while approaching the B-tipping. 
+To deal with this problem in more general terms let us abandon the sample path point of view and consider instead possibile qualitative changes in the Fokker-planck distribution associated to an ensemble of stochastic processes of the form \eqref{eq1.7}.
 \begin{definition}[\hl{Phenomenological bifurcation}]\label{def1.5}
-     Let \eqref{eq1.7} be a stochastic fast-slow system and $p_{s}(x,y)$ be a probability density for the stochastic process defined by \eqref{eq1.7} satysfing the stationary Fokker-Plank equation \eqref{eq0.1} then $y=y_{p}$ is a phenomenological bifurcation (P-tipping) if $p_{s}(x,y<y_{p})$ is qualitatively different from $p_{s}(x,y>y_{p})$. 
+     Let \eqref{eq1.7} be a stochastic fast-slow system and $p_{s}(x,y)$ be a probability density for the stochastic process defined by \eqref{eq1.7} satysfing the stationary Fokker-Plank equation \eqref{eq0.1} then $y=y_{p}$ is a phenomenological bifurcation if $p_{s}(x,y<y_{p})$ is qualitatively different from $p_{s}(x,y>y_{p})$. 
 \end{definition}
 \begin{example}[label=ex1.3]{}{}
      We consider the case for a stochastic fast-slow system in the fast timescale, i.e.
      \begin{equation*}
         \begin{cases}
             dx = f(x,y)\,dt + \sigma_{f}(x,y)\,dW\,, \\
-            dy = \epsilon g(x,y)\,dt + \sigma_{g}(x,y)\,dW\,, 
+            dy = \epsilon g(x,y)\,dt + \sigma_{g}(x,y)\,dW\,. 
         \end{cases}
      \end{equation*}
-     in the singular limit, reducing the above to the (stochastic) layer equation
+     Taking the singular limit, we reduce the above to the (stochastic) layer equation
      \begin{equation*}
          dx =  f(x,y)\,dt + \sigma_{f}(x,y)\,dW\,,
      \end{equation*}
@@ -259,7 +269,7 @@ To deal with this problem in more general terms let us abandon the sample path p
          dx = (yx - x^{2} + \frac{1}{2}\sigma^{2}x)\,dt + \sigma x\,dW\,. 
      \end{equation}
      This case was first introduced in \cite{Arnold98} in the context of studying potential bifurcations by tracking the convergence of invariant measures for parametrised families of random dynamical systems. 
-     What we will do instead is verifying whether a qualitative change in the stationary Fokker-Planck distribution of this process is in fact an EWS for the transcritical bifurcation point $y=0$. From \eqref{eq0.1} we write the stationary Fokker-Planck equation associated to \eqref{eq1.15}
+     What we will do instead is verify whether a qualitative change in the stationary Fokker-Planck distribution of this process occurs as the transcritical bifurcation point $y=0$ is approached. From \eqref{eq0.1} we write the stationary Fokker-Planck equation associated to \eqref{eq1.15}
      \begin{equation}\label{eq1.16}
           0 = -\frac{d}{dx}((yx - x^{2} + \frac{1}{2}\sigma x)p_{s}(x; y)) + \frac{d^{2}}{dx^{2}}(\frac{1}{2}\sigma^{2}x^{2}\,p_{s}(x; y))\,,
      \end{equation}
@@ -267,7 +277,7 @@ To deal with this problem in more general terms let us abandon the sample path p
      \begin{equation}\label{eq1.17}
           p_{s}(x; y) = \frac{1}{N_{y}}\,x^{\frac{2y}{\sigma^{2}}-1}\,e^{-\frac{2x}{\sigma^{2}}}\,,\quad N_{y}=\int_{0}^{+\infty} x^{\frac{2y}{\sigma^{2}}-1}\,e^{-\frac{2x}{\sigma^{2}}}\,dx = (\frac{\sigma^{2}}{2})^{\frac{2y}{\sigma^{2}}}\,\Gamma(\frac{2y}{\sigma^{2}})\,. 
      \end{equation}
-     We can easily conclude that \eqref{eq1.17} is unimodal in the parameter range $y\in(0, \frac{\sigma^{2}}{2})$ and it undergoes a clear qualitative change for parameter values $y>\frac{\sigma^{2}}{2}$. The parameter value $y_{p}=\frac{\sigma^{2}}{2}$ is therefore a P-tipping for our transcritical normal form with multiplicative noise. 
+     We can easily conclude that \eqref{eq1.17} is unimodal in the parameter range $y\in(0, \frac{\sigma^{2}}{2})$ and it undergoes a clear qualitative change for parameter values $y>\frac{\sigma^{2}}{2}$. The parameter value $y_{p}=\frac{\sigma^{2}}{2}$ is therefore a phenomenological bifurcation for our transcritical normal form. 
      Both mean and variance of the Gamma distribution are linear in $y$ and specifically
      \begin{equation*}
          \mathbb{E}(x; y)=y\,,\quad \text{Var}(x; y) = \frac{\sigma^{2}}{2}\,y\,,
@@ -285,12 +295,12 @@ To deal with this problem in more general terms let us abandon the sample path p
      \begin{figure}[H]
          \centering 
          \includegraphics[keepaspectratio, width=0.95\textwidth]{../figures/MultEnsemble.png}
-         \caption{Plot of the $1000$ sample paths (grey lines) of the ensemble simulation of \eqref{eq1.15} in the augmented state space superimposed to their mean (white dashed line for the analytical value and solid blue line for the numerical value) and variance (dashed red line for the analytical value and solid red line for the numerical value).
+         \caption{Plot of the $1000$ sample paths (grey lines) of the ensemble simulation of \eqref{eq1.15} in the augmented state space superimposed to their mean (white dashed line for the analytical value and solid blue line for the numerical one) and variance (dashed red line for the analytical value and solid red line for the numerical one).
          Notice how the (analytical) mean follows exactly the stable branch of the critical manifold following the transcritical bifurcation.}
          \label{fig1.7}
      \end{figure}
 \end{example_continued}
-We are now equipped with a discriminating criterion to identify both sample paths away from critical transitions and those approaching it; in both cases we observed that the variance of the ensemble constitutes a robust EWS to predict the tipping point. 
+We are now equipped with a criterion to discern those sample paths that are away from the critical transition from those approaching it; in both cases we observed that the variance of the ensemble constitutes an EWS to predict the upcoming B-tipping. 
 Since we established earlier that sample paths away from the transitions can be modelled as the OUP we can therefore still safely rely on the approach of monitoring the Fokker-Planck distribution for paths that are instead close to the tipping point. 
 To do that in the most general approach we need to specify appropriate boundary conditions for the Fokker-Planck equation in order to properly capture and separate sample paths that have escaped the attracting submanifold from those that instead stay bounded to it.
 As such, considering a layer equation of the form \eqref{eq1.3} we write the associated Fokker-Planck equations
@@ -305,15 +315,15 @@ whose distribution satisfies the stationary limit of \eqref{eq1.18}
 \begin{equation}\label{eq1.19}
      \newprime{J}(x) = 0\;\Rightarrow\; J(x) = \text{constant}(x)\,. 
 \end{equation}
-We immediately realise that equation \eqref{eq1.19} is defined over the entirety of the real line, meaning that in order to restrict it to a bounded and limited subinterval $[a,b]\subset \mathbb{R}$ we must restrict the entirety of the probability current to never leave such domain, resulting in the specification of reflecting boundary conditions. 
-The reason for this immediately follow by the constraint of the stationary Fokker-Planck density to remain normalised in any subdomain $[a,b]$ we restrict ourselves.
+We immediately realise that equation \eqref{eq1.19} is defined over the entirety of the real (spatial) domain, meaning that in order to restrict it to a bounded and limited subinterval $[a,b]\subset \mathbb{R}$ we must enforce the entirety of the probability current to never leave such domain, resulting in the specification of reflecting boundary conditions. 
+The reason for this immediately follow by the constraint of the stationary Fokker-Planck density to remain normalised in any subdomain $[a,b]$ we restrict ourselves to.
 Following the imposition of reflecting boundary conditions we get that the only possible constant that satisfies \eqref{eq1.19} is $J(x)=J=0$. From the definition of $J(x,t)$ this leads to a first-order, homogeneous, non-linear ODE whose general integral can be explicitly calculated
 \begin{equation}\label{eq1.20}
      p(x)=\frac{1}{N}\,e^{2 \int_{a}^{x}\frac{1}{\sigma^{2}}f(u,y)du}\,,\quad N = \int_{a}^{b}\int_{a}^{v}\frac{1}{\sigma^{2}}f(u,y)du\,dv\,.
 \end{equation}
-The above stationary Fokker-Planck distribution gives us a convenient method to detect potential P-tipping by tracking the parameter evolution of the distribution; this result has practical value since we don't necessarly need to know the deterministic dynamic $f(x,y)$ to observe a qualitative change in \eqref{eq1.20} as long as our ensemble simulations are reliable.
-Nevertheless, the occurance of a P-tipping is not always guaranteed and visual monitoring of the distribution histogram is less than ideal for real-life EWS; as such it would be optimal if quantitative measures can be derived from \eqref{eq1.20} to provide us with a definitive EWS for temporal stochastic fast-slow systems.
-As already mentioned above, the variance has provided insofar a reliable and consistent signal to anticipate and predict the critical transition. From \eqref{eq1.20} we can specify any normal form $f(x,y)$ and check wether the associated variance is indeed a good EWS for the associated deterministic bifurcation.
+The above stationary Fokker-Planck distribution gives us a convenient method to detect potential phenomenological bifurcation by tracking the parameter evolution of the distribution; this result has an important practical value since we don't necessarly need to know the deterministic dynamic $f(x,y)$ to observe a qualitative change in \eqref{eq1.20} as long as our ensemble simulations are reliable.
+Nevertheless, since visually monitoring the distribution histogram is not always a practical nor sometimes available solutions in real-life applications more quantitative measures need to be derived from \eqref{eq1.20} as a more robust EWS.
+As already mentioned above, the variance has insofar provided a good signal to anticipate and predict the critical transition. From \eqref{eq1.20} we specify any normal form $f(x,y)$ and check wether the associated variance is indeed a good EWS for the associated deterministic bifurcation.
 Here we will only consider the following three cases
 \begin{table}[H]
 \centering
@@ -327,7 +337,7 @@ Here we will only consider the following three cases
  \hline
  \end{tabular}
  \end{table}
- We highlight how the specified choices for each boundary is made in order to enforce reflecting boundary conditions for the Fokker-Planck stationary density. nn practice however, when we're dealing with ensemble simulations, we will specify the unstable branch of each critical manifold as the boundary for the sample paths of each normal form and a trajectory that crosses beyond such boundary is counted as escaped (N-tipping).
+ We highlight how the specified choices for each boundary is made in order to enforce reflecting boundary conditions for the Fokker-Planck stationary density. In practice however, when we're dealing with ensemble simulations, we will specify the unstable branch of each critical manifold as the boundary for the sample paths of each normal form and a trajectory that crosses beyond such boundary is counted as escaped (N-tipping).
 In Figure \ref{fig1.8} we plot the analytical variance computed from each distribution against the numerical variance computed from an ensemble of $1000$ sample paths. It is clear how the choice of reflecting boundary conditions is necessary for the computation of the variance in the context of deriving an EWS for a deterministic critical transition (B-tipping).
 \begin{figure}[H]
     \centering 
@@ -355,10 +365,10 @@ In Figure \ref{fig1.8} we plot the analytical variance computed from each distri
     \label{fig1.8}
 \end{figure}
 One clear observation that we can gather from Figure \ref{fig1.8} is that in all three cases the (analytic) variance is non-monotonic and it reaches a local maxima in the proximity of the bifurcation at $y=0$ before decreasing. This apparent anomaly is a result of imposing reflecting boundary conditions for the probability current.
-As a matter of fact for parameter values $y<<0$ away from the deterministic B-tipping, the effect of reflecting boundaries on the stationary distribution are negligible since, as we previously established, the stochastic process is topologically equivalent to the OUP and it evolves bounded within the neighborhood of the slow critical manifold $C_{\epsilon}$.
-As we approach the critical transition however $y\approx0$ the density $p_{s}(x; y)$ becomes more confined around the stable equilibria leading to N-tipping to occur with higher and higher probability. This can be easily verified by checking how decreasing the noise level $\sigma$ brings the local maxima of the variance closer and closer to the actual N-tipping at $y=0$.
-The second most evident observation concerns the discrepancies between the analytical and numerical variance at the local maxima. In all three cases in fact we observe that the two curves pretty much agree away from the deterministic critical transition however they largely differ as the parameter value gets closer to the local maxima for the analytical variance.
-We can delegate such discrepancy to the choice that we made earlier in counting ensemble sample paths as escaped the moment the cross the unstable equilibria. This corresponds to absorbing boundary conditions which quite substantially differ from the reflecting boundary conditions used in our stationary Fokker-Planck density modelling approach especially when boundary and noise effects become dominant (i.e. close to the deterministic critical transition as the basin of attraction shrinks further and further in size).
+As a matter of fact for parameter values $y<<0$ away from the deterministic B-tipping, the effect of reflecting boundaries on the stationary distribution are negligible since, as we previously established, the stochastic process is topologically equivalent to the OUP and it stays bounded within the neighborhood of the slow critical manifold. 
+As we approach the critical transition however the density $p_{s}(x; y)$ becomes more confined around the stable equilibria leading to N-tippings to occur with higher and higher probability. This can be easily verified by checking how decreasing the noise level $\sigma$ brings the local maxima of the variance closer and closer to the actual N-tipping at $y=0$.
+The second most evident observation concerns the discrepancies between the analytical and numerical variance near the local maxima. In all three cases in fact we observe that the two curves agree when the parameter's values are far away from the deterministic critical transition however they largely differ as the parameter value gets closer to the local maxima for the analytical variance.
+We can ascribe such discrepancy to the choice that we made earlier in counting ensemble sample paths as escaped the moment they cross the unstable equilibria. This corresponds to absorbing boundary conditions which quite substantially differ from the reflecting boundary conditions used in our stationary Fokker-Planck density especially when boundary and noise effects become dominant (i.e. close to the deterministic critical transition as the basin of attraction shrinks further and further in size).
 This argument is validated further by observing how the discrepancy between analytical and numerical variance for the fold bifurcation is significantly less than those for the remaining two normal forms; based on this observation we expect fewer trajectories to escape the stable equilibria for the fold normal form and this is exactly what we observe in the ensemble simulations as depicted in Figure \ref{fig1.9}.
 We finally note how, in reality, trajectories that cross the unstable equilibria can, in principle, still recover to the stable branch with low probability, which further corroborates our observations above.
 \begin{figure}[H]
@@ -380,7 +390,7 @@ We finally note how, in reality, trajectories that cross the unstable equilibria
         \includegraphics[keepaspectratio, width = \linewidth]{../figures/AddTransEnsemble.png}
         \label{fig1.9.c}
     \end{subfigure}
-    \caption{Ensemble sample paths of fold (top), pitchfork (middle) and transcritical (bottom) normal forms showing separately the trajectories that stayed bounded on the stable branch of the critical manifold (gray lines, blue line shows the mean) prior to the bifurcation and those that escaped (red lines) beyond the unstable submanifold. On the left of each plot a percentage of the number of escaped trajectories a discrete values of $y$ is shown.}
+    \caption{Ensemble sample paths of fold (top), pitchfork (middle) and transcritical (bottom) normal forms showing separately the trajectories that stayed bounded on the stable branch of the critical manifold (gray lines, blue line shows the mean) prior to the bifurcation and those that escaped (red lines) beyond the unstable submanifold. On the left of each plot a percentage of the number of escaped trajectories at discrete values of $y$ is shown.}
     \label{fig1.9}
 \end{figure}
 
