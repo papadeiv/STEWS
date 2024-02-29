@@ -4,20 +4,20 @@ include("lattice.jl")
 printstyled("LUNG VENTILATION LATTICE MODEL\n"; bold=true, underline=true, color=:light_blue)
 
 # Define the lattice
-n = 500
-m = 500
+n = 300
+m = 300
 N = n*m
 L = Lattice(n, m)
 
 # Initial condition of the lattice
 x0 = 1.0::Float64.*ones(Float64, length(L.grid))
 # Initial condition of the bifurcation parameter (degree of smooth muscle activation)
-K = 0.0::Float64 # background turbidity
-push!(x0, K) # smooth muscle activation
+K = 0.0::Float64 # smooth muscle activation
+push!(x0, K) 
 # SDE's parameters
-σ = 0.05::Float64 # noise level
+σ = 0.001::Float64 # noise level
 push!(x0, σ)
-ε = 1.00::Float64 # parameter's drift
+ε = 0.01::Float64 # parameter's drift
 push!(x0, ε)
 
 # Model's parameters

@@ -1,0 +1,103 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\newpage
+\section{Early-warning signals in reaction-diffusion phenomena}\label{sec3}
+So far we have dealt with low-dimensional dynamical systems, i.e. we considered the time evolution of ordinary stochastic differential equations. 
+However, a more general and complicated setting would also consider the modelling and analysis of the time evolution alongside the space distribution of systems across a spatial domain. 
+Hence the next step will be to incorporate the fast-slow framework and the concepts concerning the detection of EWS discussed in the previous section in the so-called spatio-temporal (stochastic) dynamical systems.
+In this section we will solely focus on reaction-diffusion systems discretised on a lattice as an intermediate step before addressing the more general case of spatio-temporal (stochastic) partial differential equations (SPDEs).
+\subsection{Stochastic lattice dynamical systems}\label{subsec3.1}
+Lattice dynamical systems (LDSs) are systems of ODEs organised on a regular lattice: the diffusion process is usually included as local coupling of the spatial nodes via nearest-neighbours interaction terms in the equations and the enforcement of periodic boundary conditions. 
+The organisation of SDEs on a regular lattice will similalry constitute a stochastic lattice dynamical systems (SLDSs), which will be the main object of investigation throughout the rest of the current section.
+In the context of EWS of critical transitions SLDSs are largely considered a bridge between the low (temporal) dimensional case addressed in the previous section and the high (spatio-temporal) dimensional case which will be discussed in the next section.
+Given a lattice $\mathcal{L}$ of $n\times m$ nodes we can write a generic diffusion-reaction equation in cartesian indices as
+\begin{equation}\label{eq2.1}
+     dx_{j,k} = (D_{j,k}\,\phi(x_{j,k}, x_{j\pm1,k}, x_{j,k\pm1}) + R_{j,k}\,\psi(x_{j,k}))\,dt + \sigma\,dW_{j,k}\,,
+\end{equation}
+where for simplicity we limit ourselves to the case of additive, diagonal noise for all the lattice sites.
+With a trivial coordinates transformation $\ell = n(k-1)+(j+1)$ we can recast \eqref{eq2.1} into linear indices' form
+\begin{equation}\label{eq2.2}
+     dx_{\ell} = (D_{\ell}\,\phi(x_{\ell}, x_{\ell\pm1}, x_{\ell\pm n}) + R_{\ell}\,\psi(x_{\ell}))\,dt + \sigma\,dW_{\ell}\,.
+\end{equation}
+Quantities $D_{\ell}$ and $R_{\ell}$ are, in general, inhomogeneous scalar fields over the lattice scaling the relative magnitudes of diffusion and reaction respectively. 
+Now we frame \eqref{eq2.2} by including a slow-varying bifurcation parameter as shown in the previous section thereby obtaining a fast-slow SLDS of the form
+\begin{equation}\label{eq2.3}
+   \begin{cases}
+   dx_{\ell} = (D_{\ell}(y)\,\phi(x_{\ell}, x_{\ell\pm1}, x_{\ell\pm n}; y) + R_{\ell}(y)\,\psi(x_{\ell}; y))\,dt + \sigma\,dW_{\ell} \,, \\
+      dy = \epsilon\,dt \,, 
+   \end{cases}
+\end{equation}
+where here we will restrict ourselves to, at most, (slow) linear ramping of the parameter $y(t)$ so that results previously outlined for R-tipping might also be potentially included with ease.
+\begin{interpretation*}{}
+        To lighten the notation in distinguishing temporal from spatial statistical indicators we will hereby write the latters in boldface. 
+        As an example while the temporal variance of a time-series of a single lattice site $x_{\ell}\in \mathcal{L}$ will be written as $\text{Var}(x_{\ell})$, the spatial variance for the state of the system at a particular timestep $t$ (normally referred to as \textit{snapshot}) will be written as $\mathbf{Var}(\mathcal{L}(t))$.
+\end{interpretation*}
+\subsection{Detecting critical slowing down}\label{subsec3.2}
+Critical slowing down (CSD) is regarded as one of the most simple and easy to detect form of EWS. It essentially quantifies the loss of linearity of a system around its stable equilibrium, where the nearby behaviour is well approximated by its Jacobian. 
+For B-tipping this usually means that, as the system approaches its parameter bifurcation the real part of one of the eigenvalues of its Jacobian approaches zero (i.e. it becomes less negative) and thus the decay of small perturbations towards the direction of the associated eigenvector becomes slower. 
+The overall effect is that the recovery of the system to its equilibria slows down (hence the name) and such eigenvalue can be used as an EWS for the upcoming critical transitions.
+In SDEs, the role of noise in distrubing the time evolution around an equilibria may cause the system to tip far enough as the basin of attraction shrinks. 
+As such the slower rate of recovery may be estimated indirectly by analysing statistical indicators in either time or space.
+Temporal indicators can detect CSD well enough for low-dimensional system but they have the major drawback of completely disregarding any change in the spatial distribution of the system's state.
+On the other hand, spatial indicators do account for fluctuations of the lattice sites from the spatial mean and the symmetry in the diffucion-reaction model also allows for larger spatial correlation of nearby cells via local coupling.
+However, as these indicators look at one particular snapshot at the time, they are limited in the amount of information gathered from the time evolution of the system thus ignoring any potential temporal pattern.
+Ways to cirmumvent the latter limitations have been proposed in the context of SLDSs.
+\subsubsection{Leading eigenvalues of the covariance matrix}\label{subsubsec3.2.1}
+This EWS was first proposed in \cite{Dakos18} and then later generalised in \cite{Chen19}. Several snapshots $\boldsymbol{x}\in \mathbb{R}^{N}$ ($N:=n\,m$) are collected across a sliding window of fixed width $W$ and stride $S$ in a snapshot matrix $\boldsymbol{\mathcal{X}}\in \mathbb{R}^{N\times W}$. 
+These snapshots are then used to compute a covariance matrix $\boldsymbol{\Sigma}\in \mathbb{R}^{N\times N}$ across the sliding window so that fluctuations around the temporal mean are also considered.
+\begin{align}
+     \boldsymbol{\mathcal{X}}(w) = \begin{pmatrix}
+                                        \boldsymbol{x}(t_{w}) & \dots & \boldsymbol{x}(t_{w + W}) \\
+                                \end{pmatrix}	
+                                \;\Rightarrow\;\Big\{\boldsymbol{\Sigma}(w)\Big\}_{j,k} =&\,\text{cov}(\boldsymbol{x}_{j}(t_{w\to w+W}), \boldsymbol{x}_{k}(t_{w\to w+W})) \nonumber \\
+     =&\,\mathbb{E}(\boldsymbol{x}_{j}(t_{w\to w+W})\,\boldsymbol{x}_{k}(t_{w\to w+W})) - \nonumber \\
+     -&\,\mathbb{E}(\boldsymbol{x}_{j}(t_{w\to w+W}))\mathbb{E}(\boldsymbol{x}_{k}(t_{w\to w+W}))\,, \label{eq2.4}
+\end{align}
+where $\boldsymbol{x}_{\ell}(t_{w\to w+W})\in \mathbb{R}^{W}$ is a vector of $W$ observations (truncated time-series) of site $x_{\ell}\in \mathcal{L}$ across the sliding window.
+\newpage
+\begin{example}[label=ex2.1]{}{}
+     We will consider a vegetation turbidity model on a square $20$-by-$20$ lattice proposed in \cite{Chen19} where, from \eqref{eq2.3}, we set
+     \begin{align}
+             \phi(x_{\ell}, x_{\ell\pm1},x_{\ell\pm m},y) =&\, x_{\ell+1}+ x_{\ell+1}+ x_{\ell-1} + x_{\ell+m} + x_{\ell-m}-4x_{\ell}\,, \nonumber \\
+            \psi(x_{\ell},y) =&\,r_{v}\,x_{\ell}\Big(1-x_{\ell}\frac{r_{\ell}^{4}+E_{\ell}^{4}}{r_{\ell}^{4}}\Big)\,,\;E_{\ell}=y\,\frac{h_{v}}{h_{v}+x_{\ell}} \,,\nonumber
+     \end{align}
+     with $r_{\ell}$ being sampled uniformly at random in $[0.6, 1.0]$ indipendently for each lattice site.
+    The model's properties are all constants and set to $r_{v} = 0.5$, $h_{v} = 0.2$ and $\sigma = 5\cdot 10^{-2}$. The bifurcation parameter is initialised at $y(0)=3$ and ramped linearly with the same timescale as the lattice (fast) variables (i.e. $\epsilon=1$). Finally both the diffusion and reaction rates are set to uniform values across the domain, respectively $D=0.2$ and $R=1$. 
+    For the assembly and computation of the covariance matrix we set a sliding window of width $W=20$ and moving with a single stride $S=1$. The results indicate that the leading eigenvalue of $\boldsymbol{\Sigma}$ does in fact provide a good EWS for the bifurcation in the system.
+\end{example}
+\subsubsection{Dynamic Mode Decomposition}\label{subsubsec3.2.2}
+A more direct capture of CSD through the leading spatial mode of a SLDS is introduced in \cite{Donovan22} by means of Dynamic Mode Decomposition (DMD).
+Here we work again with the same snapshot matrix assembled across a sliding window as described for the analysis of the covariance matrix.
+However now we are concerned in capturing the time evolution more directly by finding the principal spatial components of the temporal distribution between two consecutive snapshots matrices.
+Suppose $\boldsymbol{\mathcal{X}}$ is collecting snapshots from timestep $t_{w}$ to $t_{w+W}$ while in $\boldsymbol{\mathcal{\newprime{X}}}$ we store the snapshots one stride of the sliding window away i.e. capturing the snapshots from $t_{w+S}$ to $t_{(w+S)+W}$.
+We now linearise the temporal evolution during the stride and use (DMD) to quantify the temporal changes in the spatial leading mode of the system thanks to the following result.
+\begin{theorem}[label=thm2.1]{}{}
+     Let $A:\boldsymbol{\mathcal{X}}\to \boldsymbol{\mathcal{\newprime{X}}}$ be a linear operator and $\boldsymbol{\mathcal{X}}\approx \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{V}^{T}$ be the singular valued decomposition (SVD) of $\boldsymbol{\mathcal{X}}$, then the eigenvalues of $\boldsymbol{S}:= \boldsymbol{U}^{T}\boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{V}\boldsymbol{\Sigma}^{-1}$ $A$ are the best approximation of those of $A$ and its eigenvectors are the also optimally approximated by those of $\boldsymbol{S}$ multiplied from the left by $\boldsymbol{U}$.
+\end{theorem}
+\begin{proof}
+     Since $\boldsymbol{\mathcal{X}}\in \mathbb{R}^{N\times W}$ then the SVD will give us the left and right singular vectors in $\boldsymbol{U}$, $\boldsymbol{V}\in \mathbb{R}^{N\times W}$ respectively while the singular values will be stored along the (main) diagonal of $\boldsymbol{\Sigma}\in \mathbb{R}^{W\times W}$ (which is not the covariance matrix as in the previous case).
+     From straightforward algebraic manipulation we get
+     \begin{equation*}
+          A = \boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{\mathcal{X}}^{-1}\approx \boldsymbol{\mathcal{\newprime{X}}}(\boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{V}^{T})^{-1}=\boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{V}^{-T}\boldsymbol{\Sigma}^{-1}\boldsymbol{U}^{-1} = \boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{V}\boldsymbol{\Sigma}^{-1}\boldsymbol{U}^{T}\;\Rightarrow\;\boldsymbol{U}^{-1}A \boldsymbol{U}\approx \boldsymbol{U}^{T}\boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{V}\boldsymbol{\Sigma}^{-1}=:\boldsymbol{S}\,,
+     \end{equation*}
+     where we used the fact that both $\boldsymbol{U}$ and $\boldsymbol{V}$ are orthogonal. The eigendecomposition of $\boldsymbol{S}$ will then trivially give us also the eigendecomposition of $A$
+    \begin{equation*}
+         \boldsymbol{U}^{-1}A \boldsymbol{U}\approx \boldsymbol{S}=\boldsymbol{Q}\boldsymbol{\Lambda}\boldsymbol{Q}^{-1}\;\Rightarrow\;A = (\boldsymbol{U}\boldsymbol{Q})\boldsymbol{\Lambda}(\boldsymbol{U}\boldsymbol{Q})^{-1}\,.
+    \end{equation*}
+\end{proof}
+\newpage
+\begin{example}[label=ex2.2]{}{}
+     Here we study a lung ventilation model for the arising of clustered ventilation defects (CVDs) in terminal airway units simplified as a $300$-by-$300$ square lattice. This SLDS, proposed in \cite{Donovan22} as a simplified version of the one derived in \cite{Donovan15}, sets, with reference to \eqref{eq2.3}
+     \begin{align}
+             \phi(x_{\ell}, x_{\ell\pm1},x_{\ell\pm m},y) =&\, \sigma(-r_{\ell})\,, \nonumber \\
+            \psi(x_{\ell},y) =&\,-x_{\ell} \,,\nonumber
+     \end{align}
+     where $\sigma(\theta)=\frac{1}{1+e^{-\theta}}$ is the sigmoid and 
+     $$r_{\ell}:=-P_{b}(t)+y \frac{k}{x_{\ell}}+P_{b}A(x_{\ell}^{4}+x_{\ell+1}^{4}+x_{\ell-1}^{4}+x_{\ell+m}^{4}+x_{\ell-m}^{4})(1 - 1 - x_{\ell}+ \frac{3}{2}(1-x_{\ell})^{2})\,,$$
+     with $P_{b}(t):=\frac{P_{b}(0)N}{\sum_{\ell\in \mathcal{L}}^{}x_{\ell}^{4}}$. The properties of the system are set to $k=14.1$, $A=0.63$, $P_{i}=0.96$, $P_{b}(0)=7.25$ and $\sigma = 1\cdot 10^{-3}$.
+     The bifurcation parameter is ramped linearly with timescale $\epsilon = 1\cdot10^{-2}$ from an initial value $y=0$. 
+     The snapshot matrix is again assembled using a width $W=20$ while the sliding stride is also set again to be $S=1$. The results show that the spatial leading mode of the DMD of the system also provides a good EWS.
+\end{example}
+
+%\subsection{The role of symmetries}\label{subsec3.3}
+\end{document}
