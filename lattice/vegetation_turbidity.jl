@@ -15,9 +15,9 @@ x0 = 1.0::Float64.*ones(Float64, length(L.grid))
 c = 3.0::Float64 # background turbidity
 push!(x0, c)
 # SDE's parameters
-σ = 0.05::Float64 # noise level
+σ = 0.001::Float64 # noise level
 push!(x0, σ)
-ε = 1.00::Float64 # parameter's drift
+ε = 0.01::Float64 # parameter's drift
 push!(x0, ε)
 
 # Model's parameters
@@ -27,7 +27,7 @@ hv = 0.2::Float64 # half-saturation cover
 r = rand(Uniform(0.6::Float64, 1.0::Float64), N) # half-saturation turbidity
 
 # Sliding window's parameters
-T = 01.50
+T = 10.00
 δt = 1e-3
 width = 20
 
@@ -104,16 +104,6 @@ println("Performing the analysis of the covariance matrix modes")
         end
         # Compute the covariance matrix of the snapshots 
         Σ = cov(X, corrected=false)
-        #=
-        S = Array{Float64, 2}(undef, N, N)
-        for j=1:N
-                x = X[:,j]
-                for k=1:N
-                        y = X[:,k]
-                        S[j,k] = mean(x.*y)-mean(x)*mean(y) 
-                end
-        end
-        =#
         # Perform the eigendecomposition
         Λ = eigvals(Σ)
         Q = eigvecs(Σ)

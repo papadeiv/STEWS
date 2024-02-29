@@ -4,8 +4,8 @@ include("lattice.jl")
 printstyled("LUNG VENTILATION LATTICE MODEL\n"; bold=true, underline=true, color=:light_blue)
 
 # Define the lattice
-n = 300
-m = 300
+n = 200
+m = 200
 N = n*m
 L = Lattice(n, m)
 
@@ -17,7 +17,7 @@ push!(x0, K)
 # SDE's parameters
 σ = 0.001::Float64 # noise level
 push!(x0, σ)
-ε = 0.01::Float64 # parameter's drift
+ε = 0.1::Float64 # parameter's drift
 push!(x0, ε)
 
 # Model's parameters
@@ -28,7 +28,7 @@ Pb = 0.0::Float64 # breathing pressure
 Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
-T = 03.00
+T = 20.00
 δt = 1e-2
 width = 20
 
@@ -92,42 +92,6 @@ println("Performing the analysis of the DMD modes")
         EWS[j] = (findmax(real(Λ)))[1]
         Mode[:,j] = F.U*real(Q[:,(findmax(real(Λ)))[2]])
 end
-
-# Covariance analysis
-#=
-EWS = zeros(Float64, (length(time)-width))
-Mode = Array{Float64,2}(undef, N, (length(time)-width))
-println("Performing the analysis of the covariance matrix modes")
-@showprogress for t=1:(length(time)-width)
-        # Get the states of the system across the specified time window 
-        state = states[t:((t-1)+width)]
-        # Assemble the snasphot matrix for the selected window
-        ctr = 1
-        X = Array{Float64, 2}(undef, width, N)
-        for snapshot in state
-                X[ctr, :] = snapshot[1:N]
-                ctr +=1
-        end
-        # Compute the covariance matrix of the snapshots 
-        Σ = cov(X, corrected=false)
-        #=
-        S = Array{Float64, 2}(undef, N, N)
-        for j=1:N
-                x = X[:,j]
-                for k=1:N
-                        y = X[:,k]
-                        S[j,k] = mean(x.*y)-mean(x)*mean(y) 
-                end
-        end
-        =#
-        # Perform the eigendecomposition
-        Λ = eigvals(Σ)
-        Q = eigvecs(Σ)
-        # Get leading eigenvalue and eigenvector as spatial EWS
-        EWS[t] = (findmax(real(Λ)))[1]
-        Mode[:,t] = real(Q[:,(findmax(real(Λ)))[2]])
-end
-=#
 
 # Export images of the lattice time evolution
 show(L, states, EWS, Mode)

@@ -61,45 +61,59 @@ function show(L::Lattice, states::Vector{Vector{Float64}}, eigenvalues::Vector{F
                         mode[k+1,:] = eigenvec[L.rows-k,:]
                 end
 
-                fig = Figure(; size = (600, 400))
                 # Plot the lattice dynamical system evolution
-                ax1 = Axis(fig[1, 1],
-                          title = L"ε = %$drift,\; σ = %$noise,\; c = %$parameter",
+                fig1 = Figure(; size = (1000, 1000), backgroundcolor = :transparent)
+                ax1 = Axis(fig1[1,1],
+                          #title = L"ε = %$drift,\; σ = %$noise,\; c = %$parameter",
+                          backgroundcolor = :transparent,
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
                           yticklabelsvisible = false,
                           aspect = DataAspect()
                 )
-                
                 heatmap!(ax1, state', colorrange = (0,1))
+
                 # Plot the leading eigenvector evolution 
-                ax2 = Axis(fig[1, 2],
-                          title = L"window\; size = %$width",
+                fig2 = Figure(; size = (1000, 1000), backgroundcolor = :transparent)
+                ax2 = Axis(fig2[1,1],
+                          #title = L"window\; size = %$width",
+                          backgroundcolor = :transparent,
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
                           yticklabelsvisible = false,
                           aspect = DataAspect()
                 )
-                #=
-                Colorbar(fig[:, end+1], 
-                         ticks = [0,1]
-                )
-                =#
                 heatmap!(ax2, mode', colorrange = ((findmin(mode))[1],(findmax(mode))[1]))
+
                 # Plot the leading eigenvalue evolution 
-                ax3 = Axis(fig[2, 1:2],
+                #=
+                fig3 = Figure(; size = (1000, 400))
+                ax3 = Axis(fig3[1,1],
                            limits = ((0, dt*(length(eigenvalues)-width)),((findmin(eigenvalues))[1],(findmax(eigenvalues))[1])) #(0.98, 1.0))
                 )
                 lines!(ax3, LinRange(0.0, time, length(ews)), ews)
+                =#
 
-                # Export the figure
-                save("../results/lattice/vegetation_turbidity/$ctr.png", fig)
+                # Export the figures
+                save("../results/lattice/lung_ventilation/snapshots/$ctr.png", fig1)
+                save("../results/lattice/lung_ventilation/modes/$ctr.png", fig2)
 
                 # Update the time variable
                 time += dt
                 # Update the image counter
                 ctr += 1
         end
+        # Plot the leading eigenvalue evolution 
+        fig3 = Figure(size = (2500, 1250), backgroundcolor = :transparent)
+        ax3 = Axis(fig3[1,1],
+                   backgroundcolor = :transparent,
+                   aspect = 4.0,
+                   limits = ((0, dt*(length(eigenvalues)-width)),(0.99, 1.005))
+        )
+        rowsize!(fig3.layout, 1, Aspect(1, 0.25))
+        resize_to_layout!(fig3)
+        lines!(ax3, LinRange(0.0, time, length(eigenvalues)), eigenvalues)
+        save("../results/lattice/lung_ventilation/EWS.png", fig3)
 end

@@ -53,8 +53,23 @@ These snapshots are then used to compute a covariance matrix $\boldsymbol{\Sigma
      =&\,\mathbb{E}(\boldsymbol{x}_{j}(t_{w\to w+W})\,\boldsymbol{x}_{k}(t_{w\to w+W})) - \nonumber \\
      -&\,\mathbb{E}(\boldsymbol{x}_{j}(t_{w\to w+W}))\mathbb{E}(\boldsymbol{x}_{k}(t_{w\to w+W}))\,, \label{eq2.4}
 \end{align}
-where $\boldsymbol{x}_{\ell}(t_{w\to w+W})\in \mathbb{R}^{W}$ is a vector of $W$ observations (truncated time-series) of site $x_{\ell}\in \mathcal{L}$ across the sliding window.
-\newpage
+where $\boldsymbol{x}_{\ell}(t_{w\to w+W})\in \mathbb{R}^{W}$ is a vector of $W$ observations (truncated time-series) of site $x_{\ell}\in \mathcal{L}$ across the sliding window. Around an equilibria $\boldsymbol{x}^{*}$ the system's local behaviour is well approximated by its Jacobian $\newprime{\boldsymbol{x}}\approx D_{\boldsymbol{x}}f(\boldsymbol{x}-\newprime{\boldsymbol{x}})$ where $f(\boldsymbol{y})$ reppresents the deterministic dynamics of the RHS in \eqref{eq2.3}.
+The spatial and temporal distributions $p(\boldsymbol{x},t)$ of values of the solution of the linearised system are then give by the solution of the linearised Fokker-Planck equation
+\begin{equation}\label{eq2.5}
+        \partial_{t}p = \sum_{j=1}^{N}\sum_{k=1}^{N}\Big(\frac{1}{2}\delta_{jk}\partial_{jk}^{2}p-\partial_{k}f_{j}\:\partial_{j}(x_{k}\,p)\Big)\,,
+\end{equation}
+which is a multivariate Gaussian density.
+If we assume a steady-state approximation for the fluctuations of the F-P distribution then, for a sufficiently narrow width of the sliding window $W\sim1$ we can conclude that the covariance matrix defined in \eqref{eq2.3}, encoding the spatio-temporal correlation of the various lattice sites' states, is only dependent on the structure of the Jacobian.
+Altough, as discussed at the end of the previous section, non-linear and transient effects become more dominant as the system approaches the bifurcation (meaning that the real F-P distribution may deviate substantially from the Gaussian density obtained as its linear approximation), here we solely focus on the relationship between the eigenvalues of the covariance matrix of the observations over a sliding window and the eigenvalues of the Jacobian.
+Intuitively, as the bifurcation point is approached and the recovery of the dynamics along the leading eigenvector of the Jacobian is slowing at a much faster rate than the directions associated with other eigenvalues, then variance of the fluctuatuions along such direction is expected to increase. 
+While this happens the covariance matrix, capturing snapshots across a narrow window, shall record such increase in the variance thus potentially providing us with a valuable spatio-temporal EWS.
+\begin{theorem}[label=thm2.1]{}{}
+        Let $\{\sigma_{1},\,\dots,\,\sigma_{N}\}$ be the eigenvalues of the covariance matrix defined in \eqref{eq2.3} and $\{\lambda_{1},\,\dots,\,\lambda_{N}\}$ be the eigenvalues (with negative real parts) of the Jacobian around an attractor and denote with $\sigma_{\text{max}}$ and $\lambda_{\text{max}}$ the leading eigenvalues of the covariance and Jacobian matrix respectively, then as $\lambda_{\text{max}}\to 0$ (i.e. the bifurcation is approached) $\sigma_{\text{max}}>>\sigma_{j=1,\dots,N}\neq\sigma_{\text{max}}$. 
+\end{theorem}
+\begin{proof}
+     TBA...
+\end{proof}
+
 \begin{example}[label=ex2.1]{}{}
      We will consider a vegetation turbidity model on a square $20$-by-$20$ lattice proposed in \cite{Chen19} where, from \eqref{eq2.3}, we set
      \begin{align}
@@ -62,8 +77,64 @@ where $\boldsymbol{x}_{\ell}(t_{w\to w+W})\in \mathbb{R}^{W}$ is a vector of $W$
             \psi(x_{\ell},y) =&\,r_{v}\,x_{\ell}\Big(1-x_{\ell}\frac{r_{\ell}^{4}+E_{\ell}^{4}}{r_{\ell}^{4}}\Big)\,,\;E_{\ell}=y\,\frac{h_{v}}{h_{v}+x_{\ell}} \,,\nonumber
      \end{align}
      with $r_{\ell}$ being sampled uniformly at random in $[0.6, 1.0]$ indipendently for each lattice site.
-    The model's properties are all constants and set to $r_{v} = 0.5$, $h_{v} = 0.2$ and $\sigma = 5\cdot 10^{-2}$. The bifurcation parameter is initialised at $y(0)=3$ and ramped linearly with the same timescale as the lattice (fast) variables (i.e. $\epsilon=1$). Finally both the diffusion and reaction rates are set to uniform values across the domain, respectively $D=0.2$ and $R=1$. 
-    For the assembly and computation of the covariance matrix we set a sliding window of width $W=20$ and moving with a single stride $S=1$. The results indicate that the leading eigenvalue of $\boldsymbol{\Sigma}$ does in fact provide a good EWS for the bifurcation in the system.
+    The model's properties are all constants and set to $r_{v} = 0.5$, $h_{v} = 0.2$ and $\sigma = 10^{-3}$. 
+    The bifurcation parameter is initialised at $y(0)=3$ and ramped linearly with a slower timescale then the lattice (fast) variables ($\epsilon=10^{-2}$). 
+    Finally both the diffusion and reaction rates are set to uniform values across the domain, respectively $D=0.2$ and $R=1$. 
+    For the assembly and computation of the covariance matrix we set a sliding window of width $W=20$ and moving with a single stride $S=1$. 
+    The results illustrated in Figure \ref{fig2.1} indicate that the leading eigenvalue of $\boldsymbol{\Sigma}$ does in fact provide a good EWS for the bifurcation in the system.
+    \begin{figure}[H]
+    \centering 
+    \begin{subfigure}[b]{\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbEWS.png}
+    \end{subfigure}
+
+
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap1.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap2.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap3.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap4.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap5.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap6.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap7.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/VegetationTurbSnap8.png}
+    \end{subfigure}
+    \caption{Time evolution of the SLDS modelling vegetation turbidity with slow, linear ramping of the bifurcation parameter.
+The top pannel shows the timeseries of the leading eigenvalue of the covariance matrix showing a clear increase as the system approaches the bifurcation. 
+At the bottom pannel we have multiple snapshots showing the state of the system at increasing timesteps and parameter values from left to right. 
+Notice how as the bifurcation approaches the system moves from an homogeneous distribution vegetation cover to an arising of heterogeneous patches of turbidity.} 
+    \label{fig2.1}
+\end{figure}
 \end{example}
 \subsubsection{Dynamic Mode Decomposition}\label{subsubsec3.2.2}
 A more direct capture of CSD through the leading spatial mode of a SLDS is introduced in \cite{Donovan22} by means of Dynamic Mode Decomposition (DMD).
@@ -71,7 +142,7 @@ Here we work again with the same snapshot matrix assembled across a sliding wind
 However now we are concerned in capturing the time evolution more directly by finding the principal spatial components of the temporal distribution between two consecutive snapshots matrices.
 Suppose $\boldsymbol{\mathcal{X}}$ is collecting snapshots from timestep $t_{w}$ to $t_{w+W}$ while in $\boldsymbol{\mathcal{\newprime{X}}}$ we store the snapshots one stride of the sliding window away i.e. capturing the snapshots from $t_{w+S}$ to $t_{(w+S)+W}$.
 We now linearise the temporal evolution during the stride and use (DMD) to quantify the temporal changes in the spatial leading mode of the system thanks to the following result.
-\begin{theorem}[label=thm2.1]{}{}
+\begin{theorem}[label=thm2.2]{}{}
      Let $A:\boldsymbol{\mathcal{X}}\to \boldsymbol{\mathcal{\newprime{X}}}$ be a linear operator and $\boldsymbol{\mathcal{X}}\approx \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{V}^{T}$ be the singular valued decomposition (SVD) of $\boldsymbol{\mathcal{X}}$, then the eigenvalues of $\boldsymbol{S}:= \boldsymbol{U}^{T}\boldsymbol{\mathcal{\newprime{X}}}\boldsymbol{V}\boldsymbol{\Sigma}^{-1}$ $A$ are the best approximation of those of $A$ and its eigenvectors are the also optimally approximated by those of $\boldsymbol{S}$ multiplied from the left by $\boldsymbol{U}$.
 \end{theorem}
 \begin{proof}
@@ -82,10 +153,10 @@ We now linearise the temporal evolution during the stride and use (DMD) to quant
      \end{equation*}
      where we used the fact that both $\boldsymbol{U}$ and $\boldsymbol{V}$ are orthogonal. The eigendecomposition of $\boldsymbol{S}$ will then trivially give us also the eigendecomposition of $A$
     \begin{equation*}
-         \boldsymbol{U}^{-1}A \boldsymbol{U}\approx \boldsymbol{S}=\boldsymbol{Q}\boldsymbol{\Lambda}\boldsymbol{Q}^{-1}\;\Rightarrow\;A = (\boldsymbol{U}\boldsymbol{Q})\boldsymbol{\Lambda}(\boldsymbol{U}\boldsymbol{Q})^{-1}\,.
+         \boldsymbol{U}^{-1}A \boldsymbol{U}\approx \boldsymbol{S}=\boldsymbol{Q}\boldsymbol{\Lambda}\boldsymbol{Q}^{-1}\;\Rightarrow\;A \approx (\boldsymbol{U}\boldsymbol{Q})\boldsymbol{\Lambda}(\boldsymbol{U}\boldsymbol{Q})^{-1}\,.
     \end{equation*}
 \end{proof}
-\newpage
+Intuitevely, as the system approaches the bifurcation point, the leading spatial mode of the linear operator shall reflect spatio-temporal changes in the sites of the lattice as CSD sets in. One of the major benefits of DMD is that, as per Theorem \ref{thm2.2} we can estimate the spectrum of the linearised evolution around the stable equilibria without assembling the operator itself, which entails a significant speed-up in computations.
 \begin{example}[label=ex2.2]{}{}
      Here we study a lung ventilation model for the arising of clustered ventilation defects (CVDs) in terminal airway units simplified as a $300$-by-$300$ square lattice. This SLDS, proposed in \cite{Donovan22} as a simplified version of the one derived in \cite{Donovan15}, sets, with reference to \eqref{eq2.3}
      \begin{align}
@@ -95,9 +166,61 @@ We now linearise the temporal evolution during the stride and use (DMD) to quant
      where $\sigma(\theta)=\frac{1}{1+e^{-\theta}}$ is the sigmoid and 
      $$r_{\ell}:=-P_{b}(t)+y \frac{k}{x_{\ell}}+P_{b}A(x_{\ell}^{4}+x_{\ell+1}^{4}+x_{\ell-1}^{4}+x_{\ell+m}^{4}+x_{\ell-m}^{4})(1 - 1 - x_{\ell}+ \frac{3}{2}(1-x_{\ell})^{2})\,,$$
      with $P_{b}(t):=\frac{P_{b}(0)N}{\sum_{\ell\in \mathcal{L}}^{}x_{\ell}^{4}}$. The properties of the system are set to $k=14.1$, $A=0.63$, $P_{i}=0.96$, $P_{b}(0)=7.25$ and $\sigma = 1\cdot 10^{-3}$.
-     The bifurcation parameter is ramped linearly with timescale $\epsilon = 1\cdot10^{-2}$ from an initial value $y=0$. 
-     The snapshot matrix is again assembled using a width $W=20$ while the sliding stride is also set again to be $S=1$. The results show that the spatial leading mode of the DMD of the system also provides a good EWS.
 \end{example}
+\begin{example_continued}{}{}
+     The bifurcation parameter is ramped linearly with timescale $\epsilon = 10^{-2}$ from an initial value $y(0)=0$. 
+     The snapshot matrix is again assembled using a width $W=20$ while the sliding stride is also set again to be $S=1$. The results depicted in Figure \ref{fig2.2} show that the spatial leading mode of the DMD of the system also provides a good EWS.
+    \begin{figure}[H]
+    \centering 
+    \begin{subfigure}[b]{\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationEWS.png}
+    \end{subfigure}
+
+
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap1.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap2.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap3.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap4.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap5.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap6.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap7.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.11\textwidth}
+        \centering 
+        \includegraphics[keepaspectratio, width = \linewidth]{../figures/LungVentilationSnap8.png}
+    \end{subfigure}
+    \caption{Time evolution of the lung ventilation model showing the arise of CVDs as the bifurcation parameter is slowly ramped linearly. In the top panel the leading mode of the DMD is plotted, showing a clear trend as the bifurcation is approached. In the bottom pannel, several snapshots at increasing timesteps and parameter's values are reported from left to right. The emergence of heterogeneus CVDs is observed right before the bifurcation as expected. Notice how the transition to an heterogeneous spatial distribution is preceded by an homogeneous decrease in the airway luminal radius across the entire lattice and such event is not captured by the EWS in accordance with the nature of CSD encoding fluctuations in the spatial component.} 
+    \label{fig2.2}
+\end{figure}
+\end{example_continued}
 
 %\subsection{The role of symmetries}\label{subsec3.3}
 \end{document}
