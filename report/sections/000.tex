@@ -1,20 +1,155 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
-\section{Background and motivation}\label{sec1}
-     \subsection{Introduction}\label{subsec1.1}
-     \subsection{Outline of the PhD}\label{subsec1.2}
-     \subsubsection{Research}\label{subsubsec1.2.1}
-     \subsubsection{Milestones}\label{subsubsec1.2.2}
-     \begin{itemize}
-     \item \textit{Milestone 1}: enroll and pass MATHS 761 - Dynamical systems with a B+ or higher;
-\item \textit{Milestone 2}: understand the temporal tipping point method in \cite{Kuehn11} and the spatio-temporal model of asthma ventilation \cite{Donovan22} and reproduce appropriate results;
-\item \textit{Milestone 3}: ?;
-\item \textit{Milestone 4}: complete a literature review.
-     \end{itemize}
-     
-     \subsection{Foundations}\label{subsec1.3}
+\section{Background}\label{sec1}
      \subsubsection{Dynamical systems}\label{subsubsec1.3.1}
      \subsubsection{Stochastic processes}\label{subsubsec1.3.2}
      \subsubsection{Stochastic dynamical systems}\label{subsubsec1.3.3}
-     \subsubsection{Early-warning signs of tipping points}\label{subsubsec1.3.4}
+     \begin{theorem}[label=thm1]{}{}
+             Let $\dot{x}=f(x) + \xi(x,t)$ be a non-linear, autonomous, stochastic dynamical system in $\mathbb{R}^{d}$ and let the origin be a stable equilibrium, then the linearization of the associated Fokker-Plank equation 
+             \begin{equation*}
+                  f(x)\approx F^{(c)}x=-QUx\,,
+             \end{equation*}
+             where $Q$ is an anti-symmetric matrix (independent of $x$) and $U$ is the (symmetric) matrix associated to the quadratic form $\mathcal{U}(x)=x^{T}Ux$, generates a probability current of the form $-QUx\rho(x)$ which is divergence-free.
+     \end{theorem}
+     \begin{proof}
+          We write the SDS in Ito differential form
+          \begin{equation*}
+               dx = f(x)dt + \xi\,dW\,,
+          \end{equation*}
+          with drift $f(x)$ and diffusion $\xi$ for which the associated Fokker-Planck equation reads
+          \begin{equation}\label{eq0.1}
+                  \partial_{t}\rho(x,t)=-\nabla\cdot(f(x)\rho(x,t))+\Delta(D\rho(x,t))=-\nabla\cdot(\underbrace{-f(x)\rho(x,t))+\nabla(D\rho(x,t)}_{J\;\text{(probability current)}})\,, 
+          \end{equation}
+          where $D=\frac{1}{2}\xi^{2}$ is the diffusion matrix. Let's consider the divergence-free case for the current, i.e. the F-P distribution is stationary. From \eqref{eq0.1} we get
+          \begin{align}
+                  \partial_{t}\rho=0\;\Rightarrow\;0=\nabla\cdot J =& \sum_{j,k=1}^{d}\partial_{j}(-f_{j}+D_{jk}\partial_{k})\rho = \sum_{j,k=1}^{d}(-\partial_{j}f_{j}+\partial_{k}(\cancelto{0}{\partial_{j}D_{jk}})+D_{jk}\partial_{jk}^{2})\rho \nonumber \\
+                  =& \sum_{j=1}^{d}\bigg(-\partial_{j}(f_{j}\rho)+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) \approx \sum_{j=1}^{d}\bigg(-\partial_{j}\Big(\sum_{k=1}^{d}F_{jk}x_{k}\rho\Big)+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) \,, \label{eq0.2} 
+          \end{align}
+          where in the last step we linearised the $j-$th component of the non-linear drift $f_{j}\approx[Fx]_{j}=$ as prescribed.
+          We notice that $\partial_{j}x_{k}=\delta_{jk}$ and thus from \eqref{eq0.2} we get
+          \begin{equation}\label{eq0.3}
+                  0 = \sum_{j=1}^{d}\bigg(-\rho \sum_{k=1}^{d}F_{jk}\delta_{jk}-\partial_{j}\rho\Big(\sum_{k=1}^{d}\cancelto{0}{F_{jk}x_{k}}\Big) + \sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) = \sum_{j=1}^{d}\bigg(-\rho F_{jj}+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg)\,, 
+          \end{equation}
+          where we used the fact that the linearisation is around the origin and thus $x_{k}=0$, $k=1,\dots,d$. Since $\partial_{jk}^{2}\rho=\partial_{kj}^{2}\rho$ we can write \eqref{eq0.3} in compact form as:
+          \begin{equation}\label{eq0.4}
+               \rho\:\text{tr}(QU) + D\Delta\rho=0\,,
+          \end{equation}
+          where we used the factorisation of the linearised Jacobian $F=-QU$ as prescribred.
+     \begin{interpretation*}{}
+          Let $A\in \mathbb{R}^{n\times m},\:B\in \mathbb{R}^{m\times n}$ and $C=A\,B$. We write $(C)_{jk}=A_{j}\cdot B_{k}=\sum_{q=1}^{m}A_{jq}B_{qk}$ and thus
+          \begin{equation*}
+                  \text{diag}(C)=\{C_{jj}=\sum_{q=1}^{m}A_{jq}B_{qj}\}_{j=1,\dots,n}\;\Rightarrow\;\text{tr}(C)=\sum_{j=1}^{n}\sum_{k=1}^{m}A_{jk}B_{kj}\,.
+          \end{equation*}
+          If $A$ and $B$ are square and symmetric then 
+          \begin{equation*}
+               \text{tr}(C)=\sum_{j=1}^{n}\bigg(A_{jj}B_{jj}+2 \sum_{k=1}^{j-1}A_{jk}B_{kj}\bigg)=\text{diag}(A)\cdot \text{diag}(B) + 2 \sum_{j=1}^{n}\sum_{k=1}^{j-1}A_{jk}B_{kj}\,.
+          \end{equation*}
+          If instead we have $A$ to be anti-symmetric while $B$ is still symmetric then $A_{jk}B_{kj}=-A_{kj}B_{jk}$ and thus every non-diagonal term in the above sum cancels out leaving us with
+          \begin{equation}\label{eq0.5}
+               \text{tr}(C)=\text{diag}(A)\cdot \text{diag}(B)\,.
+          \end{equation}
+          Lastly we notice that the result in \eqref{eq0.5} is also valid for the case of either $A$ or $B$ being diagonal.
+     \end{interpretation*}
+     With $Q$ being an anti-symmetric matrix while $U$ is symmetric we can thus plug \eqref{eq0.5} into \eqref{eq0.4} to get
+     \color{red}
+     \begin{equation}\label{eq0.6}
+          D\Delta \rho(x) = -\rho(x)\sum_{j=1}^{d}Q_{jj}U_{jj}\,.
+     \end{equation}
+     In the following we set $d=2$ so that $x=(x_{1},x_{2})^{T}$ and 
+     \begin{equation*}
+          D = \begin{pmatrix}
+                  \sigma_{1} & 0 \\
+                  0 & \sigma_{2}
+          \end{pmatrix}\,,\quad U = \begin{pmatrix}
+                  a & b \\
+                  c & d
+          \end{pmatrix}\,.
+     \end{equation*}
+     Without loss of generality we set $Z = 1$ and check that if $\rho(x)\sim e^{-\mathcal{U}(x)}$ then equality \eqref{eq0.6} necessarily holds. 
+     First we compute the quadratic form explicitly
+     \begin{equation*}
+          \mathcal{U}(x)=x^{T}Ux=(x_{1}\,,\;x_{2})\begin{pmatrix}
+                  a & b \\
+                  c & d
+          \end{pmatrix}\begin{pmatrix}
+               x_{1} \\
+               x_{2}
+          \end{pmatrix} = ax_{1}^{2}+(b+c)x_{1}x_{2}+dx_{2}^{2}\,.
+     \end{equation*}
+     Now we observe that $(e^{f(x)})^{''}=e^{f(x)}\Big((f^{'}(x))^{2}+f^{''}(x)\Big)$ and thus the left-hand side of \eqref{eq0.6} becomes
+     \begin{equation}\label{eq0.7}
+          \Delta \rho(x_{1}, x_{2}) = e^{-\mathcal{U}(x_{1},x_{2})}\bigg((a x_{1}+ \frac{1}{2}(b+c)x_{2})^{2}-a+(\frac{1}{2}(b+c)x_{1}+d x_{2})^{2}-d\bigg)\,.
+     \end{equation}
+     Evaluating \eqref{eq0.7} at the origin will give us
+     \begin{equation}\label{eq0.8}
+          \left.\Delta\rho(x_{1}, x_{2})\right|_{x_{1}=0,\,x_{2}=0}=-e^{- \mathcal{U}(0,0)}(a+d)=-a - d\,,
+     \end{equation}
+     which corresponds to the sum of the elements along the main diagonal of $U$. Plugging \eqref{eq0.8} into the left-hand side of \eqref{eq0.6} gives us the identity since $D\Delta\rho(0,0)= -(\sigma_{1}a+\sigma_{2}d)$ and $\rho(0,0)=1$. 
+     \end{proof}
+     \begin{theorem}[label=thm1]{}{}
+             Let $\dot{x}=f(x) + \xi(x,t)$ be a non-linear, autonomous, stochastic dynamical system in $\mathbb{R}^{d}$ and let the origin be a stable equilibrium, then the linearization of the associated Fokker-Plank equation 
+             \begin{equation*}
+                  f(x)\approx F^{(d)}x=-DUx\,,
+             \end{equation*}
+             where $D$ is the (symmetric) diffusion matrix associated to the noise in the system (independent of $x$) and $U$ is the (symmetric) matrix associated to the quadratic form $\mathcal{U}(x)=x^{T}Ux$, leads to the probability current to vanish and its solution is Boltzmann-like of the form $\rho(x,t)\sim Z^{-1}e^{-\mathcal{U}(x)}$. 
+     \end{theorem}
+     \begin{proof}
+          We write the SDS in Ito differential form
+          \begin{equation*}
+               dx = f(x)dt + \xi\,dW\,,
+          \end{equation*}
+          with drift $f(x)$ and diffusion $\xi$ for which the associated Fokker-Planck equation reads
+          \begin{equation}\label{eq0.9}
+                  \partial_{t}\rho(x,t)=-\nabla\cdot(f(x)\rho(x,t))+\Delta(D\rho(x,t))=-\nabla\cdot(\underbrace{-f(x)\rho(x,t))+\nabla(D\rho(x,t)}_{J\;\text{(probability current)}})\,, 
+          \end{equation}
+          where $D=\frac{1}{2}\xi^{2}$ is the diffusion matrix. Let's consider the divergence-free case for the current, i.e. the F-P distribution is stationary. From \eqref{eq0.1} we get
+          \begin{align}
+                  \partial_{t}\rho=0\;\Rightarrow\;0=\nabla\cdot J =& \sum_{j,k=1}^{d}\partial_{j}(-f_{j}+D_{jk}\partial_{k})\rho = \sum_{j,k=1}^{d}(-\partial_{j}f_{j}+\partial_{k}(\cancelto{0}{\partial_{j}D_{jk}})+D_{jk}\partial_{jk}^{2})\rho \nonumber \\
+                  =& \sum_{j=1}^{d}\bigg(-\partial_{j}(f_{j}\rho)+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) \approx \sum_{j=1}^{d}\bigg(-\partial_{j}\Big(\sum_{k=1}^{d}F_{jk}x_{k}\rho\Big)+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) \,, \label{eq0.10} 
+          \end{align}
+          where in the last step we linearised the $j-$th component of the non-linear drift $f_{j}\approx[Fx]_{j}=$ as prescribed.
+          We notice that $\partial_{j}x_{k}=\delta_{jk}$ and thus from \eqref{eq0.2} we get
+          \begin{equation}\label{eq0.11}
+                  0 = \sum_{j=1}^{d}\bigg(-\rho \sum_{k=1}^{d}F_{jk}\delta_{jk}-\partial_{j}\rho\Big(\sum_{k=1}^{d}\cancelto{0}{F_{jk}x_{k}}\Big) + \sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg) = \sum_{j=1}^{d}\bigg(-\rho F_{jj}+\sum_{k=1}^{d}D_{jk}\partial_{jk}^{2}\rho\bigg)\,, 
+          \end{equation}
+          where we used the fact that the linearisation is around the origin and thus $x_{k}=0$, $k=1,\dots,d$. Since $\partial_{jk}^{2}\rho=\partial_{kj}^{2}\rho$ we can write \eqref{eq0.3} in compact form as:
+          \begin{equation}\label{eq0.12}
+               \rho\:\text{tr}(DU) + D\Delta\rho=0\,,
+          \end{equation}
+          where we used the factorisation of the linearised Jacobian $F=-DU$ as prescribred.
+     Under the assumption that the state variables are i.i.d. we can then use the last hypotheses discussed above for the diffusion matrix $D$ (being diagonal) and thus plug \eqref{eq0.5} into \eqref{eq0.4} to get
+     \begin{equation}\label{eq0.13}
+          D\Delta \rho(x) = -\rho(x)\sum_{j=1}^{d}D_{jj}U_{jj}\,.
+     \end{equation}
+     In the following we set $d=2$ so that $x=(x_{1},x_{2})^{T}$ and 
+     \begin{equation*}
+          D = \begin{pmatrix}
+                  \sigma_{1} & 0 \\
+                  0 & \sigma_{2}
+          \end{pmatrix}\,,\quad U = \begin{pmatrix}
+                  a & b \\
+                  c & d
+          \end{pmatrix}\,.
+     \end{equation*}
+     Without loss of generality we set $Z = 1$ and check that if $\rho(x)\sim e^{-\mathcal{U}(x)}$ then equality \eqref{eq0.6} necessarily holds. 
+     First we compute the quadratic form explicitly
+     \begin{equation*}
+          \mathcal{U}(x)=x^{T}Ux=(x_{1}\,,\;x_{2})\begin{pmatrix}
+                  a & b \\
+                  c & d
+          \end{pmatrix}\begin{pmatrix}
+               x_{1} \\
+               x_{2}
+          \end{pmatrix} = ax_{1}^{2}+(b+c)x_{1}x_{2}+dx_{2}^{2}\,.
+     \end{equation*}
+     Now we observe that $(e^{f(x)})^{''}=e^{f(x)}\Big((f^{'}(x))^{2}+f^{''}(x)\Big)$ and thus the left-hand side of \eqref{eq0.6} becomes
+     \begin{equation}\label{eq0.14}
+          \Delta \rho(x_{1}, x_{2}) = e^{-\mathcal{U}(x_{1},x_{2})}\bigg((a x_{1}+ \frac{1}{2}(b+c)x_{2})^{2}-a+(\frac{1}{2}(b+c)x_{1}+d x_{2})^{2}-d\bigg)\,.
+     \end{equation}
+     Evaluating \eqref{eq0.14} at the origin will give us
+     \begin{equation}\label{eq0.15}
+          \left.\Delta\rho(x_{1}, x_{2})\right|_{x_{1}=0,\,x_{2}=0}=-e^{- \mathcal{U}(0,0)}(a+d)=-a - d\,,
+     \end{equation}
+     which corresponds to the sum of the elements along the main diagonal of $U$. Plugging \eqref{eq0.8} into the left-hand side of \eqref{eq0.6} gives us the identity since $D\Delta\rho(0,0)= -(\sigma_{1}a+\sigma_{2}d)$ and $\rho(0,0)=1$. 
+     \end{proof}
 \end{document}
