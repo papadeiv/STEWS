@@ -5,7 +5,6 @@
 #       is implemented by the stats module in SciPy and doesn't require the knowledge of the cumulative distribution (CDF)
 #######################################################################################################################################
 
-import random as rd
 import numpy as np
 from scipy import stats                                    # https://docs.scipy.org/doc/scipy/tutorial/stats.html
 from scipy.stats import sampling                           # https://docs.scipy.org/doc/scipy/tutorial/stats/sampling.html 
