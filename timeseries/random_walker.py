@@ -13,7 +13,10 @@ def density(x:float):
 
 # Create non-uniform sampling object
 sampler = Sampler(density, domain=(-10,10))
-# Draw samples from the input pdf
-sampler.sample(10000)
+
+# Generate Nt samples from the input pdf
+Nt = 10000
+sampler.sample(Nt)
+
 # Plot the histogram of the drawn samples
 sampler.plot()
