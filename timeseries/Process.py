@@ -1,8 +1,8 @@
 #######################################################################################################################################
-#       This class implements a non-uniform random variate generator (https://en.wikipedia.org/wiki/Inverse_transform_sampling) 
-#       to draw samples from a specific probability density function (pdf) provided as input by the user. The sampling method
-#       that has been used is the inverse transformation method (https://en.wikipedia.org/wiki/Inverse_transform_sampling) which
-#       is implemented by the stats module in SciPy and doesn't require the knowledge of the cumulative distribution (CDF)
+#        
+#       
+#       
+#       
 #######################################################################################################################################
 
 import numpy as np
@@ -38,6 +38,7 @@ class Process:
         self.realizations[0] = self.x0
         for n in np.arange(Nt):
             self.realizations[n] = self.realizations[n-1] + steps[draws[n]]
+            #self.realizations[n] += steps[draws[n]]
 
         return
 
@@ -59,6 +60,8 @@ class Process:
         if self.is_detrended:
             ax3 = plt.subplot2grid((2,4), (1,1), colspan=3, rowspan=self.rows, sharex=ax2, fig=fig)
             ax3.plot(np.arange(self.realizations.size), self.detrended, color = 'black')
+            # Overlap the trend estimation with the original timeseries
+            ax2.plot(np.arange(self.realizations.size), self.trend, alpha=0.5, color = 'green')
 
         # Show the figure
         plt.show()
@@ -74,14 +77,16 @@ class Process:
             # Fit the model by least-squares minimization
             model.fit(x,self.realizations)
             # Generate the trend
-            trend = model.predict(x)
+            self.trend = model.predict(x)
             # Detrend the original timeseries
-            self.detrended = np.array(self.realizations - trend)
+            self.detrended = np.array(self.realizations - self.trend)
 
         # Detrending by first-order differencing
         elif mode=='diff':
             # Initialised detrended array
             self.detrended = np.zeros(self.realizations.shape)
+            # Initialise dummy array for the trend
+            self.trend = np.empty(self.realizations.shape)
             # Detrend the timeseries
             for n in np.arange(self.realizations.size-1):
                 self.detrended[n] = self.realizations[n] - self.realizations[n+1]

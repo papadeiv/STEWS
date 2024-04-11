@@ -4,6 +4,7 @@
 
 import numpy as np
 from Process import Process 
+from Estimator import Estimator
 
 # Define the gaussian distribution to draw samples from
 def density(x:float):
@@ -19,7 +20,11 @@ Nt = 1000
 random_walker.evolve(Nt)
 
 # Detrend the timeseries for better analysis
-random_walker.detrend(mode='fit')
+random_walker.detrend(mode='diff')
 
 # Plot the histogram of the drawn samples
 random_walker.plot()
+
+# Estimate statistical indicators of the timeseries
+estimator = Estimator(random_walker)
+estimator.variance(5)

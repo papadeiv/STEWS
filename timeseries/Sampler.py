@@ -13,10 +13,10 @@ from matplotlib import pyplot as plt                       # https://matplotlib.
 import plotly as ply                                       # https://plotly.com/python/
 import seaborn as sb                                       # https://seaborn.pydata.org/tutorial.html
 
-# Define the input pdf from which the target CDF is interpolated
+# Define the input pdf from which the target CDF is interpolated (https://en.wikipedia.org/wiki/List_of_probability_distributions)
 class InputDensity:
     def __init__(self, function):
-        self.density = function
+        self.density = function 
 
     def pdf(self, x:float):
         return self.density(x)

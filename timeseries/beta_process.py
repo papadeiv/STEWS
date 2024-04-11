@@ -20,7 +20,7 @@ Nt = 1000
 process.evolve(Nt)
 
 # Detrend the timeseries for better analysis
-process.detrend(mode='fit')
+process.detrend(mode='diff')
 
 # Plot the histogram of the drawn samples
 process.plot()
