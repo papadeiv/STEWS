@@ -1,30 +1,50 @@
-#######################################################################################################################################
-#      Implementing a simple random walker under gaussian distribution (https://en.wikipedia.org/wiki/Random_walk#Gaussian_random_walk)
-#######################################################################################################################################
+########################################################################################
+#      Implementing a simple random walker under different sampling distribution       # 
+########################################################################################
 
 import numpy as np
+from scipy import special 
 from Process import Process 
 from Estimator import Estimator
 
-# Define the gaussian distribution to draw samples from
-def density(x:float):
+# Define different pdfs for the diffusion (residuals) of the stochastic process 
+# Gaussian distribution
+def gaussian(x:float):
     mu = 0.0
     sigma = 1.00
     return (1.0/(sigma*np.sqrt(2*np.pi)))*(np.exp(-0.5*np.square((x-mu)/sigma)))
 
-# Create the stochastic process object from the sampling pdf 
-random_walker = Process(density, domain=(-10,10))
+# Gamma distribution
+def gamma(x:float):
+    k = 7.5
+    theta = 1.0
+    return (1.0/(special.gamma(k)*(np.power(theta, k))))*np.power(x, k-1.0)*np.exp(-x/theta)
 
-# Generate the timeseries of the process with Nt realizations 
+# Beta distribution
+def beta(x:float):
+    a = 2.0
+    b = 2.0
+    return (1.0/special.beta(a, b))*np.power(x, a-1.0)*np.power(1.0-x, b-1.0)
+
+# Define the deterministic drift (trend) of the stochastic process
+def drift(x:float):
+    return x
+
+# Create the stochastic processes from each of the sampling pdfs 
+gaussian_rw = Process(gaussian, domain=(-10,10))
+gamma_rw = Process(gamma, domain=(0,20))
+beta_rw = Process(beta, domain=(0,1))
+
+# Generate the timeseries of the processes with Nt realizations 
 Nt = 1000
-random_walker.evolve(Nt)
+gaussian_rw.evolve(Nt)
 
 # Detrend the timeseries for better analysis
-random_walker.detrend(mode='diff')
+gaussian_rw.detrend(mode='diff')
 
 # Plot the histogram of the drawn samples
-random_walker.plot()
+gaussian_rw.plot()
 
 # Estimate statistical indicators of the timeseries
-estimator = Estimator(random_walker)
+estimator = Estimator(gaussian_rw.detrended)
 estimator.variance(5)

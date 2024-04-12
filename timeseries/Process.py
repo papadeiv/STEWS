@@ -27,7 +27,7 @@ class Process:
         self.x0 = x0
         return
 
-    def evolve(self, Nt:int):
+    def evolve(self, Nt:int, drift=None):
         # Generate non-uniform variate from the sampling object according to the input pdf
         self.sampler.sample(Nt)
         # Draw uniformly at random from those variates to generate the steps of the stochastic process
@@ -37,8 +37,10 @@ class Process:
         self.realizations = np.zeros([Nt,1])
         self.realizations[0] = self.x0
         for n in np.arange(Nt):
-            self.realizations[n] = self.realizations[n-1] + steps[draws[n]]
-            #self.realizations[n] += steps[draws[n]]
+            if drift==None:
+                self.realizations[n] = self.realizations[n-1] + steps[draws[n]]
+            else:
+                self.realizations[n] = drift(n) + steps[draws[n]]
 
         return
 
