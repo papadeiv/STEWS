@@ -40,11 +40,11 @@ Nt = 1000
 gaussian_rw.evolve(Nt)
 
 # Detrend the timeseries for better analysis
-gaussian_rw.detrend(mode='diff')
+gaussian_rw.detrend(mode='fit')
 
 # Plot the histogram of the drawn samples
 gaussian_rw.plot()
 
 # Estimate statistical indicators of the timeseries
-estimator = Estimator(gaussian_rw.detrended)
-estimator.variance(5)
+ts = Estimator(gaussian_rw.detrended)
+ts.autocorrelation(99)
