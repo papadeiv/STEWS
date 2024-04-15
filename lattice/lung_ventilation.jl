@@ -12,7 +12,7 @@ L = Lattice(n, m)
 # Initial condition of the lattice
 x0 = 1.0::Float64.*ones(Float64, length(L.grid))
 # Initial condition of the bifurcation parameter (degree of smooth muscle activation)
-K = 0.0::Float64 # smooth muscle activation
+K = 0.5::Float64 # smooth muscle activation
 push!(x0, K) 
 # SDE's parameters
 σ = 0.001::Float64 # noise level

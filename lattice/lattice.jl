@@ -62,10 +62,10 @@ function show(L::Lattice, states::Vector{Vector{Float64}}, eigenvalues::Vector{F
                 end
 
                 # Plot the lattice dynamical system evolution
-                fig1 = Figure(; size = (1000, 1000), backgroundcolor = :transparent)
+                fig1 = Figure(; size = (1000, 1000), backgroundcolor = "#fdfff2ff")# :transparent)
                 ax1 = Axis(fig1[1,1],
-                          #title = L"ε = %$drift,\; σ = %$noise,\; c = %$parameter",
-                          backgroundcolor = :transparent,
+                          title = L"ε = %$drift,\; σ = %$noise,\; c = %$parameter",
+                          backgroundcolor = "#fdfff2ff",# :transparent,
                           xticksvisible = false,
                           yticksvisible = false,
                           xticklabelsvisible = false,
@@ -110,6 +110,7 @@ function show(L::Lattice, states::Vector{Vector{Float64}}, eigenvalues::Vector{F
         ax3 = Axis(fig3[1,1],
                    backgroundcolor = :transparent,
                    aspect = 4.0,
+                   xtickformat = values -> ["$(round(value*0.1,digits=2))" for value in values],
                    limits = ((0, dt*(length(eigenvalues)-width)),(0.99, 1.005))
         )
         rowsize!(fig3.layout, 1, Aspect(1, 0.25))
