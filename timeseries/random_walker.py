@@ -30,6 +30,10 @@ def beta(x:float):
 def drift(x:float):
     return x
 
+# Define the periodic fluctuations (seasonality) of the stochastic process
+def seasonality(x:float):
+    return np.sin(x)
+
 # Create the stochastic processes from each of the sampling pdfs 
 gaussian_rw = Process(gaussian, domain=(-10,10))
 gamma_rw = Process(gamma, domain=(0,20))
@@ -37,7 +41,7 @@ beta_rw = Process(beta, domain=(0,1))
 
 # Generate the timeseries of the processes with Nt realizations 
 Nt = 1000
-gaussian_rw.evolve(Nt)
+gaussian_rw.evolve(Nt, drift=drift, season=seasonality)
 
 # Detrend the timeseries for better analysis
 gaussian_rw.detrend(mode='fit')
@@ -47,4 +51,4 @@ gaussian_rw.plot()
 
 # Estimate statistical indicators of the timeseries
 ts = Estimator(gaussian_rw.detrended)
-ts.autocorrelation(99)
+ts.variance(10)

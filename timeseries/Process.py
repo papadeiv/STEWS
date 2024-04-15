@@ -27,7 +27,7 @@ class Process:
         self.x0 = x0
         return
 
-    def evolve(self, Nt:int, drift=None):
+    def evolve(self, Nt:int, drift=None, season=None):
         # Generate non-uniform variate from the sampling object according to the input pdf
         self.sampler.sample(Nt)
         # Draw uniformly at random from those variates to generate the steps of the stochastic process
@@ -37,10 +37,17 @@ class Process:
         self.realizations = np.zeros([Nt,1])
         self.realizations[0] = self.x0
         for n in np.arange(Nt):
-            if drift==None:
+            if drift==None and season==None:
                 self.realizations[n] = self.realizations[n-1] + steps[draws[n]]
+
+            elif season==None:
+                self.realizations[n] = drift(n/200) + steps[draws[n]]
+
+            elif drift==None:
+                self.realizations[n] = season(n/200) + steps[draws[n]] 
+
             else:
-                self.realizations[n] = drift(n) + steps[draws[n]]
+                self.realizations[n] = drift(n/200) + season(n) + steps[draws[n]] 
 
         return
 
@@ -57,13 +64,13 @@ class Process:
         ax1.plot(self.sampler.density.pdf(x), x, alpha=0.5, color = 'red', lw=1.5)
         # Plot the timeseries realizations
         ax2 = plt.subplot2grid((2,4), (0,1), colspan=3, rowspan=self.rows, fig=fig)
-        ax2.plot(np.arange(self.realizations.size), self.realizations, color = 'black')
+        ax2.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.realizations, color = 'black')
         # Plot the detrended timeseries
         if self.is_detrended:
             ax3 = plt.subplot2grid((2,4), (1,1), colspan=3, rowspan=self.rows, sharex=ax2, fig=fig)
-            ax3.plot(np.arange(self.realizations.size), self.detrended, color = 'black')
+            ax3.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.detrended, color = 'black')
             # Overlap the trend estimation with the original timeseries
-            ax2.plot(np.arange(self.realizations.size), self.trend, alpha=0.5, color = 'green')
+            ax2.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.trend, alpha=0.5, color = 'green')
 
         # Show the figure
         plt.show()
