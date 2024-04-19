@@ -3,93 +3,104 @@ from matplotlib import pyplot as plt
 
 class Estimator:
     def __init__(self, timeseries):
-        self.timeseries = timeseries 
+        # Initialise the timeseries
+        self.timeseries = timeseries
+        # Initialise the size of the timeseries (number of observations)
         self.Nt = self.timeseries.size
+        # Initialise default value of the width of the sliding window
+        self.M = 0
 
     def mean(self, width:int):
-        # Compute the size of the sliding window relative to the overall length of the series
-        M = np.ceil(self.Nt*(width/100))
-        M = M.astype(int)
+        # Update the width of the sliding window relative to the overall length of the series
+        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
         # Initialise empty array
-        self.smean = np.empty(self.Nt-M)
+        self.smean = np.empty(self.Nt-self.M)
         # Estimate the mean across the sliding window
-        for t in range(self.Nt-M):
-            self.smean[t] = (1.0/M)*np.sum(self.timeseries[t:t+M])
+        for t in range(self.Nt-self.M):
+            self.smean[t] = (1.0/self.M)*np.sum(self.timeseries[t:t+self.M])
 
         # Plot the sample mean
         self.plot('mean')
         return
 
     def variance(self, width:int):
-        # Compute the size of the sliding window relative to the overall length of the series
-        M = np.ceil(self.Nt*(width/100))
-        M = M.astype(int)
+        # Update the width of the sliding window relative to the overall length of the series
+        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
         # Compute the mean 
         self.mean(width)
         # Initialise empty array
-        self.var = np.empty(self.Nt-M)
+        self.var = np.empty(self.Nt-self.M)
         # Estimate the variance across the sliding window
-        for t in range(self.Nt-M):
-            self.var[t] = (1.0/M)*np.sum(np.square(self.timeseries[t:t+M]-self.smean[t]))
+        for t in range(self.Nt-self.M):
+            self.var[t] = (1.0/self.M)*np.sum(np.square(self.timeseries[t:t+self.M]-self.smean[t]))
 
         # Plot the sample variance
         self.plot('variance')
         return
 
     def covariance(self, width:int):
-        # Compute the size of the sliding window relative to the overall length of the series
-        M = np.ceil(self.Nt*(width/100))
-        M = M.astype(int)
+        # Update the width of the sliding window relative to the overall length of the series
+        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
         # Initialise empty array
-        self.acvf = np.empty(self.Nt-M)
+        self.acvf = np.empty(self.Nt-self.M)
         # Estimate the acvf across the sliding window
         return
 
     def autocorrelation(self, width:int, lag=1):
-        # Compute the size of the sliding window relative to the overall length of the series
-        M = np.ceil(self.Nt*(width/100))
-        M = M.astype(int)
+        # Update the width of the sliding window relative to the overall length of the series
+        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
         # Compute the mean
         self.mean(width)
         # Initialise empty array
-        self.acf = np.empty(self.Nt-M)
+        self.acf = np.empty(self.Nt-self.M)
         # Estimate the acf across the sliding window
-        for t in range(self.Nt-M):
-            running = self.timeseries[t+lag:t+M]
-            lagging = self.timeseries[t:(t+M)-lag]
-            self.acf[t] = (np.sum(running - self.smean[t]))*(np.sum(lagging - self.smean[t]))/(np.sum(np.square(self.timeseries[t:t+M])))
+        for t in range(self.Nt-self.M):
+            running = self.timeseries[t+lag:t+self.M]
+            lagging = self.timeseries[t:(t+self.M)-lag]
+            self.acf[t] = (np.sum(running - self.smean[t]))*(np.sum(lagging - self.smean[t]))/(np.sum(np.square(self.timeseries[t:t+self.M])))
 
         # Plot the autocorrelation coefficient
         self.plot('autocorr')
         return
 
     def spectrum(self, width:int):
-        # Compute the size of the sliding window relative to the overall length of the series
-        M = np.ceil(self.Nt*(width/100))
-        M = M.astype(int)
+        # Update the width of the sliding window relative to the overall length of the series
+        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
         # Initialise empty array
-        self.spectrum = np.empty(self.Nt-M)
+        self.spectrum = np.empty(self.Nt-self.M)
         # Estimate the spectrum across the sliding window
         return
 
     def plot(self, indicator):
         # Create the figure
-        plt.figure(figsize=[12.8,9.6], dpi=200, layout='tight')
-        # Initialise array for the statistical indicator to be plotted
+        fig = plt.figure(figsize=[12.8,9.6], dpi=200, layout='tight')
         if indicator=='mean':
-            plt.plot(np.arange(self.smean.size), self.smean)
+            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean)
+            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         elif indicator=='variance':
-            plt.plot(np.arange(self.var.size), self.var)
+            ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.var.size), self.var)
+            ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
+            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         elif indicator=='covariance':
-            plt.plot(np.arange(self.acvf.size), self.acvf)
+            ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf)
+            ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
+            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         elif indicator=='autocorr':
-            plt.plot(np.arange(self.acf.size), self.acf)
+            ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf)
+            ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
+            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         else:
-            plt.plot(np.arange(self.mean.size), self.mean)
+            ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean)
+            ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
+            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         # Plot the statistical indicator
         plt.show()

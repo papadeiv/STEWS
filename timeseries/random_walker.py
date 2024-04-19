@@ -11,7 +11,7 @@ from Estimator import Estimator
 # Gaussian distribution
 def gaussian(x:float):
     mu = 0.0
-    sigma = 1.00
+    sigma = 0.01
     return (1.0/(sigma*np.sqrt(2*np.pi)))*(np.exp(-0.5*np.square((x-mu)/sigma)))
 
 # Gamma distribution
@@ -32,7 +32,7 @@ def drift(x:float):
 
 # Define the periodic fluctuations (seasonality) of the stochastic process
 def seasonality(x:float):
-    return np.sin(x)
+    return (x/10)*np.sin(x) + np.cos(x)
 
 # Create the stochastic processes from each of the sampling pdfs 
 gaussian_rw = Process(gaussian, domain=(-10,10))
@@ -44,11 +44,11 @@ Nt = 1000
 gaussian_rw.evolve(Nt, drift=drift, season=seasonality)
 
 # Detrend the timeseries for better analysis
-gaussian_rw.detrend(mode='fit')
+gaussian_rw.detrend(mode='diff')
 
 # Plot the histogram of the drawn samples
 gaussian_rw.plot()
 
 # Estimate statistical indicators of the timeseries
 ts = Estimator(gaussian_rw.detrended)
-ts.variance(10)
+ts.variance(50)

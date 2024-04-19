@@ -20,6 +20,8 @@ class Process:
         self.is_detrended = False
         # Initialise default number of rows for the timeseries' plot
         self.rows = 2
+        # Initialise default boolean variable for the plot of the tren
+        self.plot_trend = False
         return
 
     def setIC(self, x0:float):
@@ -41,13 +43,13 @@ class Process:
                 self.realizations[n] = self.realizations[n-1] + steps[draws[n]]
 
             elif season==None:
-                self.realizations[n] = drift(n/200) + steps[draws[n]]
+                self.realizations[n] = drift(n/10) + steps[draws[n]]
 
             elif drift==None:
-                self.realizations[n] = season(n/200) + steps[draws[n]] 
+                self.realizations[n] = season(n/10) + steps[draws[n]] 
 
             else:
-                self.realizations[n] = drift(n/200) + season(n) + steps[draws[n]] 
+                self.realizations[n] = drift(n/10) + season(n/10) + steps[draws[n]] 
 
         return
 
@@ -64,20 +66,29 @@ class Process:
         ax1.plot(self.sampler.density.pdf(x), x, alpha=0.5, color = 'red', lw=1.5)
         # Plot the timeseries realizations
         ax2 = plt.subplot2grid((2,4), (0,1), colspan=3, rowspan=self.rows, fig=fig)
-        ax2.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.realizations, color = 'black')
+        ax2.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.realizations, color = 'black')
         # Plot the detrended timeseries
         if self.is_detrended:
             ax3 = plt.subplot2grid((2,4), (1,1), colspan=3, rowspan=self.rows, sharex=ax2, fig=fig)
-            ax3.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.detrended, color = 'black')
+            ax3.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.detrended, color = 'black')
             # Overlap the trend estimation with the original timeseries
-            ax2.plot(np.linspace(0, (self.realizations.size)/200, self.realizations.size), self.trend, alpha=0.5, color = 'green')
+            if self.plot_trend:
+                ax2.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.trend, alpha=0.5, color = 'green')
 
         # Show the figure
         plt.show()
 
     def detrend(self, mode='EMD'):
+        # Detrending by eye-balling 
+        if mode=='manual':
+            print('to be implemented')
+
+        # Detrending by removing the mean
+        elif mode=='mean':
+            print('to be implemented')
+
         # Detrending by curve-fitting
-        if mode=='fit':
+        elif mode=='fit':
             # Initialise discrete timesteps
             x = np.arange(self.realizations.size) 
             x = np.reshape(x, (self.realizations.size, 1))
@@ -89,6 +100,8 @@ class Process:
             self.trend = model.predict(x)
             # Detrend the original timeseries
             self.detrended = np.array(self.realizations - self.trend)
+            # Set the boolean variable for the plot of the trend to be true
+            self.plot_trend = True
 
         # Detrending by first-order differencing
         elif mode=='diff':
@@ -100,6 +113,10 @@ class Process:
             for n in np.arange(self.realizations.size-1):
                 self.detrended[n] = self.realizations[n] - self.realizations[n+1]
 
+        # Detrending by gaussian weighted filter
+        elif mode=='gauss':
+            print('to be implemented')
+        
         # Detrending by Empirical Mode Decomposition (EMD)
         else:
             print('to be implemented')
