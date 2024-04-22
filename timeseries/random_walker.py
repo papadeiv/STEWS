@@ -50,5 +50,5 @@ gaussian_rw.detrend(mode='diff')
 gaussian_rw.plot()
 
 # Estimate statistical indicators of the timeseries
-ts = Estimator(gaussian_rw.detrended)
-ts.variance(50)
+ts = Estimator(gaussian_rw.realizations)
+ts.autocorrelation(20)

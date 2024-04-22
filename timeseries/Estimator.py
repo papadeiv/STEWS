@@ -38,26 +38,43 @@ class Estimator:
         self.plot('variance')
         return
 
-    def covariance(self, width:int):
-        # Update the width of the sliding window relative to the overall length of the series
-        self.M = (np.ceil(self.Nt*(width/100))).astype(int)
-        # Initialise empty array
-        self.acvf = np.empty(self.Nt-self.M)
-        # Estimate the acvf across the sliding window
+    def covariance(self, width:int, lag=1):
+        # Deal with the case of no-lag autocovariance
+        if lag==0:
+            self.variance(width)
+
+        else:
+            # Update the width of the sliding window relative to the overall length of the series
+            self.M = (np.ceil(self.Nt*(width/100))).astype(int)
+            # Initialise empty array
+            self.acvf = np.empty(self.Nt-self.M)
+            # Estimate the acvf across the sliding window
+            for t in range(self.Nt-self.M):
+                # Extract the current (running) sub-series and compute its mean
+                running = self.timeseries[t+lag:t+self.M]
+                mu_run = (1.0/(self.M - lag))*np.sum(running) 
+                # Extract the past (lagging) sub-series and compute its mean
+                lagging = self.timeseries[t:(t+self.M)-lag]
+                mu_lag = (1.0/(self.M - lag))*np.sum(lagging) 
+                # Compute the covariance
+                self.acvf[t] = (1.0/(self.M - lag))*np.sum(np.multiply(running-mu_run, lagging-mu_lag))
+
+            self.plot('covariance')
+
         return
 
     def autocorrelation(self, width:int, lag=1):
         # Update the width of the sliding window relative to the overall length of the series
         self.M = (np.ceil(self.Nt*(width/100))).astype(int)
-        # Compute the mean
-        self.mean(width)
+        # Compute the acvf at lag-k (numerator)
+        self.covariance(width, lag=lag)
+        # Compute the acvf at lag-0 (denominator)
+        self.covariance(width, lag=0)
         # Initialise empty array
         self.acf = np.empty(self.Nt-self.M)
         # Estimate the acf across the sliding window
         for t in range(self.Nt-self.M):
-            running = self.timeseries[t+lag:t+self.M]
-            lagging = self.timeseries[t:(t+self.M)-lag]
-            self.acf[t] = (np.sum(running - self.smean[t]))*(np.sum(lagging - self.smean[t]))/(np.sum(np.square(self.timeseries[t:t+self.M])))
+            self.acf[t] = self.acvf[t]/self.var[t] 
 
         # Plot the autocorrelation coefficient
         self.plot('autocorr')
@@ -75,26 +92,30 @@ class Estimator:
         # Create the figure
         fig = plt.figure(figsize=[12.8,9.6], dpi=200, layout='tight')
         if indicator=='mean':
-            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean)
+            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean, label='mean')
             plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            plt.legend()
 
         elif indicator=='variance':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.var.size), self.var)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.var.size), self.var, label='variance')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax1.legend()
 
         elif indicator=='covariance':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf, label='autocovariance')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax1.legend()
 
         elif indicator=='autocorr':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf)
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf, label='autocorrelation')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax1.legend()
 
         else:
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
