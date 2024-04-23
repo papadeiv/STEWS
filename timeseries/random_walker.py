@@ -44,11 +44,11 @@ Nt = 1000
 gaussian_rw.evolve(Nt, drift=drift, season=seasonality)
 
 # Detrend the timeseries for better analysis
-gaussian_rw.detrend(mode='diff')
+gaussian_rw.detrend(mode='fit')
 
 # Plot the histogram of the drawn samples
 gaussian_rw.plot()
 
-# Estimate statistical indicators of the timeseries
+# Estimate and plot statistical indicators of the timeseries
 ts = Estimator(gaussian_rw.realizations)
-ts.autocorrelation(20)
+ts.autocorrelation(20, lag=1)

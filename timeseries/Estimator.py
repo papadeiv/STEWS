@@ -20,7 +20,7 @@ class Estimator:
             self.smean[t] = (1.0/self.M)*np.sum(self.timeseries[t:t+self.M])
 
         # Plot the sample mean
-        self.plot('mean')
+        self.plot('mean', width, 0)
         return
 
     def variance(self, width:int):
@@ -35,7 +35,7 @@ class Estimator:
             self.var[t] = (1.0/self.M)*np.sum(np.square(self.timeseries[t:t+self.M]-self.smean[t]))
 
         # Plot the sample variance
-        self.plot('variance')
+        self.plot('variance', width, 0)
         return
 
     def covariance(self, width:int, lag=1):
@@ -59,7 +59,7 @@ class Estimator:
                 # Compute the covariance
                 self.acvf[t] = (1.0/(self.M - lag))*np.sum(np.multiply(running-mu_run, lagging-mu_lag))
 
-            self.plot('covariance')
+            self.plot('covariance', width, lag)
 
         return
 
@@ -77,7 +77,7 @@ class Estimator:
             self.acf[t] = self.acvf[t]/self.var[t] 
 
         # Plot the autocorrelation coefficient
-        self.plot('autocorr')
+        self.plot('autocorr', width, lag)
         return
 
     def spectrum(self, width:int):
@@ -88,7 +88,7 @@ class Estimator:
         # Estimate the spectrum across the sliding window
         return
 
-    def plot(self, indicator):
+    def plot(self, indicator, width, lag):
         # Create the figure
         fig = plt.figure(figsize=[12.8,9.6], dpi=200, layout='tight')
         if indicator=='mean':
@@ -105,14 +105,14 @@ class Estimator:
 
         elif indicator=='covariance':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf, label='autocovariance')
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf, label='acv('+str(lag)+')')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             ax1.legend()
 
         elif indicator=='autocorr':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf, label='autocorrelation')
+            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf, label='acf('+str(lag)+')')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             ax1.legend()
@@ -124,5 +124,6 @@ class Estimator:
             ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         # Plot the statistical indicator
+        plt.title('width=' + str(width) + '%')
         plt.show()
         return
