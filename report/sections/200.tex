@@ -41,7 +41,7 @@ As such the slower rate of recovery may be estimated indirectly by analysing sta
 Temporal indicators can detect CSD well enough for low-dimensional system but they have the major drawback of completely disregarding any change in the spatial distribution of the system's state.
 On the other hand, spatial indicators do account for fluctuations of the lattice sites from the spatial mean and the symmetry in the diffucion-reaction model also allows for larger spatial correlation of nearby cells via local coupling.
 However, as these indicators look at one particular snapshot at the time, they are limited in the amount of information gathered from the time evolution of the system thus ignoring any potential temporal pattern.
-Ways to cirmumvent the latter limitations have been proposed in the context of SLDSs.
+Ways to circumvent the latter limitations have been proposed in the context of SLDSs.
 \subsubsection{Leading eigenvalues of the covariance matrix}\label{subsubsec3.2.1}
 This EWS was first proposed in \cite{Dakos18} and then later generalised in \cite{Chen19}. Several snapshots $\boldsymbol{x}\in \mathbb{R}^{N}$ ($N:=n\,m$) are collected across a sliding window of fixed width $W$ and stride $S$ in a snapshot matrix $\boldsymbol{\mathcal{X}}\in \mathbb{R}^{N\times W}$. 
 These snapshots are then used to compute a covariance matrix $\boldsymbol{\Sigma}\in \mathbb{R}^{N\times N}$ across the sliding window so that fluctuations around the temporal mean are also considered.

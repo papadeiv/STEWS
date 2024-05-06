@@ -5,6 +5,7 @@
 #       
 #######################################################################################################################################
 
+import emd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from matplotlib import pyplot as plt
@@ -73,12 +74,12 @@ class Process:
             ax3.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.detrended, color = 'black')
             # Overlap the trend estimation with the original timeseries
             if self.plot_trend:
-                ax2.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.trend, alpha=0.5, color = 'green')
+                ax2.plot(np.linspace(0, (self.realizations.size)/10, self.realizations.size), self.trend, alpha=0.25, color = 'green', linewidth=2.5)
 
         # Show the figure
         plt.show()
 
-    def detrend(self, mode='EMD'):
+    def detrend(self, mode='EMD', order=None):
         # Detrending by eye-balling 
         if mode=='manual':
             print('to be implemented')
@@ -119,7 +120,20 @@ class Process:
         
         # Detrending by Empirical Mode Decomposition (EMD)
         else:
-            print('to be implemented')
+            # Extract the IMFs from the signal
+            imfs = emd.sift.sift(self.realizations)
+            # Quantify the trend by summing over each IMF
+            if order==None or order>(imfs.shape)[1]:
+                self.trend = np.sum(imfs[:,0:(imfs.shape)[1]], axis=1)
+            else:
+                self.trend = np.sum(imfs[:,0:order], axis=1)
+            
+            # Detrend the non-stationary trend from the timeseries 
+            self.detrended = self.realizations[:,0] - self.trend 
+            # Plot the original timeseries and its IMF-components
+            emd.plotting.plot_imfs(imfs)
+            # Set the boolean variable for the plot of the trend to be true
+            self.plot_trend = True
 
         # Update boolean variable for plotting the detrended timeseries
         self.is_detrended = True
