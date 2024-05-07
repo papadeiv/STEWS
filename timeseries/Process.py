@@ -5,7 +5,7 @@
 #       
 #######################################################################################################################################
 
-import emd
+import emd #(https://emd.readthedocs.io/en/stable/emd_tutorials/01_sifting/emd_tutorial_01_sift_02_siftindetail.html#sphx-glr-emd-tutorials-01-sifting-emd-tutorial-01-sift-02-siftindetail-py)
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from matplotlib import pyplot as plt
@@ -126,7 +126,7 @@ class Process:
             if order==None or order>(imfs.shape)[1]:
                 self.trend = np.sum(imfs[:,0:(imfs.shape)[1]], axis=1)
             else:
-                self.trend = np.sum(imfs[:,0:order], axis=1)
+                self.trend = np.sum(imfs[:,((imfs.shape)[1]-order):(imfs.shape)[1]], axis=1)
             
             # Detrend the non-stationary trend from the timeseries 
             self.detrended = self.realizations[:,0] - self.trend 

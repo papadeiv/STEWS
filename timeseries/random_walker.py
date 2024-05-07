@@ -32,7 +32,7 @@ def drift(x:float):
 
 # Define the periodic fluctuations (seasonality) of the stochastic process
 def seasonality(x:float):
-    return 1*((x/10)*np.sin(x) + np.cos(x))
+    return 1*((x/10)*np.sin(x)*np.cos(x) - np.sin(3*x))
 
 # Create the stochastic processes from each of the sampling pdfs 
 gaussian_rw = Process(gaussian, domain=(-10,10))
@@ -44,7 +44,7 @@ Nt = 1000
 gaussian_rw.evolve(Nt, drift=drift, season=seasonality)
 
 # Detrend the timeseries for better analysis
-gaussian_rw.detrend(mode='EMD', order=10)
+gaussian_rw.detrend(mode='EMD', order=1)
 
 # Plot the histogram of the drawn samples
 gaussian_rw.plot()
