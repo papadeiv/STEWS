@@ -126,7 +126,7 @@ class Process:
             if order==None or order>(imfs.shape)[1]:
                 self.trend = np.sum(imfs[:,0:(imfs.shape)[1]], axis=1)
             else:
-                self.trend = np.sum(imfs[:,((imfs.shape)[1]-order):(imfs.shape)[1]], axis=1)
+                self.trend = np.sum(imfs[:,order:(imfs.shape)[1]], axis=1)
             
             # Detrend the non-stationary trend from the timeseries 
             self.detrended = self.realizations[:,0] - self.trend 

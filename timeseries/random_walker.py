@@ -11,7 +11,7 @@ from Estimator import Estimator
 # Gaussian distribution
 def gaussian(x:float):
     mu = 0.0
-    sigma = 0.1
+    sigma = 1
     return (1.0/(sigma*np.sqrt(2*np.pi)))*(np.exp(-0.5*np.square((x-mu)/sigma)))
 
 # Gamma distribution
