@@ -1,6 +1,7 @@
 using DifferentialEquations
 using LaTeXStrings, CairoMakie
 using Statistics
+using PyCall
 
 #     Ornstein-Uhlenbeck process
 # (linear drift, constant diffusion)
@@ -33,6 +34,14 @@ OUP = SDEProblem(iip_det!, iip_stoc!, x0, (0.0, T))
 
 # Evolve a sample path of the stochastic process 
 Xt = solve(OUP, EM(), dt=δt)
+
+# Analyse and detrend timeseries data
+py"""
+import sys
+sys.path.append('../../timeseries')
+
+import Sampler
+"""
 
 # Plot the sample path 
 CairoMakie.activate!()

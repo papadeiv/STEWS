@@ -1,11 +1,12 @@
 using DifferentialEquations, LinearAlgebra, LaTeXStrings, ProgressMeter
+using PyCall
 include("lattice.jl")
 
 printstyled("LUNG VENTILATION LATTICE MODEL\n"; bold=true, underline=true, color=:light_blue)
 
 # Define the lattice
-n = 200
-m = 200
+n = 20#0
+m = 20#0
 N = n*m
 L = Lattice(n, m)
 
@@ -28,7 +29,7 @@ Pb = 0.0::Float64 # breathing pressure
 Pb0 = 7.25::Float64 # breating pressure's IC
 
 # Sliding window's parameters
-T = 20.00
+T = 1.0#20.00
 δt = 1e-2
 width = 20
 
@@ -62,6 +63,22 @@ problem = SDEProblem(iip_det!, iip_stoc!, x0, (0.0, T), L.connectivity)
 solution = solve(problem, EM(), dt=δt)
 time = solution.t
 states = solution.u
+
+# Python code to invoke the timeseries analysis classes 
+py"""
+import sys
+sys.path.append('../timeseries')
+
+from Estimator import Estimator 
+
+def analyse(data):
+        ts = Estimator(data)
+        print(ts.timeseries)
+        return
+"""
+# Analyse and detrend timeseries data
+pyanalyse = py"analyse"
+pyanalyse(time)
 
 # Dynamic Mode Decomposition
 EWS = zeros(Float64, (length(time)-width))
