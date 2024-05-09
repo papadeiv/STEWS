@@ -50,5 +50,5 @@ gaussian_rw.detrend(mode='EMD', order=1)
 gaussian_rw.plot()
 
 # Estimate and plot statistical indicators of the timeseries
-ts = Estimator(gaussian_rw.detrended)
+ts = Estimator(gaussian_rw.detrended.ts)
 ts.autocorrelation(10, lag=1)

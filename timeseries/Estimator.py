@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.fft import fft, ifft, fftfreq, fftshift
 
 class Estimator:
     def __init__(self, timeseries):
