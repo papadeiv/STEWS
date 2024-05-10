@@ -69,16 +69,21 @@ py"""
 import sys
 sys.path.append('../timeseries')
 
+from Process import Process
 from Estimator import Estimator 
+from TimeSeries import TimeSeries
 
 def analyse(data):
-        ts = Estimator(data)
-        print(ts.timeseries)
-        return
+        ts = Process()
+        ts.realizations = TimeSeries(realizations=data) 
+        ts.detrend(mode='diff')
+        ews = Estimator(ts.detrended.ts, timescale=10)
+        ews.variance(width=10)
+        return ews.var
 """
 # Analyse and detrend timeseries data
 pyanalyse = py"analyse"
-pyanalyse(time)
+ews = pyanalyse(time)
 
 # Dynamic Mode Decomposition
 EWS = zeros(Float64, (length(time)-width))

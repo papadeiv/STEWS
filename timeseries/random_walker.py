@@ -35,9 +35,9 @@ def seasonality(x:float):
     return 1*((x/10)*np.sin(x)*np.cos(x) - np.sin(3*x))
 
 # Create the stochastic processes from each of the sampling pdfs 
-gaussian_rw = Process(gaussian, domain=(-10,10))
-gamma_rw = Process(gamma, domain=(0,20))
-beta_rw = Process(beta, domain=(0,1))
+gaussian_rw = Process(density=gaussian, domain=(-10,10))
+gamma_rw = Process(density=gamma, domain=(0,20))
+beta_rw = Process(density=beta, domain=(0,1))
 
 # Generate the timeseries of the processes with Nt realizations 
 Nt = 1000
@@ -50,5 +50,5 @@ gaussian_rw.detrend(mode='EMD', order=1)
 gaussian_rw.plot()
 
 # Estimate and plot statistical indicators of the timeseries
-ts = Estimator(gaussian_rw.detrended.ts)
+ts = Estimator(gaussian_rw.detrended.ts, timescale=10)
 ts.autocorrelation(10, lag=1)

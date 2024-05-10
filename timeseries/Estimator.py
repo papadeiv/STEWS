@@ -3,13 +3,15 @@ from matplotlib import pyplot as plt
 from scipy.fft import fft, ifft, fftfreq, fftshift
 
 class Estimator:
-    def __init__(self, timeseries):
+    def __init__(self, timeseries, timescale=1):
         # Initialise the timeseries
         self.timeseries = timeseries
         # Initialise the size of the timeseries (number of observations)
         self.Nt = self.timeseries.size
         # Initialise default value of the width of the sliding window
         self.M = 0
+        # Initialise default timescale of the deterministic drift (trend) w.r.t. the noise
+        self.timescale = 1.0/timescale
 
     def mean(self, width:int):
         # Update the width of the sliding window relative to the overall length of the series
@@ -92,37 +94,38 @@ class Estimator:
     def plot(self, indicator, width, lag):
         # Create the figure
         fig = plt.figure(figsize=[12.8,9.6], dpi=200, layout='tight')
+        # Plot the windowed mean
         if indicator=='mean':
-            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean, label='mean')
-            plt.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            plt.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale)/10, self.smean.size), self.smean, label='mean')
+            plt.plot(np.linspace((self.M)*(self.timescale)/10, (self.Nt)*(self.timescale)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             plt.legend()
-
+        # Plot the windowed variance
         elif indicator=='variance':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.var.size), self.var, label='variance')
+            ax1.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.var.size), self.var, label='variance')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
-            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax2.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             ax1.legend()
-
+        # Plot the windowed lag-k autocovariance
         elif indicator=='covariance':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acvf.size), self.acvf, label='acv('+str(lag)+')')
+            ax1.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.acvf.size), self.acvf, label='acv('+str(lag)+')')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
-            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax2.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             ax1.legend()
-
+        # Plote the windowed lag-k autocorrelation
         elif indicator=='autocorr':
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.acf.size), self.acf, label='acf('+str(lag)+')')
+            ax1.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.acf.size), self.acf, label='acf('+str(lag)+')')
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
-            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax2.plot(np.linspace((self.M)*(self.timescale), (self.Nt)*(self.timescale), self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
             ax1.legend()
 
         else:
             ax1 = plt.subplot2grid((2,4), (0,0), colspan=4, fig=fig)
-            ax1.plot(np.linspace(self.M/10, (self.Nt)/10, self.smean.size), self.smean)
+            ax1.plot(np.linspace(self.M*(self.timescale), (self.Nt)*(self.timescale), self.smean.size), self.smean)
             ax2 = plt.subplot2grid((2,4), (1,0), colspan=4, fig=fig)
-            ax2.plot(np.linspace(self.M/10, (self.Nt)/10, self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
+            ax2.plot(np.linspace(self.M*(self.timescale), (self.Nt)*(self.timescale), self.timeseries[self.M:self.Nt].size), self.timeseries[self.M:self.Nt], color = 'black')
 
         # Plot the statistical indicator
         plt.title('width=' + str(width) + '%')

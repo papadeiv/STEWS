@@ -13,9 +13,12 @@ from Sampler import Sampler
 from TimeSeries import TimeSeries
 
 class Process:
-    def __init__(self, density, domain=(float('-inf'),float('inf'))):
+    def __init__(self, density=None, domain=(float('-inf'),float('inf'))):
         # Initialise non-uniform random variate generator (sampling) object
-        self.sampler = Sampler(density, domain=domain)
+        if density==None:
+            self.sampler = None 
+        else:
+            self.sampler = Sampler(density, domain=domain)
         # Initialise empty timeseries objecy
         self.realizations = TimeSeries()
         # Initialise default boolean variable for plotting the detrended timeseries
@@ -99,7 +102,7 @@ class Process:
             # Initialised detrended array
             self.detrended = TimeSeries()
             # Detrend the timeseries
-            for n in np.arange(self.realizations.size-1):
+            for n in np.arange(self.realizations.ts.size-1):
                 self.detrended.update(self.realizations.ts[n] - self.realizations.ts[n+1])
 
         # Detrending by gaussian weighted filter
