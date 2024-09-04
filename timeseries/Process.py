@@ -112,12 +112,14 @@ class Process:
         # Detrending by Empirical Mode Decomposition (EMD)
         else:
             # Extract the IMFs from the signal
-            imfs = emd.sift.sift(self.realizations.ts)
+            self.imfs = emd.sift.sift(self.realizations.ts)
             # Quantify the trend by summing over each IMF
-            if order==None or order>(imfs.shape)[1]:
-                self.trend = TimeSeries(realizations=(np.sum(imfs[:,0:(imfs.shape)[1]], axis=1)))
+            if order==None:
+                self.trend = TimeSeries(realizations=(np.sum(self.imfs[:,0:(self.imfs.shape)[1]], axis=1)))
+            elif order<(self.imfs.shape)[1]:
+                self.trend = TimeSeries(realizations=(np.sum(self.imfs[:,order:(self.imfs.shape)[1]], axis=1)))
             else:
-                self.trend = TimeSeries(realizations=(np.sum(imfs[:,order:(imfs.shape)[1]], axis=1)))
+                self.trend = TimeSeries(realizations=self.imfs[:,(self.imfs.shape)[1]-1])
             
             # Detrend the non-stationary trend from the timeseries 
             self.detrended = TimeSeries(realizations=(self.realizations.ts - self.trend.ts))

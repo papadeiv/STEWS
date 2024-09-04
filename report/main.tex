@@ -1,5 +1,5 @@
-\PassOptionsToPackage{dvipsnames}{xcolor}
-\documentclass[dvipsnames, 11pt]{article}
+\PassOptionsToPackage{dvipsnames, table}{xcolor}
+\documentclass[dvipsnames, table, 11pt]{article}
 
 \textwidth=7in
 \textheight=9.5in
@@ -11,8 +11,17 @@
 \usepackage{style}
 
 \begin{document}
-\subfile{sections/100}
-\subfile{sections/200}
+\subfile{sections/Ch1}
+\newpage
+\subfile{sections/Ch2}
+\newpage
+\subfile{sections/Ch3}
+\newpage
+\subfile{sections/Ch4}
+\newpage
+\subfile{sections/Ch5}
 \newpage
 \printbibliography
+\newpage
+\subfile{sections/Supp}
 \end{document}
