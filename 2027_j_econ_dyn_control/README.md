@@ -1,20 +1,28 @@
-# A systematic analysis of the dynamics of a model of unified growth
+# Dynamics, bifurcations and extensions of models of unified growth
 
 ## 🚀 Description 
 
-Unified growth theory (UGT) is a model proposed in [[Galor and Weil 2000]](https://www.aeaweb.org/articles?id=10.1257/aer.90.4.806) and used by macroeconomists to explain the three main stages of population growth and technological progress throughout civilisations.
-This model's cornestone is the optimisation of a utility function reppresenting the tradeoff between each agaent's choice of allocatin resources to consumption or child-rearing activities.
-Such optimisation problem is dynamic, in the sense that it updates through (discrete-time) iterations for the optimal choice of the agents' number of offspring and level of education of said children at each generation.
-This gives rise to a 4-dimensional, piece-wise defined, non-smooth map whose dynamics is only given in the abstract sense (i.e. no explicit functional form is proposed but rather a set of conditions for them is specified).
-Later efforts [[Lagerlöf 2006]](https://www.aeaweb.org/articles?id=10.1257/aer.90.4.806) have put this model into numerical simulations to showcase the expected behaviour and properties of the model.
+Unified growth theory (UGT) is family of models proposed in [[Galor 2000]](https://www.aeaweb.org/articles?id=10.1257/aer.90.4.806) and used by macroeconomists to explain the three main stages of population growth and technological progress throughout civilisations.
+At its core, UGT derives the equations of motions by optimising the utility of each agent in the working population.
+Each agent choces the optimal allocation of resources between consumption and child-rearing activities depending on the income level and the endogenous state of the economy.
+Such optimisation problem yields, for each generation, a number of children an agent will have and the level of education they endowe them.
+
+From Galor's analysis, this gives rise to a four-dimensional, piece-wise continous (i.e. non-smooth) iterated map.
+Later efforts [[Lagerlöf 2006]](https://www.aeaweb.org/articles?id=10.1257/aer.90.4.806) have tested this model using numerical simulations however they stopped at one set of parameter for a single starting economy.
 
 ### ✏️  Outline
 
 __Collaborators:__ Samuel Bolduc St-Aubin (U. of Auckland, New Zealand), Sam Doak (U. of Auckland, New Zealand) and Greta Meggiorini (U. of Auckland, New Zealand). 
 
-A systematic, phase space and bifurcation analysis of the model is still lacking from the literature in both mathematics and economics. We seek to fill such gap providing rigorous mathematical grounding to the properties observed by others' simulations while refining some aspects of the model to produce new results.
+We certify Lagerlöf's numerical findings and expand upon them by putting UGT models through the rigorous machinery of dynamical systems theory and bifurcation analysis.
+Among the numerous findings, we hereby list the most important:
 
-This project is currently at a _work in progress_ stage!
+- the family of models proposed by Galor is actually three-dimensional, not four dimensional (education is a choice variable, not an endogenous one);
+- the [Malthusian trap](https://en.wikipedia.org/wiki/Malthusianism#Theory_of_breakout_via_technology) is not a fixed point for the family of models proposed by Galor, making claims such as the following one incorrect
+> (From _"UNIFIED GROWTH THEORY: ROOTS OF GROWTH AND INEQUALITY IN THE WEALTH OF NATIONS", page 9, third paragraph_) ``Unified Growth Theory uncovers the central forces that gave rise to the Malthusian trap, unraveling the mechanisms that ultimately enabled humanity to escape its gravitational pull''
+- Lagerlöf's modelling choices yield a system with a substantial amount of economies that undergo population collapse within one or two generations despite [[Lagerlöf 2006]](https://www.aeaweb.org/articles?id=10.1257/aer.90.4.806) showing a single simulation for which the economy survives into the post-modern growth;
+- Lagerlöf's specified parameter values are not robust as they make the system sitting at a border-collision bifurcation (see [Simpson 2022](https://www.tandfonline.com/doi/full/10.1080/10236198.2023.2265495));
+- the post-modern growth regime is explained by looking at the large technology asymptotic limit of Lagerlöf's system; in this regime the dynamics reduces to a two-dimensional state space whose partition into a 6-subsets covering, and transitions therein, induces a directed graph that explains the different endstates of any economy that survives the population collapse.
 
 ## 📦 Structure of the repo
 
@@ -22,41 +30,28 @@ This repository is organised as follows
 
 ```bash
 root/
-├── doc/                # LaTeX source code and compiled PDF of the arXiv preprint 
-├── exp/                # Collection of subdirectories associated one-to-one to an experiment/figure in the paper 
-├── res/                # Figures and data generated by the scripts in the subdirs of exp/  
-├── src/                # Modules collecting the source code of the experiments 
-├── test/               # (When present) unit testing of the functions in utils/ 
-└── utils/              # Functions used to implement the algorithms used to generate the res/ 
+├── doc/                # LaTeX source code of the arXiv preprint 
+├── exp/                # Collection of experiments/simulations in the paper 
+├── res/                # Figures and data generated by exp/ 
+├── src/                # Modules collecting the source code 
+└── utils/              # Source code (implementation of the algorithms) 
 ```
 
-### ⚙️  Organisation of the experiments
+### ⚙️🛠️ Organisation of the experiments
 
-In `exp` you'll find many subdirs, each associated one-to-one with an important experiment and/or a picture in the paper. The code in each subdir is organised acoording to the following structure
+In `exp` you'll find many subdirs, each associated with an important experiment and/or a figure in the paper. The code in each subdir is organized as follows
 
 ```bash
 experiment/
 ├── scripts/             
-│   ├── figs.jl         # Customise the layouts of the figures
-│   ├── plot.jl         # Create the plots in each figure
-│   ├── proc.jl         # Postprocess the results of a simulation (usually this is the main algorithm)
-│   └── sim.jl          # Definition of the system and settings of the problem
-├── inc.jl              # Load the modules in src/ and include all the other libraries
-└── main.jl             # File to run to execute the simulation, analyse the results and export the figures
+│   ├── figs.jl         # Customise the layouts of the figures 
+│   ├── plot.jl         # Create the plots in each figure 
+│   ├── proc.jl         # Postprocess the results of a simulation 
+│   └── sim.jl          # Defines and sets-up the simulation 
+├── inc.jl              # Load the appropriate source code modules 
+└── main.jl             # Run the experiment 
 ```
 
 ### 💡 What does each experiment do?
 
-What follows is a brief description of those experiments so that you can gather their functionalities without interpreting the code in it:
-
-- [lagerlof](./exp/lagerlof/): simulations of the "_time-paths_" of the UGT with Lagerlöf explicit function forms to replicate the results shown in [[Lagerlöf 2006]](https://www.sciencedirect.com/science/article/abs/pii/S1094202505000566).
-
-![](doc/figures/timepaths.png)
-
-- [switching](./exp/switching/): propagation of several initial conditions to investigate robustness of fixed points in Lagerlof's system.
-
-![](doc/figures/switching.png)
-
-- [smoothing](./exp/smoothing/): simulations of an alternative system of Galor's family with smooth dynamics.
-
-![](doc/figures/smoothing.png)
+_Work in progress_
