@@ -42,6 +42,4 @@ experiment/
 
 ### 💡🔬 What does each experiment do?
 
-What follows is a brief description of those experiments so that you can gather their functionalities without interpreting the code in it:
-
-- [model_wood_ramped_ensemble](./exp/model_wood_ramped_ensemble/): applied the NLLS parameter estimation of the potential approximation method to compute the escape likelihood for an ensemble of slowly ramped solutions of [Wood's reduced 5-box model](https://royalsocietypublishing.org/rspa/article/475/2225/20190051/54509/Basin-bifurcations-oscillatory-instability-and) at different points of the bifurcation diagram.
+_Work in progress_
