@@ -2,38 +2,38 @@
 
 Here I collect and organise the code developed as part of my research.
 
-Each subdirectory is associated one-to-one to a specific work and it includes the simulation scripts, postprocessing routines and plotting utilities for reproducibility.
+Each subdirectory is associated to a specific project and it includes the simulation scripts, postprocessing routines and plotting utilities for reproducibility.
 
 In each subdirectory a `README` file explains the main content of the project and provides a description of each experiment in `exp/`.
 
 ## 🔬 List
-If you are interested in one particular work you can follow one of the links listed below.
+If you are interested in a particular work you can follow one of the links listed below.
 
 ### Published
 
-What follows is a list of repositories associated to peer-reviewed work that has been _Published_ in a scientific journal.
+These are repositories associated to peer-reviewed papers that have been _Published_ in a scientific journal.
 
 - [Quadrature of functions with endpoint singular and generalised polynomial behaviour in computational physics](https://github.com/papadeiv/MTQR) (2024, external repository).
 - [The neural network shifted-proper orthogonal decomposition: a machine learning approach for non-linear reduction of hyperbolic equations](https://github.com/papadeiv/NNsPOD) (2022, external repository).
 
-### Submitted 
+### Under review 
 <!-- ### Submitted -->
 
-_Submitted_ projects are works whose manuscripts have been submitted to a journal and are under peer-review. Once accepted they are promoted" to _Published_ repositories. 
+_Under review_ projects are works whose manuscripts have been submitted to a journal and are under peer-review. 
+If accepted, they are promoted" to _Published_ repositories; if rejected, that's life I guess '¯\_(ツ)_/¯.
 
 - [Likelihood estimation of an interpretable early-warning sign of critical transitions](./2026_phys_a/).
 
 ### In progress
 
-_In progress_ gives a list of repositories whose work is already been typed in a manuscript and close to submission.
+_In progress_ are projects whose manuscript is currently being typed and close to submission.
 
 - [Dynamics, bifurcations and extensions of models of unified growth](./2027_j_econ_dyn_control/) (Late 2026, estimated).
-- [Optimal, skilfull and interpretable prediction of high-dimensional tipping events](./2026_proc_r_soc_a/) (Late 2026, estimated).
-- [Statistical and numerical analysis of an early-warning signal approximation method based on large deviaton theory](./2027_commun_nonlinear_sci_numer_simul/) (Early 2027, estimated).
+- [Optimal and skilfull prediction of high-dimensional tipping events](./2026_proc_r_soc_a/) (Late 2026, estimated).
 
 ### Preliminary investigation
 
-In _Preliminary investigation_ we find projects that are at the primordial stage of development where test cases and theoretical advancement are being researched. These works, while could be typed in a manuscript, are nowhere near the stage of completion to become publishable material and thus cannot be listed as _In progress_.
+Projects at the _Preliminary investigation_ stage are in early development, meaning that test cases and theoretical advancement are currently being researched.
 
 - [Localised patterns of the Lugiato-Lefever equation in 2 dimensions](./preliminary_projects/2d_patterns/).
 - [Rate-induced tipping in a feedback-controlled, game-theoretic model](./preliminary_projects/game_theory/).
