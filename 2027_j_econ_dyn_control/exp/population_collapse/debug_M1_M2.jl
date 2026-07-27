@@ -22,7 +22,8 @@
 # ---------------------------------------------------------------------------
 
 using Roots
-using CairoMakie
+#using CairoMakie
+using GLMakie
 using MAT
 using ProgressMeter
 
@@ -297,12 +298,14 @@ function plot_omega_partition(; G0max=5.0, L0max=20.0, n=600, savepath="./result
 end
 
 # ---------------------------------------------------------------------------
-# Plot the boundary of M2 (both branches, all regions)
+# Plot M1 and M2 in 3D (interactive, GLMakie)
 # ---------------------------------------------------------------------------
-function plot_M2_3d(; G0max=5.0, L0max=20.0, n=600, regions_to_run=1:6,
-                     savepath="./results/M2_surface.png", surface_alpha=0.05,
+function plot_M(; G0max=5.0, L0max=20.0, n=600, regions_to_run=1:6,
+                     savepath="./results/M2_surface.png", surface_alpha=0.5,
                      wire_stride=10, wire_alpha=0.00,
                      highlight_G0=nothing, highlight_n=1500, highlight_eps=nothing)
+    GLMakie.activate!()
+
     G0s = collect(range(1e-6, G0max, length=n))
     L0s = collect(range(1e-6, L0max, length=n))
 
@@ -382,7 +385,19 @@ function plot_M2_3d(; G0max=5.0, L0max=20.0, n=600, regions_to_run=1:6,
     end
     =#
 
+    # M1's boundary, extended from the (single-G0) line used in plot_collapse
+    # (A0 = M1_slope(G0)*L0) into a full surface over the (G0,L0) grid.
+    A0_M1 = [M1_slope(g) * l for g in G0s, l in L0s]
+    surface!(ax, G0s, L0s, A0_M1, color=fill((:navy, surface_alpha), size(A0_M1)),
+             nan_color=:transparent)
+
+    # (G0,A*,L0) = (0,A*,0) for A* in [0,300], thick and black
+    lines!(ax, [0.0, 0.0], [0.0, 0.0], [0.0, 300.0], color=:black, linewidth=4)
+
     save(savepath, fig)
+    display(fig)
+
+    CairoMakie.activate!()
 end
 
 # ---------------------------------------------------------------------------
@@ -558,20 +573,22 @@ end
 # Driver: main script
 # ---------------------------------------------------------------------------
 function main(; G0max=0.5, L0max=20.0, regions_to_run=1:6, slice_G0=0.5)
-    println("Plotting ∪_j Ωj")
-    plot_omega_partition(G0max=10*G0max, L0max=L0max)
+        #=
+        println("Plotting ∪_j Ωj")
+        plot_omega_partition(G0max=10*G0max, L0max=L0max)
+        =#
 
-    println("Plotting ∂M2")
-    plot_M2_3d(G0max=G0max, L0max=L0max, regions_to_run=regions_to_run,
+        println("Plotting ∂M2")
+        plot_M(G0max=G0max, L0max=L0max, regions_to_run=regions_to_run,
                highlight_G0=slice_G0)
 
-    #=
-    println("Plotting and exporting Π_G0(M2) (G0 = $(slice_G0))")
-    @showprogress for (idx, G0) in enumerate(LinRange(0.00, slice_G0, 100)) 
+        #=
+        println("Plotting and exporting Π_G0(M2) (G0 = $(slice_G0))")
+        @showprogress for (idx, G0) in enumerate(LinRange(0.00, slice_G0, 100)) 
             export_M2_slice_mat(G0; L0max=L0max)
             plot_collapse(idx, G0; L0max=L0max)
-    end
-    =#
+        end
+        =#
 end
 
 # Execute the script

@@ -1,5 +1,5 @@
 # Import packages
-using DifferentialEquations 
+using DifferentialEquations, StochasticDiffEq 
 using Roots, ForwardDiff 
 using ProgressMeter
 

@@ -1,5 +1,5 @@
-include("../../../../inc/IO.jl")
-include("../../../../inc/PlottingTools.jl")
+include("../../inc/IO.jl")
+include("../../inc/PlottingTools.jl")
 
  # Import the data from csv 
 solution = readin("../data/figure_01/solutions/1.csv")
@@ -57,9 +57,9 @@ printstyled("Generating the figures\n"; bold=true, underline=true, color=:light_
         local u = solution[:,3]
 
         # Plot the state's solution 
-        lines!(ax1, μ, u, linewidth = 3, color = n, colormap = (:thermal, 0.02), colorrange = (1,Nε))
+        lines!(ax1, μ, u, linewidth = 3, color = n, colormap = (:thermal, 0.2), colorrange = (1,Nε))
         # Plot the parameter's shift
-        lines!(ax2, t, μ, linewidth = 4, color = n, colormap = (:thermal, 0.02), colorrange = (1,Nε))
+        lines!(ax2, t, μ, linewidth = 4, color = n, colormap = (:thermal, 0.2), colorrange = (1,Nε))
 end
 
 # Plot the colorbar for all the rates
@@ -119,4 +119,4 @@ Colorbar(fig,
         )
 
 # Export the figure 
-save("../fig/figure.png", fig)
+save("../fig/figure.pdf", fig)

@@ -1,5 +1,5 @@
-include("../../../../inc/IO.jl")
-include("../../../../inc/SystemAnalysis.jl")
+include("../../inc/IO.jl")
+include("../../inc/SystemAnalysis.jl")
 
 # Define the dynamics of the frozen system 
 a = -(0.25::Float64)

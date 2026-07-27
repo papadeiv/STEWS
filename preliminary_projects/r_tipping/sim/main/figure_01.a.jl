@@ -1,5 +1,5 @@
-include("../../../../inc/IO.jl")
-include("../../../../inc/SystemAnalysis.jl")
+include("../../inc/IO.jl")
+include("../../inc/SystemAnalysis.jl")
 
 # Define the dynamical system (drift of the state variable) 
 a = -(0.25::Float64)
@@ -11,7 +11,7 @@ K = 2.00::Float64
 f(x, λ) = -((x + a + b*λ)^2 + c*tanh(λ - d))*(x - K/(cosh(e*λ)))
 
 # Define the parameter's rates
-ε = collect(LinRange(0.01, 0.15, 1000)) 
+ε = collect(LinRange(0.01, 0.15, 100)) 
 Nε = length(ε)
 
 # Define the dynamical system (diffusion of the state variable) 
