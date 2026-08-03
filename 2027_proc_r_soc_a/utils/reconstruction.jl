@@ -1,99 +1,72 @@
 """
-Approximation methods to reconstruct the scalar potential of a conservative system from the empirical distribution of a sample path.
+Local approximation of the probability density p and the potential V of a Langevin dynamical process. The potential V is shifted to be centered at the target local minimo x0 of U.
 
-Author: Davide Papapicco Affil: U. of Auckland
-Date: 26-09-2025
+Author: Davide Papapicco
+Affil: University of Auckland
+Date: 03-08-2026
 """
 
-"""
-$(TYPEDSIGNATURES)
+# ---------------- #
+#      Density     #
+# ---------------- #
 
-Computes the approximate normalisation constant of a pdf by Gauss-Kronrod quadrature.
+# Returns a Boltzmann-like equilibrium distribution, based on a cubic potential V, bounded on one end of the domain
+function fit_density(V, D)
+        # Define the Boltzmann-like functional form
+        p(x) = exp(-V(x)/D)
 
-The input function `f::Function` depends on some `parameters::Vector{Float64}` from which the approximate normalisation constant is computed over a specified `domain::Tuple`.
-If no `domain` is given, then `f::Function` is assumed to depend on a cubic potential of coefficients `{c1,c2,c3}` provided in `parameters`.
-
-## Keyword Arguments
-* `accuracy=1e-8`: relative accuracy criterion for the quadrature iterations.
-
-## Output
-* `normalisation_constant::Float64`: normalisation constant to make `f` a pdf 
-
-## Example
-"""
-function normalise(f::Function, parameters, domain; accuracy=1e-8)
-        # Define the integral problem over the domain
-        if parameters == nothing
-                global integral = IntegralProblem(f, domain)
+        # Compute critical points of V numerically
+        dV(x) = ForwardDiff.derivative(V, x)
+        d2V(x) = ForwardDiff.derivative(dV, x)
+        points = find_zeros(dV, -5, 5)
+        xu = points[1]
+        xs = points[2]
+        if d2V(points[1]) > 0
+                xs = points[1]
+                xu = points[2]
         else
-                global integral = IntegralProblem(f, domain, parameters)
+                xs = points[2]
+                xu = points[1]
         end
 
-        # Solve the definite integral by using adaptive Gauss-Kronrod quadrature
-        quadrature = solve(integral, QuadGKJL(; order=20000); maxiters=10000, reltol=accuracy, abstol=accuracy)
+        # Establish the integration interval
+        interval = (-Inf, Inf)
+        if xu > xs 
+                interval = (-Inf, xu)
+        else
+                interval = (xu, +Inf)
+        end
 
-        # Compute the normalisation constant
-        N = 1.0::Float64/(quadrature.u)
-        return N
+        # Compute the normalized pdf 
+        N = normalise(p, interval)
+        ρ(x) = N*p(x)
+
+        return ρ 
 end
 
-function normalise(f::Function, parameters; accuracy=1e-8)
-        # Compute the location of the local minima and maxima
-        μ = parameters
-        xs = +(1/(3*μ[3]))*(sqrt((μ[2])^2 - 3*μ[1]*μ[3]) - μ[2])
-        xu = -(1/(3*μ[3]))*(sqrt((μ[2])^2 - 3*μ[1]*μ[3]) + μ[2])
+# ------------------ #
+#      Potential     #
+# ------------------ #
 
-        # Define the integration interval
-        I = (-Inf,Inf)
-        if xs > xu
-                I = (xu, +Inf) 
-        else
-                I = (-Inf, xu) 
-        end
+# Coefficients are the (regularized) linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
+function fit_potential(coeff, x0, U, μ)
+        # Compute the potential coefficients from the drift coefficients
+        θ = [-coeff[1], -coeff[2]/2, -coeff[3]/3]
 
-        # Define the integral problem over the domain
-        if parameters == nothing
-                global integral = IntegralProblem(f, I)
-        else
-                global integral = IntegralProblem(f, I, parameters)
-        end
+        # Compute the stable equilibrium (center of the shift)
+        xs = +(1/(3*θ[3]))*(sqrt((θ[2])^2 - 3*θ[1]*θ[3]) - θ[2])
 
-        # Solve the definite integral by using adaptive Gauss-Kronrod quadrature
-        quadrature = solve(integral, QuadGKJL(; order=20000); maxiters=10000, reltol=accuracy, abstol=accuracy)
+        # Compute the shifts
+        δx = x0 - xs 
+        δy = U(x0, μ) - (Polynomial([0.0; θ]))(xs)
 
-        # Compute the normalisation constant
-        N = 1.0::Float64/(quadrature.u)
-        return N
+        # Define the shifted potential
+        V(x) = δy + θ[1]*(x - δx) + θ[2]*(x - δx)^2 + θ[3]*(x - δx)^3
+
+        return V
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Fits a polynomial potential of a certain `degree` by solving a linear least-squares problem on its probability density function.
-
-The LLS above is defined by `bins` and `distribution` corresponding to the bins'centerpoints and the heights of an histogram creating an empirical distribution. 
-It uses the asymptotic limit of the Fokker-Plank equation of diffusion level `noise` so that an explicit equilibrium (stationary) distribution explicit depends on the potential of the Langevin dynamics. 
-
-If instead of `bins` and `distribution` one only provides a `timeseries`, then the potential, which is assumed to be a cubic, is approximated by solving a nonlinear least-square problem.
-
-## Keyword Arguments
-* `N=nothing`: normalisation constant of the equilibrium distribution. If unknown (default) then the function uses the OUP assumption to compute it
-* `n_coeff=3::Int`: degree of the polynomial function to be fitted (defaults to `3`)
-* `n_bins=nothing`: number of bins to approximate the histogram of the stationary distribution as computed by `fit_distribution` (defaults to the `floor` integer of 2% of the total number of timesteps in `timeseries`)
-* `noise=nothing`: additive noise of the scalar SDE generating the `timeseries` (defaults to `std(timeseries)`)
-* `initial_guess=nothing`: initial value for the vector of coefficients to be used by the optimiser (if nothing is passed it defaults to the solution of `approximate_solution` which uses the OUP assumption)
-* `optimiser=1e-2`: standard deviation of the noise injected in the `initial_guess` (defaults to `1e-2`)
-* `attempts=1000::Int`: number of tries on the initial guess for the optimiser in case of failure or numerical instability (defaults to `1000`)
-* `verbose=false`: print on screen whether the method converged or not 
-
-## Output
-`potential::Tuple`
-* `potential.points::Vector{Float64}`:
-* `potential.potential::Vector{Float64}`:
-* `potential.fit::Vector{Float64}`:
-
-## Example
-"""
+#=
 function fit_potential(bins, distribution, degree, noise::Float64; N = nothing)
         # Compute the diffusion coefficient
         D = (noise^2)/2
@@ -243,3 +216,4 @@ function fit_potential(timeseries; n_bins=nothing, noise=nothing, initial_guess=
                 fit = initial_guess
                )
 end
+=#

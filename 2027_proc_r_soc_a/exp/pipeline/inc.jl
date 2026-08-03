@@ -1,7 +1,14 @@
-using LinearAlgebra, Polynomials, Statistics, KernelDensity, Optim, Integrals
+#using LinearAlgebra 
+#using Polynomials 
+#using Statistics 
+#using KernelDensity
+#using Optim
+#using Integrals
 using CairoMakie, Makie.Colors, LaTeXStrings
-using ProgressMeter, Revise
-using DataFrames, CSV
+using ProgressMeter
+#using Revise
+#using DataFrames
+#using CSV
 
 # Avoid re-loading DataInterface 
 if !isdefined(Main, :DataInterface)

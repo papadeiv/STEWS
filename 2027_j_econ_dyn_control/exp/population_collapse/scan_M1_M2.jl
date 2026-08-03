@@ -470,10 +470,8 @@ function export_M2_slice_mat(G0::Float64; L0max=20.0, n=2000,
     matwrite(savepath, Dict(
         "G0"           => G0,
         "L0"           => L0s,
-        "branch1_low"  => B1lo,
-        "branch1_high" => B1hi,
-        "branch2_low"  => B2lo,
-        "branch2_high" => B2hi,
+        "branch1"      => B1hi,
+        "branch2"      => B2lo,
         "region"       => js,
     ))
 end
@@ -558,6 +556,7 @@ end
 # Driver: main script
 # ---------------------------------------------------------------------------
 function main(; G0max=0.5, L0max=20.0, regions_to_run=1:6, slice_G0=0.5)
+    #=
     println("Plotting ∪_j Ωj")
     plot_omega_partition(G0max=10*G0max, L0max=L0max)
 
@@ -565,13 +564,14 @@ function main(; G0max=0.5, L0max=20.0, regions_to_run=1:6, slice_G0=0.5)
     plot_M2_3d(G0max=G0max, L0max=L0max, regions_to_run=regions_to_run,
                highlight_G0=slice_G0)
 
-    #=
+    =#
     println("Plotting and exporting Π_G0(M2) (G0 = $(slice_G0))")
-    @showprogress for (idx, G0) in enumerate(LinRange(0.00, slice_G0, 100)) 
+    #G0_set = LinRange(0.00, slice_G0, 100)
+    G0_set = [0.048, 0.35, 0.42, 0.5]
+    @showprogress for (idx, G0) in enumerate(G0_set)
             export_M2_slice_mat(G0; L0max=L0max)
             plot_collapse(idx, G0; L0max=L0max)
     end
-    =#
 end
 
 # Execute the script

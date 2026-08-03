@@ -57,50 +57,11 @@ function build_window(Nt::Int64, width::Float64)
                )
 end
 
-function find_tipping(ut::AbstractVector{Float64}; width = 200::Integer, threshold = 2.0::Float64, verbose=true)
-        # Extract the length of the timeseries
-        Nt = length(ut)
-
-        # Loop over the window strides
-        scores = zeros(Nt)
-        for n in (width+1):(Nt-width)
-                # Compute the mean and standard deviation of the left and right subseries in the window
-                μL = mean(@view ut[n-width:n-1])
-                μR = mean(@view ut[n+1:n+width])
-                σL = std(@view ut[n-width:n-1])
-                σR = std(@view ut[n+1:n+width])
-
-                # Compute the score matching
-                scores[n] = abs(μR - μL)/(0.5*(σL + σR) + 1e-12)
-        end
-
-        # Find the maximum score
-        tipping_idx = argmax(scores)
-
-        # Impose the tipping criterion
-        if scores[tipping_idx] > threshold
-                # Print message
-                if verbose
-                        printstyled("Tipping point found at timestep ", tipping_idx, " of ", Nt,"\n"; bold=true, underline=true, color=:green)
-                end
-
-                # Return the tipping point index 
-                return tipping_idx 
-        else
-                # Print message
-                if verbose
-                        printstyled("No tipping point found\n"; bold=true, underline=true, color=:red)
-                end
-
-                # Return the tipping point index 
-                return Nt 
-        end
-end
-
-function find_tipping(ut, threshold)
-        tipping_index = findfirst(u -> u < threshold, ut)
+# Truncate a timeseries once it crosses a threshold
+function find_tipping(timeseries, threshold)
+        tipping_index = findfirst(u -> u < threshold, timeseries)
         if isnothing(tipping_index)
-                return length(ut)
+                return length(timeseries)
         else
                 return tipping_index
         end 

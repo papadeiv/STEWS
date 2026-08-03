@@ -6,7 +6,8 @@ Affil: U. of Auckland
 Date: 30-09-2025
 """
 
-function fit_distribution(u; interval = nothing, n_bins = 200::Int64)
+# Approximates a probability distribution in L1 using histograms (piecewise constant functions)
+function estimate_distribution(u; interval = nothing, n_bins = 200::Int64)
         # Get the range of values of the distribution
         if interval == nothing
                 global u_min = u[argmin(u)]
@@ -32,4 +33,18 @@ function fit_distribution(u; interval = nothing, n_bins = 200::Int64)
                 
         # Export the data
         return bins, pdf, LinearAlgebra.norm(hist)
+end
+
+# Implementation of the (regularized) linear-least squares solution of the Euler-Mauryama quasi-likelihood estimation
+function estimate_parameters(timeseries, dt; α = 0.0)
+        # Define the observation and data vectors 
+        Xn = timeseries[1:end-1]
+        Y  = (timeseries[2:end] .- timeseries[1:end-1])./dt
+
+        # Assemble the model matrix
+        A = hcat(ones(length(Xn)), Xn, Xn.^2)
+
+        # Solve the regularized (linear) least-squares problem
+        θ = (A'*A + α.*I(size(A,2)))\(A'*Y)
+        return θ 
 end
