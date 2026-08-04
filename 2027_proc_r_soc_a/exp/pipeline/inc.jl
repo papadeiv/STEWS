@@ -1,6 +1,6 @@
 #using LinearAlgebra 
 #using Polynomials 
-#using Statistics 
+using Statistics 
 #using KernelDensity
 #using Optim
 #using Integrals

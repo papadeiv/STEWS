@@ -6,9 +6,54 @@ Affil: University of Auckland
 Date: 03-08-2026
 """
 
-# ---------------- #
-#      Density     #
-# ---------------- #
+# Quantiles of χ² with 3 degrees of freedom: P(‖x‖²_Σ ≤ q) = conf for a 3-D
+# Gaussian.  The ellipsoid is {x : (x-μ)ᵀΣ⁻¹(x-μ) ≤ d²} with d = √q.
+const χ2 = Dict(0.50   => 2.3660,
+                0.6827 => 3.5267,   # 3-D analogue of "one std away from the mean"
+                0.90   => 6.2514,
+                0.95   => 7.8147,
+                0.99   => 11.3449)
+
+# Builds the covariance (uncertainty) ellipsoid of the estimated coefficients of the cubic potential
+function fit_ellipsoid(sample; confidence = 0.95, nθ = 100, nφ = 100)
+        # Compute the mean vector of the solutions
+        μ = vec(mean(sample; dims = 1))
+
+        # Compute the covariance matrix Σ and its symmetric factor L s.t. Σ = L*L^T 
+        Σ = cov(sample)
+        Λ = eigen(Symmetric(Matrix(Σ)))
+        λ = Λ.values
+        v = Λ.vectors
+        L = v*Diagonal(sqrt.(max.(λ, 0)))
+
+        # Compute the Mahalanobis distance given the confidence
+        d = sqrt(χ2[confidence])
+
+        # Parametrize the domain of the ellipsoid
+        θ = LinRange(0, π, nθ)
+        φ = LinRange(0, 2π, nφ)
+
+        # Build the ellipsoid as a surface
+        X = Matrix{Float64}(undef, nθ, nφ); 
+        Y = similar(X); 
+        Z = similar(X)
+        for i in 1:nθ, j in 1:nφ
+                u = [sin(θ[i])*cos(φ[j]), sin(θ[i])*sin(φ[j]), cos(θ[i])]
+                p = μ .+ d.*(L*u)
+                X[i, j], Y[i, j], Z[i, j] = p
+        end
+
+        return (
+                mean = μ,
+                covariance = Σ,
+                distance = d,
+                ellipsoid = (
+                             X = X, 
+                             Y = Y, 
+                             Z = Z
+                            )
+               )
+end
 
 # Returns a Boltzmann-like equilibrium distribution, based on a cubic potential V, bounded on one end of the domain
 function fit_density(V, D)
@@ -41,12 +86,8 @@ function fit_density(V, D)
         N = normalise(p, interval)
         ρ(x) = N*p(x)
 
-        return ρ 
+        return ρ, interval 
 end
-
-# ------------------ #
-#      Potential     #
-# ------------------ #
 
 # Coefficients are the (regularized) linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
 function fit_potential(coeff, x0, U, μ)

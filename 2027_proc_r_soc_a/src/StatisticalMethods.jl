@@ -20,8 +20,9 @@ using Tables, CSV, MAT, DataFrames
 include("../utils/output.jl")
 
 # Export namespaces
+export normalise, get_error
 export build_window, detrend, find_tipping
-export fit_distribution, normalise, get_error
-export estimate_parameters, fit_potential, fit_density
+export fit_potential, fit_density, fit_ellipsoid
+export estimate_distribution, estimate_parameters
 
 end # module

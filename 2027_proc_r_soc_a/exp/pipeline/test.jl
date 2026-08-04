@@ -13,57 +13,40 @@ include("./scripts/proc.jl")
 
 # Main algorithm 
 function main()
-        # Parameter sweep loop
-        #=@showprogress=#for (idx_μ, μ) in enumerate(μ_set[1])
-                # Compute the equilibrium distribution
-                N = normalise(ρ, μ)
-                p(x) = N*ρ(x, μ) 
+        printstyled("Generating and analysing the samples\n"; bold=true, underline=true, color=:light_blue)
+        @showprogress for (idx_sim, (stepsize, steps)) in enumerate(Iterators.product(dt, Nt)) 
+                # Solve the ensemble problems and export the results
+                generate_samples(stepsize, steps)
 
-                # Compute the relevant equilibria
-                equilibria = get_equilibria(f, μ, domain=[-10,10])
-                xu = equilibria.unstable[1] 
-                xs = equilibria.stable[2]
-
-                # Solve the ensemble problem
-                x0 = [xs, μ]
-                ensemble = evolve(f, η, Λ, x0, stepsize=dt, steps=Nt, particles=Ne)
-
-                # Ensemble loop
-                for (idx_sol, solution) in enumerate(ensemble.state)
-                        # Truncate and detrend the solution
-                        idx_tip = find_tipping(solution, xu)
-                        u = solution[1:idx_tip]
-                        u = u .- x0[1]
-
-                        # ---------------------------- # 
-                        #     Parameter estimation     #
-                        # ---------------------------- # 
-                         
-                        # E-M LLS regression
-                        θ = estimate_parameters(u, dt)
-
-                        V = fit_potential(θ, xs, U, μ)
-                        error = get_error(U, V, (xs, xu), μ)
-                        display(error)
-
-                        q = fit_density(V, D)
-                        error = get_error(p, q, xs, θ)
-                        display(error)
-
-                        fig = Figure()
-                        ax = Axis(fig[1,1])
-
-                        domain = LinRange(-1.5, 1.5, 100)
-                        lines!(ax, domain, [p(x) for x in domain], color = :red, linewidth = 3.0)
-
-                        domain = LinRange(0.9, 1.1, 100)
-                        lines!(ax, domain, [q(x) for x in domain], color = (:blue, 0.25), linewidth = 3.0)
-
-                        savefig("$idx_sol.png", fig)
-
-                        println("----------------------------")
-                end
+                # Perform the error analysis for the current simulation setup
+                error_analysis(stepsize, steps, idx_sim)
         end
+
+        # Export the error matrix
+        writeout(error_matrix, "error_analysis.csv")
+
+        # Plot the error heatmap
+        error = reshape(error_matrix[:,3], length(dt), length(Nt))
+        logedges(v) = (l = log10.(v); exp10.([l[1] - (l[2]-l[1])/2;
+                                      (l[1:end-1] .+ l[2:end]) ./ 2;
+                                      l[end] + (l[end]-l[end-1])/2]))
+
+        x, y = logedges(dt), logedges(Nt)
+        fig = Figure()
+        ax = Axis(fig[1,1], 
+                  xscale = log10, yscale = log10,
+                  xticks = [1e-3, 1e-2, 1e-1],
+                  yticks = [1e+3, 1e+4, 1e+5]
+                 )
+        hm = heatmap!(ax, x, y, error, colorrange = (minimum(error), maximum(error)), colorscale = log10)
+        Colorbar(fig[1,2], hm)
+
+        # Plot the location of the minimizer in the heatmap
+        idx_min = argmin(error_matrix[:,3])
+        scatter!(ax, error_matrix[idx_min,1], error_matrix[idx_min,2], marker = :star5, color = :yellow, markersize = 20)
+
+        # Export the error heatmap figure
+        savefig("error_matrix.png", fig)
 end
 
 # Execute the main 
