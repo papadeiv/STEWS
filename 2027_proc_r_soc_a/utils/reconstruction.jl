@@ -9,7 +9,7 @@ Date: 03-08-2026
 # Quantiles of χ² with 3 degrees of freedom: P(‖x‖²_Σ ≤ q) = conf for a 3-D
 # Gaussian.  The ellipsoid is {x : (x-μ)ᵀΣ⁻¹(x-μ) ≤ d²} with d = √q.
 const χ2 = Dict(0.50   => 2.3660,
-                0.6827 => 3.5267,   # 3-D analogue of "one std away from the mean"
+                0.6827 => 3.5267,
                 0.90   => 6.2514,
                 0.95   => 7.8147,
                 0.99   => 11.3449)
@@ -19,7 +19,7 @@ function fit_ellipsoid(sample; confidence = 0.95, nθ = 100, nφ = 100)
         # Compute the mean vector of the solutions
         μ = vec(mean(sample; dims = 1))
 
-        # Compute the covariance matrix Σ and its symmetric factor L s.t. Σ = L*L^T 
+        # Compute the covariance matrix Σ and its symmetric square root
         Σ = cov(sample)
         Λ = eigen(Symmetric(Matrix(Σ)))
         λ = Λ.values
@@ -46,7 +46,8 @@ function fit_ellipsoid(sample; confidence = 0.95, nθ = 100, nφ = 100)
         return (
                 mean = μ,
                 covariance = Σ,
-                distance = d,
+                spectrum = λ,
+                eigenbasis = d.*L, 
                 ellipsoid = (
                              X = X, 
                              Y = Y, 

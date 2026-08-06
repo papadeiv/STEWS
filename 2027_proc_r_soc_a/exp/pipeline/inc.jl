@@ -1,4 +1,4 @@
-#using LinearAlgebra 
+using LinearAlgebra 
 #using Polynomials 
 using Statistics 
 #using KernelDensity

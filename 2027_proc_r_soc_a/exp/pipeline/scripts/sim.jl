@@ -5,11 +5,11 @@ Storage of the definitions of the system alongside all the settings of the probl
 """
 
 # System parameters
-Nμ = 20                                                   # Number of parameter values in the sweep
-μ_set = collect(LinRange(0.0, 1.0, Nμ))                   # Set of bifurcation parameter values 
+Nμ = 50                                                   # Number of parameter values in the sweep
+μ_set = collect(LinRange(0.0, 1.3, Nμ))                   # Set of bifurcation parameter values 
 idx_analysis = findfirst(≥(0.5), μ_set)                   # Parameter value for the error analysis 
 ε = 0.0                                                   # Timescale separation
-σ = 0.200                                                 # Noise level (additive)
+σ = 0.100                                                 # Noise level (additive)
 D = (σ^2)/2.0                                             # Diffusion level (additive) 
 
 # Dynamical system  
@@ -19,10 +19,8 @@ f(x, μ) = -μ + 4*x - 4*x^3                                # Drift
 
 # Simulation parameters
 Ne = 1e2                                                   # Number of particles in the ensemble 
-dt = exp10.(range(log10(0.1), log10(0.001), length = 20))  # Timestep size
-#dt = [1e-1,1e-2]
-Nt = round.(Integer, exp10.(range(3, 5, length = 20)))     # Number of timesteps
-#Nt = [1e+4,1e+5]
+dt = exp10.(range(log10(0.1), log10(0.001), length = 75))  # Timestep size
+Nt = round.(Integer, exp10.(range(3, 5, length = 75)))     # Number of timesteps
 
 # Compute solutions and error approximations of the parameter estimation problems
 function generate_samples(stepsize, steps)
