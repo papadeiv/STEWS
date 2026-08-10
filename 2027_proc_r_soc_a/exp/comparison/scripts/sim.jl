@@ -18,17 +18,18 @@ f(x, μ) = -μ + 4*x - 4*x^3                                # Drift
 η(x) = σ                                                  # Diffusion
 
 # Simulation parameters
-Ne = 1e2                                                   # Number of particles in the ensemble 
-dt = exp10.(range(log10(0.1), log10(0.001), length = 75))  # Timestep size
-Nt = round.(Integer, exp10.(range(3, 5, length = 75)))     # Number of timesteps
+dt = 1e-1                                                 # Timestep size
+Nt = 1e+4                                                 # Number of timesteps
+Ne = 1e+2                                                 # Number of particles
 
 # Compute solutions and error approximations of the parameter estimation problems
-function generate_samples(stepsize, steps)
+function generate_samples()
         # Initialize stop flag
         stop_flag = false 
 
         # Parameter sweep loop
-        for (idx_μ, μ) in enumerate(μ_set)
+        printstyled("Generating the samples\n"; bold=true, underline=true, color=:light_blue)
+        @showprogress for (idx_μ, μ) in enumerate(μ_set)
                 # Compute the relevant equilibria
                 equilibria = get_equilibria(f, μ, domain=[-10,10])
                 xu = equilibria.unstable[1] 
@@ -36,7 +37,7 @@ function generate_samples(stepsize, steps)
 
                 # Solve the ensemble problem
                 x0 = [xs, μ]
-                ensemble = evolve(f, η, Λ, x0, stepsize=stepsize, steps=steps, particles=Ne)
+                ensemble = evolve(f, η, Λ, x0, stepsize=dt, steps=Nt, particles=Ne)
 
                 # Ensemble loop
                 data = Matrix{Float64}(undef, convert(Integer, Ne), 4)
@@ -47,13 +48,13 @@ function generate_samples(stepsize, steps)
                         u = u .- x0[1]
 
                         # Stop the simulation if a single sample path has tipped
-                        if idx_tip < steps 
+                        if idx_tip < Nt
                                 stop_flag = true 
                                 @goto tipped 
                         end
 
                         # Linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
-                        θ = estimate_parameters(u, stepsize)
+                        θ = estimate_parameters(u, dt)
                         try 
                                 V = fit_potential(θ, xs, U, μ)
                                 error = get_error(U, V, (xs, xu), μ)
@@ -68,7 +69,7 @@ function generate_samples(stepsize, steps)
                 for idx_err in eachindex(data[:,4])
                         isinf(data[idx_err,4]) && (data[idx_err,4] = E∞)
                 end
-                writeout(data, "$stepsize/$steps/$idx_μ.csv")
+                writeout(data, "solutions/$idx_μ.csv")
         end
 
         # Return the flag

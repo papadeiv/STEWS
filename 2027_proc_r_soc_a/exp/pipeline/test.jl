@@ -14,20 +14,28 @@ include("./scripts/plot.jl")
 
 # Main algorithm 
 function main()
-        printstyled("Generating and analysing the samples\n"; bold=true, underline=true, color=:light_blue)
         a = [dt[1],dt[end]]
         b = [Nt[1],Nt[end]]
+        printstyled("Generating and analysing the samples\n"; bold=true, underline=true, color=:light_blue)
         @showprogress for (idx_sim, (stepsize, steps)) in enumerate(Iterators.product(dt,Nt)) 
                 # Solve the ensemble problems and export the results
-                generate_samples(stepsize, steps)
+                tipped = generate_samples(stepsize, steps)
 
-                # Perform the statistical analysis for the current simulation setup
-                analysis(stepsize, steps, idx_sim)
+                # Check whether any sample path has tipped
+                if tipped
+                        @goto stop
+                else
+                        # Perform the statistical analysis for the current simulation setup
+                        analysis(stepsize, steps, idx_sim)
+                end
         end
 
         # Plot and export the error matrix
         writeout(error_matrix, "error_analysis.csv")
         plot_errormap(error_matrix)
+
+        @label stop
+        printstyled("A sample path has tipped\n"; bold=true, underline=true, color=:light_blue)
 end
 
 # Execute the main 
