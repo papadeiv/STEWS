@@ -25,43 +25,39 @@ c3(x0, μ) = U3x(x0, μ)/6
 Tm(x, x0, μ) = c0(x0, μ) + c1(x0, μ)*x + c2(x0, μ)*(x^2) + c3(x0, μ)*(x^3)
 
 # Initialize data structures for the analysis
-median_error = Vector{Real}(undef, convert(Integer, Nμ))
-interquartile_error = Matrix{Real}(undef, convert(Integer, Nμ), 2)
-outliers_error = Matrix{Real}(undef, convert(Integer, Nμ), 2)
+median_variance = Vector{Real}(undef, Nμ)
+interquartile_variance = Matrix{Real}(undef, Nμ, 2)
+outliers_variance = Matrix{Real}(undef, Nμ, 2)
 median_solutions = [zeros(Nμ) for _ in 1:3]
 interquartile_solutions = [zeros(Nμ, 2) for _ in 1:3]
 outliers_solutions = [zeros(Nμ, 2) for _ in 1:3]
-spectrum = Matrix{Real}(undef, Nμ, 3)
 
 # Perform the statistical analysis of the generated samples
 function analysis()
         # Loop over the parameter values
         printstyled("Analyzing the samples\n"; bold=true, underline=true, color=:light_blue)
         @showprogress for (idx_μ, μ) in enumerate(μ_set)
-                # Import the data and convert it from drift to potential coefficients
+                # Import the data 
                 data = readin("solutions/$idx_μ.csv")
                 β = data[:,1:3]
+                V = data[:,4]
+
+                # Perform the variance analysis
+                median_variance[idx_μ] = median(V)
+                interquartile_variance[idx_μ,:] = quantile(V, [0.25, 0.75])
+                outliers_variance[idx_μ,:] = collect(extrema(V))
+
+                # Convert the solutions from drift to potential coefficients
                 θ = hcat(-β[:,1], -β[:,2]./2, -β[:,3]./3)
 
+                # Perform the coefficients analysis
                 for (idx_col, col) in enumerate(eachcol(θ))
                         median_solutions[idx_col][idx_μ] = median(col)
                         interquartile_solutions[idx_col][idx_μ,:] = quantile(col, [0.25, 0.75])
                         outliers_solutions[idx_col][idx_μ,:] = collect(extrema(col))
                 end
-
-                # Compute the data ellipsoid
-                ellipsoid = fit_ellipsoid(θ)
-                spectrum[idx_μ,:] = ellipsoid.spectrum 
-
-                # Compute the error statistics
-                error = data[:,4]
-                median_error[idx_μ] = median(error)
-                interquartile_error[idx_μ,:] = quantile(error, [0.25, 0.75])
-                outliers_error[idx_μ,:] = collect(extrema(error))
         end
 
         # Plot and export the solutions, error and spectral decay figures
-        plot_solutions(μ_set, outliers_solutions, interquartile_solutions, median_solutions)
-        plot_spectral_decay(spectrum, μ_set)
-        plot_error_decay(μ_set, outliers_error, interquartile_error, median_error)
+        plot_solutions(μ_set, outliers_solutions, interquartile_solutions, median_solutions, outliers_variance, interquartile_variance, median_variance)
 end

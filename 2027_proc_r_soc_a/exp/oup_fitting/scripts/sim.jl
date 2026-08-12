@@ -21,6 +21,19 @@ dt = 1e-1                                                 # Timestep size
 Nt = 1e+4                                                 # Number of timesteps
 Ne = 1e+2                                                 # Number of particles
 
+function estimate_reduced_parameters(timeseries, dt; α = 0.0)
+        # Define the observation and data vectors 
+        Xn = timeseries[1:end-1]
+        Y  = (timeseries[2:end] .- timeseries[1:end-1])./dt
+
+        # Assemble the model matrix
+        A = hcat(ones(length(Xn)), Xn)
+
+        # Solve the regularized (linear) least-squares problem
+        θ = (A'*A + α.*I(size(A,2)))\(A'*Y)
+        return θ 
+end
+
 # Compute solutions and error approximations of the parameter estimation problems
 function generate_samples()
         # Initialize stop flag
@@ -39,7 +52,8 @@ function generate_samples()
                 ensemble = evolve(f, η, Λ, x0, stepsize=dt, steps=Nt, particles=Ne)
 
                 # Ensemble loop
-                data = Matrix{Float64}(undef, convert(Integer, Ne), 4)
+                data = Matrix{Real}(undef, convert(Integer, Ne), 2)
+                variance = Vector{Real}(undef, convert(Integer, Ne))
                 for (idx_sol, solution) in enumerate(ensemble.state)
                         # Truncate and detrend the solution
                         idx_tip = find_tipping(solution, xu)
@@ -53,21 +67,10 @@ function generate_samples()
                         end
 
                         # Linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
-                        θ = estimate_parameters(u, dt)
-                        try 
-                                V = fit_potential(θ, xs, U, μ)
-                                error = get_error(U, V, (xs, xu), μ)
-                                data[idx_sol, :] = [θ; error]
-                        catch
-                                data[idx_sol, :] = [θ; Inf]
-                        end
+                        data[idx_sol, :] = estimate_reduced_parameters(u, dt)
                 end
 
-                # Clean and export the data
-                E∞ = maximum(filter(isfinite, data[:,4]))
-                for idx_err in eachindex(data[:,4])
-                        isinf(data[idx_err,4]) && (data[idx_err,4] = E∞)
-                end
+                # Export the data
                 writeout(data, "solutions/$idx_μ.csv")
         end
 

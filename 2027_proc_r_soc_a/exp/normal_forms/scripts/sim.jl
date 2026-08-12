@@ -54,20 +54,10 @@ function generate_samples()
 
                         # Linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
                         θ = estimate_parameters(u, dt)
-                        try 
-                                V = fit_potential(θ, xs, U, μ)
-                                error = get_error(U, V, (xs, xu), μ)
-                                data[idx_sol, :] = [θ; error]
-                        catch
-                                data[idx_sol, :] = [θ; Inf]
-                        end
+                        data[idx_sol, :] = [θ; var(u)]
                 end
 
-                # Clean and export the data
-                E∞ = maximum(filter(isfinite, data[:,4]))
-                for idx_err in eachindex(data[:,4])
-                        isinf(data[idx_err,4]) && (data[idx_err,4] = E∞)
-                end
+                # Export the data
                 writeout(data, "solutions/$idx_μ.csv")
         end
 

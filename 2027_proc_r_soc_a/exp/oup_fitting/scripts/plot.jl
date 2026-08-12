@@ -26,13 +26,6 @@ function plot_solutions(μ_set, outliers_solutions, interquartile_solutions, med
         lines!(ax7, μ_set, interquartile_solutions[2][:,1], color = :steelblue, linestyle = :dash, linewidth = 3.0)
         lines!(ax7, μ_set, interquartile_solutions[2][:,2], color = :steelblue, linestyle = :dash, linewidth = 3.0)
         lines!(ax7, μ_set, median_solutions[2], color = :red, linewidth = 3.0)
-        # c3
-        band!(ax8, μ_set, outliers_solutions[3][:,1], outliers_solutions[3][:,2], color = (:steelblue, 0.25))
-        lines!(ax8, μ_set, outliers_solutions[3][:,1], color = :steelblue, linewidth = 3.0)
-        lines!(ax8, μ_set, outliers_solutions[3][:,2], color = :steelblue, linewidth = 3.0)
-        lines!(ax8, μ_set, interquartile_solutions[3][:,1], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-        lines!(ax8, μ_set, interquartile_solutions[3][:,2], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-        lines!(ax8, μ_set, median_solutions[3], color = :red, linewidth = 3.0)
 
         # Loop over the parameter values
         new_μ_set = LinRange(-1.2, 1.5396, Nμ)
@@ -63,12 +56,12 @@ function plot_solutions(μ_set, outliers_solutions, interquartile_solutions, med
                 lines!(ax21, domain, [T(x, x0, μ) for x in domain], color = (:steelblue,0.75), linewidth = 5.0)
                 lines!(ax21, domain, [Tm(x, x0, μ) for x in domain], color = :blue, linewidth = 2.0)
 
-                band!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,1], outliers_solutions[2][idx_μ,1], outliers_solutions[3][idx_μ,1]]) for x in domain], [V(x, [outliers_solutions[1][idx_μ,2], outliers_solutions[2][idx_μ,2], outliers_solutions[3][idx_μ,2]]) for x in domain], color = (:steelblue, 0.25))
-                lines!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,1], outliers_solutions[2][idx_μ,1], outliers_solutions[3][idx_μ,1]]) for x in domain], color = :steelblue, linewidth = 3.0)
-                lines!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,2], outliers_solutions[2][idx_μ,2], outliers_solutions[3][idx_μ,2]]) for x in domain], color = :steelblue, linewidth = 3.0)
-                lines!(ax22, domain, [V(x, [interquartile_solutions[1][idx_μ,1], interquartile_solutions[2][idx_μ,1], interquartile_solutions[3][idx_μ,1]]) for x in domain], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-                lines!(ax22, domain, [V(x, [interquartile_solutions[1][idx_μ,2], interquartile_solutions[2][idx_μ,2], interquartile_solutions[3][idx_μ,2]]) for x in domain], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-                lines!(ax22, domain, [V(x,[median_solutions[1][idx_μ], median_solutions[2][idx_μ], median_solutions[3][idx_μ]]) for x in domain], color = :red, linewidth = 3.0)
+                band!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,1], outliers_solutions[2][idx_μ,1]]) for x in domain], [V(x, [outliers_solutions[1][idx_μ,2], outliers_solutions[2][idx_μ,2]]) for x in domain], color = (:steelblue, 0.25))
+                lines!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,1], outliers_solutions[2][idx_μ,1]]) for x in domain], color = :steelblue, linewidth = 3.0)
+                lines!(ax22, domain, [V(x, [outliers_solutions[1][idx_μ,2], outliers_solutions[2][idx_μ,2]]) for x in domain], color = :steelblue, linewidth = 3.0)
+                lines!(ax22, domain, [V(x, [interquartile_solutions[1][idx_μ,1], interquartile_solutions[2][idx_μ,1]]) for x in domain], color = :steelblue, linestyle = :dash, linewidth = 3.0)
+                lines!(ax22, domain, [V(x, [interquartile_solutions[1][idx_μ,2], interquartile_solutions[2][idx_μ,2]]) for x in domain], color = :steelblue, linestyle = :dash, linewidth = 3.0)
+                lines!(ax22, domain, [V(x,[median_solutions[1][idx_μ], median_solutions[2][idx_μ]]) for x in domain], color = :red, linewidth = 3.0)
 
                 # Export the figure
                 savefig("potentials/$idx_μ.png", fig2)
@@ -109,34 +102,14 @@ end
 # Plot spectral decay
 function plot_spectral_decay(λ, θm)
         # Create the figure
-        fig = Figure(; size = (1200, 400))
+        fig = Figure(; size = (1200, 600))
         ax1 = Axis(fig[1,1])
         ax2 = Axis(fig[1,2])
-        ax3 = Axis(fig[1,3])
 
         # Plot the spectrum 
         scatter!(ax1, μ_set, λ[:,1], markersize = 15, color = (:red,0.5))
         scatter!(ax2, μ_set, λ[:,2], markersize = 15, color = (:red,0.5))
-        scatter!(ax3, μ_set, λ[:,3], markersize = 15, color = (:red,0.5))
 
         # Export the figure
         savefig("spectrum.png", fig)
-end
-
-# Plot the error decays with the bifurcation parameter 
-function plot_error_decay(μ_set, outliers_error, interquartile_error, median_error)
-        # Create the figure
-        fig = Figure()
-        ax = Axis(fig[1,1], yscale = log10)
-
-        # Plot the error decays
-        band!(ax, μ_set, outliers_error[:,1], outliers_error[:,2], color = (:steelblue, 0.25))
-        lines!(ax, μ_set, outliers_error[:,1], color = :steelblue, linewidth = 3.0)
-        lines!(ax, μ_set, outliers_error[:,2], color = :steelblue, linewidth = 3.0)
-        lines!(ax, μ_set, interquartile_error[:,1], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-        lines!(ax, μ_set, interquartile_error[:,2], color = :steelblue, linestyle = :dash, linewidth = 3.0)
-        lines!(ax, μ_set, median_error, color = :red, linewidth = 3.0)
-
-        # Export the figure
-        savefig("error.png", fig)
 end
