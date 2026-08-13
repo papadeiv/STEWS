@@ -4,6 +4,9 @@
 Collection of quantities and functions used to postprocess and analyse the results of a simulation.
 """
 
+# Ground truth coefficients of the normal form
+θt(μ) = [μ, 0.0, 1.0/3.0]
+
 # Scalar potential of the conservative system 
 U(x, μ) =  + μ*x + (1.0/3.0)*x^3                # Potential (ground truth)
 V(x, c) = c[1]*x + c[2]*(x^2) + c[3]*(x^3)      # Potential
@@ -24,7 +27,7 @@ function solve_lls(solution; α = 1e-2)
         θ = [-β[1], -β[2]/2, -β[3]/3]
 
         # Compute the misfit between the model's prediction and the observations
-        r = norm(Y - [V(x, θ) for x in Xn])/norm(Y)
+        r = norm(Y - A*β)/norm(Y)
 
         return (
                 solution = θ,
