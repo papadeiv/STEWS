@@ -6,7 +6,7 @@ Storage of the definitions of the system alongside all the settings of the probl
 
 # System parameters
 Nμ = 100                                                  # Number of parameter values in the sweep
-μ_set = collect(LinRange(0.0, 1.2, Nμ))                   # Set of bifurcation parameter values 
+μ_set = collect(LinRange(0.0, 1.45, Nμ))                  # Set of bifurcation parameter values 
 ε = 0.0                                                   # Timescale separation
 σ = 0.050                                                 # Noise level (additive)
 D = (σ^2)/2.0                                             # Diffusion level (additive) 
@@ -40,7 +40,7 @@ function generate_samples()
                 ensemble = evolve(f, η, Λ, x0, stepsize=dt, steps=Nt, particles=Ne)
 
                 # Ensemble loop
-                data = Matrix{Float64}(undef, convert(Integer, Ne), 4)
+                data = Matrix{Float64}(undef, convert(Integer, Ne), 3)
                 for (idx_sol, solution) in enumerate(ensemble.state)
                         # Truncate and detrend the solution
                         idx_tip = find_tipping(solution, xu)
@@ -53,15 +53,19 @@ function generate_samples()
                                 @goto tipped 
                         end
 
-                        # Linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
-                        θ = estimate_parameters(u, dt)
+                        # Solve the linear least-squares problem of the Euler-Maruyama quasi-likelihood estimation
+                        c = (estimate_parameters(u, dt))[2]
 
-                        # Estimate of the leading eigenvalue thriugh AR(1)
+                        # Compute the lag-1 autocorrelation coefficient ρ and the return rate α
                         ρ = sum(u[1:end-1].*u[2:end])/sum(abs2, u)
-                        λ = log(ρ)/dt
+                        α = log(ρ)/dt
+
+                        # Compute the sample variance and fit an Ornstein-Uhlenbeck process with linear coefficient θ
+                        v = var(u) 
+                        θ = -σ^2/(2*v)
 
                         # Update the data matrix
-                        data[idx_sol, :] = [θ; λ]
+                        data[idx_sol, :] = [c, α, θ]
                 end
 
                 # Export the data

@@ -10,12 +10,12 @@ include("inc.jl")
 # Import the simulation's scripts
 include("./scripts/sim.jl")
 include("./scripts/proc.jl")
-include("./scripts/plot.jl")
+include("./scripts/figs.jl")
 
 # Main algorithm 
 function main()
         # Solve the ensemble problems and export the results
-        #tipped = generate_samples()
+        tipped = generate_samples()
 
         # Check whether any sample path has tipped
         if tipped

@@ -6,42 +6,30 @@ Storage of the definitions of the system alongside all the settings of the probl
 
 # System parameters
 Nμ = 100                                                  # Number of parameter values in the sweep
-μ_set = collect(LinRange(-1.2, 1.2, Nμ))                  # Set of bifurcation parameter values 
+μ_set = collect(LinRange(0.0, 1.20, Nμ))                  # Set of bifurcation parameter values 
 ε = 0.0                                                   # Timescale separation
 σ = 0.050                                                 # Noise level (additive)
 D = (σ^2)/2.0                                             # Diffusion level (additive) 
 
 # Dynamical system  
 f(x, μ) = -μ + 4*x - 4*x^3                                # Drift
+J(x) = + 4 - 12*x^2                                       # Jacobian 
 Λ(t) = ε                                                  # Shift/Ramp
 η(x) = σ                                                  # Diffusion
 
 # Simulation parameters
-dt = 1e-1                                                 # Timestep size
-Nt = 1e+4                                                 # Number of timesteps
-Ne = 1e+2                                                 # Number of particles
-
-function estimate_reduced_parameters(timeseries, dt; α = 0.0)
-        # Define the observation and data vectors 
-        Xn = timeseries[1:end-1]
-        Y  = (timeseries[2:end] .- timeseries[1:end-1])./dt
-
-        # Assemble the model matrix
-        A = hcat(ones(length(Xn)), Xn)
-
-        # Solve the regularized (linear) least-squares problem
-        θ = (A'*A + α.*I(size(A,2)))\(A'*Y)
-        return θ 
-end
+dt = exp10.(range(log10(0.2), log10(0.001), length = 100)) # Timestep size
+Nt = round.(Integer, exp10.(range(2, 5, length = 100)))    # Number of timesteps
+Ns = length(dt)*length(Nt)                                 # Number of simulations
+Ne = 1e2                                                   # Number of particles
 
 # Compute solutions and error approximations of the parameter estimation problems
-function generate_samples()
+function generate_samples(stepsize, steps)
         # Initialize stop flag
         stop_flag = false 
 
         # Parameter sweep loop
-        printstyled("Generating the samples\n"; bold=true, underline=true, color=:light_blue)
-        @showprogress for (idx_μ, μ) in enumerate(μ_set)
+        for (idx_μ, μ) in enumerate(μ_set)
                 # Compute the relevant equilibria
                 equilibria = get_equilibria(f, μ, domain=[-10,10])
                 xu = equilibria.unstable[1] 
@@ -49,11 +37,10 @@ function generate_samples()
 
                 # Solve the ensemble problem
                 x0 = [xs, μ]
-                ensemble = evolve(f, η, Λ, x0, stepsize=dt, steps=Nt, particles=Ne)
+                ensemble = evolve(f, η, Λ, x0, stepsize=stepsize, steps=steps, particles=Ne)
 
                 # Ensemble loop
-                data = Matrix{Real}(undef, convert(Integer, Ne), 2)
-                variance = Vector{Real}(undef, convert(Integer, Ne))
+                data = Matrix{Float64}(undef, convert(Integer, Ne), 3)
                 for (idx_sol, solution) in enumerate(ensemble.state)
                         # Truncate and detrend the solution
                         idx_tip = find_tipping(solution, xu)
@@ -61,17 +48,29 @@ function generate_samples()
                         u = u .- x0[1]
 
                         # Stop the simulation if a single sample path has tipped
-                        if idx_tip < Nt
+                        if idx_tip < steps 
                                 stop_flag = true 
                                 @goto tipped 
                         end
 
-                        # Linear least-squares solution of the Euler-Maruyama quasi-likelihood estimation 
-                        data[idx_sol, :] = estimate_reduced_parameters(u, dt)
+                        # Solve the linear least-squares problem of the Euler-Maruyama quasi-likelihood estimation
+                        c = (estimate_parameters(u, stepsize))[2]
+
+                        # Compute the lag-1 autocorrelation coefficient ρ and the return rate α
+                        α = -100.0
+                        ρ = sum(u[1:end-1].*u[2:end])/sum(abs2, u)
+                        ρ > 0 && (α = log(ρ)/stepsize)
+
+                        # Compute the sample variance and fit an Ornstein-Uhlenbeck process with linear coefficient θ
+                        v = var(u) 
+                        θ = -σ^2/(2*v)
+
+                        # Update the data matrix
+                        data[idx_sol, :] = [c, α, θ]
                 end
 
                 # Export the data
-                writeout(data, "solutions/$idx_μ.csv")
+                writeout(data, "$idx_μ/$stepsize/$steps.csv")
         end
 
         # Return the flag
