@@ -13,6 +13,7 @@ include("./scripts/proc.jl")
 
 # Main algorithm 
 function main()
+        #=
         # Materialise the simulation parameter grid for parallelization
         grid = vec(collect(Iterators.product(dt, Nt)))
 
@@ -32,6 +33,7 @@ function main()
                 tipped = generate_samples(stepsize, steps)
                 next!(progressbar)
         end
+        =#
 
         # Perform the statistical analysis of the results 
         analysis()

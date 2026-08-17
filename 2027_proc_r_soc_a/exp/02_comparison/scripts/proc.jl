@@ -55,7 +55,8 @@ function analysis()
                 
                 # LLS -----------------------------------------------------------------------------------------------------
                 error_map = reshape(relative_errors[:,1], length(dt), length(Nt))
-                heatmap!(ax1, x, y, error_map, colorrange = (err_min, err_max))#, colorscale = log10)
+                heatmap!(ax1, x, y, error_map, colorrange = (err_min, err_max), colorscale = log10)
+                #heatmap!(ax1, x, y, error_map, colorrange = (err_min, 1))
 
                 idx_min = argmin(error_map)
                 scatter!(ax1, dt[idx_min[1]], Nt[idx_min[2]], marker = :star5, color = :yellow, markersize = 20)
@@ -65,7 +66,8 @@ function analysis()
 
                 # AR(1) ---------------------------------------------------------------------------------------------------
                 error_map = reshape(relative_errors[:,2], length(dt), length(Nt))
-                heatmap!(ax2, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, err_max))#, colorscale = log10)
+                hm = heatmap!(ax2, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, err_max), colorscale = log10)
+                #hm = heatmap!(ax2, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, 1))
 
                 idx_min = argmin(error_map)
                 scatter!(ax2, dt[idx_min[1]], Nt[idx_min[2]], marker = :star5, color = :yellow, markersize = 20)
@@ -75,7 +77,8 @@ function analysis()
 
                 # OUP -----------------------------------------------------------------------------------------------------
                 error_map = reshape(relative_errors[:,3], length(dt), length(Nt))
-                heatmap!(ax3, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, err_max))#, colorscale = log10)
+                heatmap!(ax3, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, err_max), colorscale = log10)
+                #heatmap!(ax3, logedges(dt), logedges(Nt), error_map, colorrange = (err_min, 1))
 
                 idx_min = argmin(error_map)
                 scatter!(ax3, dt[idx_min[1]], Nt[idx_min[2]], marker = :star5, color = :yellow, markersize = 20)
@@ -92,11 +95,14 @@ function analysis()
                 Colorbar(fig[1,4], 
                          size = 25,
                          label = "relative error",
-                         limits = (trunc(err_min,digits=1), trunc(err_max,digits=1)), 
-                         ticks = [trunc(err_min,digits=1), trunc(err_max,digits=1)], 
+                         hm
+                         #limits = (trunc(err_min,digits=1), trunc(err_max,digits=1)), 
+                         #ticks = [trunc(err_min,digits=1), trunc(err_max,digits=1)], 
+                         #scale = log10
                         )
                 # Export the figure
-                savefig("02_comparison/$idx_μ.pdf", fig)
+                savefig("02_comparison/logscale/$idx_μ.png", fig)
+                #savefig("02_comparison/linscale/$idx_μ.png", fig)
         end
 
         # Export the minimizers
