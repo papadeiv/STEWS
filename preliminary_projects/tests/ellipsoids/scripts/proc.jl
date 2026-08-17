@@ -17,6 +17,58 @@ interquartile_error = Matrix{Real}(undef, convert(Integer, Nμ), 2)
 outliers_error = Matrix{Real}(undef, convert(Integer, Nμ), 2)
 error_matrix = Matrix{Real}(undef, length(dt)*length(Nt), 3)
 
+# Quantiles of χ² with 3 degrees of freedom: P(‖x‖²_Σ ≤ q) = conf for a 3-D
+# Gaussian.  The ellipsoid is {x : (x-μ)ᵀΣ⁻¹(x-μ) ≤ d²} with d = √q.
+const χ2 = Dict(0.50   => 2.3660,
+                0.6827 => 3.5267,
+                0.90   => 6.2514,
+                0.95   => 7.8147,
+                0.99   => 11.3449)
+
+# Builds the covariance (uncertainty) ellipsoid of the estimated coefficients of the cubic potential
+function fit_ellipsoid(sample; confidence = 0.95, nθ = 100, nφ = 100)
+        # Compute the mean vector of the solutions
+        μ = vec(mean(sample; dims = 1))
+
+        # Compute the covariance matrix Σ and its symmetric square root
+        Σ = cov(sample)
+        Λ = eigen(Symmetric(Matrix(Σ)))
+        λ = Λ.values
+        v = Λ.vectors
+        L = v*Diagonal(sqrt.(max.(λ, 0)))
+
+        # Compute the Mahalanobis distance given the confidence
+        d = sqrt(χ2[confidence])
+
+        # Parametrize the domain of the ellipsoid
+        θ = LinRange(0, π, nθ)
+        φ = LinRange(0, 2π, nφ)
+
+        # Build the ellipsoid as a surface
+        X = Matrix{Float64}(undef, nθ, nφ); 
+        Y = similar(X); 
+        Z = similar(X)
+        for i in 1:nθ, j in 1:nφ
+                u = [sin(θ[i])*cos(φ[j]), sin(θ[i])*sin(φ[j]), cos(θ[i])]
+                p = μ .+ d.*(L*u)
+                X[i, j], Y[i, j], Z[i, j] = p
+        end
+
+        return (
+                mean = μ,
+                covariance = Σ,
+                spectrum = λ,
+                eigenbasis = d.*L, 
+                ellipsoid = (
+                             X = X, 
+                             Y = Y, 
+                             Z = Z
+                            )
+               )
+end
+
+
+
 # Perform the statistical analysis of the generated samples
 function analysis(stepsize, steps, idx_sim)
         # Initialize data structures for the analysis

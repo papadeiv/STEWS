@@ -30,6 +30,7 @@ function detrend(timeseries; alg = "exact", timestamps = Float64[], qse = Float6
         elseif alg == "exact"
                 trend = qse 
                 residuals = timeseries - trend
+
         else alg == "emd"
                 emd = PyEMD.EMD()
                 imfs = Array(emd(timeseries))
