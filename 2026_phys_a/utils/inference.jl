@@ -1,5 +1,5 @@
 """
-???
+Fits an empirical histogram (piecewise constant function) to the distribution of a sample path.
 
 Author: Davide Papapicco
 Affil: U. of Auckland

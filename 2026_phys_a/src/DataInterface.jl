@@ -9,7 +9,6 @@ include("../utils/input.jl")
 include("../utils/output.jl")
 
 # Export namespaces
-export readin, writeout
-export savefig
+export readin, writeout, savefig
 
 end # module

@@ -1,7 +1,7 @@
 module StatisticalMethods
 
 # Import packages
-using LinearAlgebra, StatsBase, LsqFit
+using LinearAlgebra, StatsBase
 using Polynomials, Integrals
 using ProgressMeter, DocStringExtensions
 
@@ -12,13 +12,11 @@ PyEMD = pyimport("PyEMD")
 # Import utility functions
 include("../utils/inference.jl")
 include("../utils/preprocess.jl")
-include("../utils/approximation.jl")
 
 using Tables, CSV, MAT, DataFrames
 include("../utils/output.jl")
 
 # Export namespaces
-export fit_distribution, normalise, fit_potential
-export build_window, detrend, find_tipping
+export fit_distribution, build_window, detrend, find_tipping
 
 end # module

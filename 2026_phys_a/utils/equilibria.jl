@@ -1,27 +1,11 @@
 """
-Dynamics utility functions to compute the typical analytical properties of dynamical systems (equilibria, spectrum etc...).
+Compute the equilibria of a one- and two-dimensional vector field with different signatures.
 
 Author: Davide Papapicco
 Affil: U. of Auckland
 Date: 21-08-2025
 """
 
-"""
-$(TYPEDSIGNATURES)
-
-Numerically computes the zeros of a vector field `f::Function`.
-
-This function can either take a simple function `f(x)` of the state variables or a parametrised vector field `f(x,μ)`, in which case you'll need to provide `μ` as well.
-
-## Keyword arguments
-* `domain=[-Inf,Inf]`: interval over which the roots of `f` are sought
-* `guesses=[[-1,1],[-1,-1],[1,-1],[1,1]]`: points in a 2-dimensional domain to start Newton's method
-
-## Output
-`equilibria::Tuple`
-* `equilibria.stable::Vector{Float64}`: stable equilibria of `f`
-* `equilibria.unstable::Vector{Float64}`: unstable equilibria of `f`
-"""
 function get_equilibria(f::Function, μ::Float64; domain=[-Inf,Inf])
         # Reduce the parameter dependent dynamics to a 1D scalar function
         F(x) = f(x, μ)

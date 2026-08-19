@@ -1,31 +1,11 @@
 """
-Propagating solutions of a system of differential equations forward in time.
+Propagating solutions of a system of nonautonomous, stochastic differential equations forward in time.
 
 Author: Davide Papapicco
 Affil: U. of Auckland
 Date: 21-08-2025
 """
 
-"""
-$(TYPEDSIGNATURES)
-
-Solve an ensemble of i.i.d. IVPs with deterministic initial condition `u0`.
-
-The SDEs are characterised by a parametric drift `f`, a parameter shift `Λ` and stochastic diffusion `η`.
-
-## Keyword arguments
-* `δt=1e-2`: timestep of the solver
-* `saveat=δt`: timestep at which solutions are exported
-* `Nt=1000::Int64`: total number of timesteps
-* `Ne=1::Int64`: total number of particles in the ensemble
-
-## Output
-`solutions::Tuple`
-* `solutions.time::Vector{Float64}`: timestamps of the trajectories
-* `solutions.state::Vector{Vector{Float64}}`: trajectories of the ensemble 
-
-## Example
-"""
 #___________________________#
 #                           #
 #                           #

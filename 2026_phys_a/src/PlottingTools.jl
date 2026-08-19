@@ -7,9 +7,6 @@ using DocStringExtensions
 # Increase the definition of the figures
 CairoMakie.activate!(; px_per_unit = 2)
 
-# Import utility functions
-include("../utils/palette.jl")
-
 # Export namespaces
 export savefig 
 

@@ -10,7 +10,6 @@ include("../utils/evolution.jl")
 include("../utils/equilibria.jl")
 
 # Export namespaces
-export evolve 
-export get_equilibria
+export evolve, get_equilibria 
 
 end # module

@@ -1,5 +1,5 @@
 """
-Utilities to analyse the sample paths solutions of stochastic processes whose determinist term is non-autonomus (i.e. time-dependent).
+Analyse the solutions of stochastic processes whose deterministic term is nonautonomus (i.e. time-dependent).
 
 Author: Davide Papapicco
 Affil: U. of Auckland
