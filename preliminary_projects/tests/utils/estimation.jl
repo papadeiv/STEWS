@@ -1,9 +1,9 @@
 """
-Statistical methods to estimate relevant quantities from an input sample (e.g. distribution, parameters etc...)
+???
 
 Author: Davide Papapicco
 Affil: U. of Auckland
-Date: 10-07-2026
+Date: 30-09-2025
 """
 
 # Approximates a probability distribution in L1 using histograms (piecewise constant functions)

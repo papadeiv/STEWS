@@ -1,5 +1,5 @@
 """
-Compute the equilibria of a one- and two-dimensional vector field with different signatures.
+Dynamics utility functions to compute the typical analytical properties of dynamical systems (equilibria, spectrum etc...).
 
 Author: Davide Papapicco
 Affil: U. of Auckland

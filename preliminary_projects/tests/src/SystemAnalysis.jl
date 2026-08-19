@@ -8,10 +8,9 @@ using DocStringExtensions
 # Import utility functions
 include("../utils/evolution.jl")
 include("../utils/equilibria.jl")
-include("../utils/approximation.jl")
 
 # Export namespaces
-export evolve, get_equilibria
-export get_error, fit_potential
+export evolve 
+export get_equilibria
 
 end # module

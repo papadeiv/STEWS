@@ -6,6 +6,20 @@ Affil: U. of Auckland
 Date: 02-12-2025
 """
 
+"""
+$(TYPEDSIGNATURES)
+
+Import data 'filename' from a local path and format it accordingly.
+
+## Keyword arguments
+* `path=../../res/data`: path of the data in the local tree 
+
+## Output
+`data::Matrix{Float64}`
+
+## Example
+"""
+
 function readin(filename; path="../../res/data/")
         # Give full path to the reader
         fullpath = path * filename 

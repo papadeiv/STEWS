@@ -1,4 +1,4 @@
-# Optimal and skilfull predition of high-dimensional tipping events
+# Optimal and skilfull prediction of high-dimensional tipping events
 
 ## 🚀 Description 
 

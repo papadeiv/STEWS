@@ -1,5 +1,5 @@
 """
-Propagating solutions of a system of nonautonomous, stochastic differential equations forward in time.
+Propagating solutions of a system of differential equations forward in time.
 
 Author: Davide Papapicco
 Affil: U. of Auckland
