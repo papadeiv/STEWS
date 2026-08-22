@@ -82,26 +82,26 @@ function evolve(f::Function, η::Function, Λ::Function, u0::Vector; endparamete
         ensemble = EnsembleProblem(dynamics)
 
         # Solve the problem forward in time
-        solutions = solve(ensemble, EM(), dt=δt, verbose=false, EnsembleDistributed(), trajectories=Ne)
+        solutions = solve(ensemble, EM(), dt=δt, EnsembleDistributed(), trajectories=Ne, verbose = None())
 
         # Extract the trajectories of the state 
         state = Vector{Vector{Float64}}() 
         parameter_length = Vector{Int64}()
         time_length = Vector{Int64}()
         for n in 1:Ne
-                time = solutions[n].t 
+                time = solutions.u[n].t 
                 push!(time_length, length(time))
 
-                parameter = [(solutions[n].u)[t][2] for t in 1:length(solutions[n].u)]
+                parameter = [(solutions.u[n].u)[t][2] for t in 1:length(time)]
                 push!(parameter_length, length(parameter))
 
-                push!(state, [(solutions[n].u)[t][1] for t in 1:length(solutions[n].u)])
+                push!(state, [(solutions.u[n].u)[t][1] for t in 1:length(time)])
         end
 
         # Extract the timestamps and parameter realisations
         longest_run = findmax(time_length)[2]
-        time = solutions[longest_run].t
-        parameter = [(solutions[longest_run].u)[t][2] for t in 1:length(solutions[longest_run].u)]
+        time = solutions.u[longest_run].t
+        parameter = [(solutions.u[longest_run].u)[t][2] for t in 1:length(solutions.u[longest_run].u)]
 
         return (
                 time = time,
@@ -188,7 +188,7 @@ function evolve(f::Vector{<:Function}, η::Vector{<:Function}, Λ::Function, u0:
         ensemble = EnsembleProblem(dynamics)
 
         # Solve the problem forward in time
-        solutions = solve(ensemble, EM(), dt=δt, verbose=false, EnsembleDistributed(), trajectories=Ne)
+        solutions = solve(ensemble, EM(), dt=δt, EnsembleDistributed(), trajectories=Ne)
 
         # Extract the trajectories of the state 
         state = Vector{Matrix{Float64}}() 
