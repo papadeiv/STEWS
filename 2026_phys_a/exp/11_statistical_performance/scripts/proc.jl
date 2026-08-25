@@ -8,40 +8,6 @@ Collection of quantities and functions used to postprocess and analyse the resul
 U(x, μ) = - μ*x + 2*x^2 - x^4                   # Ground truth
 V(x, c) = c[1]*x + c[2]*(x^2) + c[3]*(x^3)      # Arbitrary 
 
-# Flag for tipped states
-tipped = false
-
-# Create the figure
-fig = Figure(; size = (1200, 400))
-ax1 = Axis(fig[1,1], 
-           title = "μ=$(μ_set[1])", 
-           xlabel = "stepsize", 
-           ylabel = "n. of timesteps", 
-           xscale = log10, 
-           yscale = log10,
-           xticks = [1e-2, 1e-1],
-           yticks = [1e+3, 1e+4]
-          )
-ax2 = Axis(fig[1,2], 
-           title = "μ=$(μ_set[2])", 
-           xlabel = "stepsize", 
-           xscale = log10, 
-           yscale = log10,
-           yticklabelsvisible = false,
-           xticks = [1e-2, 1e-1],
-           yticks = [1e+3, 1e+4]
-          )
-ax3 = Axis(fig[1,3], 
-           title = "μ=$(μ_set[3])", 
-           xlabel = "stepsize", 
-           xscale = log10, 
-           yscale = log10,
-           yticklabelsvisible = false,
-           xticks = [1e-2, 1e-1],
-           yticks = [1e+3, 1e+4]
-          )
-axes = [ax1, ax2, ax3]
-
 # Solve the LLS problem
 function solve_lls(solution, dt)
         # Define the observation vectors 
@@ -77,8 +43,10 @@ end
 function analysis()
         # Parameter sweep loop
         printstyled("Analyzing the samples\n"; bold=true, underline=true, color=:light_blue)
-        err_min, err_max = 10, 0
-        relative_error = Matrix{Real}(undef, Ns, 3)
+        sim_err_min, sim_err_max = 10, 0
+        sys_err_min, sys_err_max = 10, 0
+        simulation_error = Matrix{Real}(undef, Ns, 3)
+        system_error = Matrix{Real}(undef, Ns, 3)
         @showprogress for (idx_μ, μ) in enumerate(μ_set)
                 # Compute the ground truth of the modified escape rate 
                 xs = (get_equilibria(f, μ, domain=[-10,10])).stable[2]
@@ -89,38 +57,64 @@ function analysis()
                 # Simulation parameters loop
                 for (idx_sim, (stepsize, steps)) in enumerate(Iterators.product(dt,Nt))
                         # Import the data the ensemble median of the modified escape rate
-                        ews = median(readin("$idx_μ/$stepsize/$steps.csv"))
+                        ews = median(readin("sim_par/$idx_μ/$stepsize/$steps.csv"))
 
                         # Compute the relative error between the median estimate and the ground truth
-                        relative_error[idx_sim, idx_μ] = abs(escape-ews)/abs(escape)
+                        simulation_error[idx_sim, idx_μ] = abs(escape-ews)/abs(escape)
                 end
 
                 # Extract the minimum and maximum relative errors
-                err_min > minimum(relative_error[:,idx_μ]) && (err_min = minimum(relative_error[:,idx_μ]))
-                err_max < maximum(relative_error[:,idx_μ]) && (err_max = maximum(relative_error[:,idx_μ]))
+                sim_err_min > minimum(simulation_error[:,idx_μ]) && (sim_err_min = minimum(simulation_error[:,idx_μ]))
+                sim_err_max < maximum(simulation_error[:,idx_μ]) && (sim_err_max = maximum(simulation_error[:,idx_μ]))
+
+                # Systems parameters loop
+                for (idx_sim, (noise, speed)) in enumerate(Iterators.product(σ,ε))
+                        # Import the data the ensemble median of the modified escape rate
+                        ews = median(readin("sys_par/$idx_μ/$noise/$speed.csv"))
+
+                        # Compute the relative error between the median estimate and the ground truth
+                        system_error[idx_sim, idx_μ] = abs(escape-ews)/abs(escape)
+                end
+
+                # Extract the minimum and maximum relative errors
+                sys_err_min > minimum(system_error[:,idx_μ]) && (sys_err_min = minimum(system_error[:,idx_μ]))
+                sys_err_max < maximum(system_error[:,idx_μ]) && (sys_err_max = maximum(system_error[:,idx_μ]))
         end
 
         # Parameter sweep loop
-        local hm
+        local sim_hm
+        local sys_hm
+        cmap = :balance
         @showprogress for (idx_μ, μ) in enumerate(μ_set)
                 # Transformation of the coordinate axes in logscale so that it does not interpolate negative values
                 logedges(v) = (l = log10.(v); exp10.([l[1] - (l[2]-l[1])/2;
                               (l[1:end-1] .+ l[2:end]) ./ 2;
                               l[end] + (l[end]-l[end-1])/2]))
-                x, y = logedges(dt), logedges(Nt)
 
-                # Plot the heatmap of the relative errors and the minimizers
-                error_map = reshape(relative_error[:,idx_μ], length(dt), length(Nt))
-                hm = heatmap!(axes[idx_μ], x, y, error_map, colorrange = (err_min, err_max), colormap = Reverse(:Paired_11))
+                # Plot the heatmap of the relative errors (simulation parameters)
+                x, y = logedges(dt), logedges(Nt)
+                error_map = reshape(simulation_error[:,idx_μ], length(dt), length(Nt))
+                sim_hm = heatmap!(top_axes[idx_μ], x, y, error_map, colorrange = (sim_err_min, sim_err_max), colormap = cmap)
+
+                # Plot the heatmap of the relative errors (system parameters)
+                x, y = logedges(σ), logedges(ε)
+                error_map = reshape(system_error[:,idx_μ], length(σ), length(ε))
+                sys_hm = heatmap!(bottom_axes[idx_μ], x, y, error_map, colorrange = (sys_err_min, sys_err_max), colormap = cmap)
         end
 
         # Add the colorbar 
         Colorbar(fig[1,4],
                  size = 25,
                  label = "relative error",
-                 hm,
+                 sim_hm,
+                )
+
+        Colorbar(fig[2,4],
+                 size = 25,
+                 label = "relative error",
+                 sys_hm,
                 )
 
         # Export the figure
-        savefig("13_sensitivity_analysis.pdf", fig)
+        savefig("statistical_performance.pdf", fig)
 end

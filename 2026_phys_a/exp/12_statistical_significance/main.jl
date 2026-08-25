@@ -50,7 +50,7 @@ function main()
         printstyled("Generating the samples\n"; bold=true, underline=true, color=:light_blue)
         @showprogress for (sol_idx, solution) in enumerate(ensemble.state)
                 # Export the solution
-                writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/1/$sol_idx.csv")
+                sol_idx ≤ 10 && (writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/1/$sol_idx.csv"))
 
                 # Compute the residuals and extract the windowed subseries 
                 residuals = detrend(solution[1:tip_idx]; alg = "emd", n_modes = 1).residuals
@@ -103,14 +103,14 @@ function main()
         ews = Matrix{Real}(undef, Ns, length(ensemble.state))
         @showprogress for (sol_idx, solution) in enumerate(ensemble.state)
                 # Export the solution
-                writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/2/$sol_idx.csv")
+                sol_idx ≤ 10 && (writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/2/$sol_idx.csv"))
 
                 # Compute the residuals and extract the windowed subseries 
                 residuals = detrend(solution; alg = "emd", n_modes = 1).residuals
                 subseries = preprocess_solution(t, μ, residuals, window_size)
 
                 # Estimate the modified escate rate across the sliding windows
-                for (win_idx, xw) in enumerate(subseries.trajectories)
+                for (win_idx, xw) in enumerate(subseries.trajectories[1:Ns])
                         θ = solve_lls(xw)
                         ews[win_idx,sol_idx] = compute_ews(θ)
                 end
@@ -142,14 +142,14 @@ function main()
         ews = Matrix{Real}(undef, Ns, length(ensemble.state))
         @showprogress for (sol_idx, solution) in enumerate(ensemble.state)
                 # Export the solution
-                writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/3/$sol_idx.csv")
+                sol_idx ≤ 10 && (writeout(hcat(ensemble.time[1:length(solution)], solution), "solutions/3/$sol_idx.csv"))
 
                 # Compute the residuals and extract the windowed subseries 
                 residuals = detrend(solution; alg = "emd", n_modes = 1).residuals
                 subseries = preprocess_solution(t, μ, residuals, window_size)
 
                 # Estimate the modified escate rate across the sliding windows
-                for (win_idx, xw) in enumerate(subseries.trajectories)
+                for (win_idx, xw) in enumerate(subseries.trajectories[1:Ns])
                         θ = solve_lls(xw)
                         ews[win_idx,sol_idx] = compute_ews(θ)
                 end
@@ -167,19 +167,20 @@ function main()
         for anl_idx in 1:3
                 # Loop over the solutions of the ensemble problem
                 for sol_idx in 1:convert(Integer, Ne)
-                        # Import the data 
-                        data = readin("solutions/$anl_idx/$sol_idx.csv")
-                        t = data[:,1]
-                        x = data[:,2]
-
                         if sol_idx < 10
+                                # Import the data 
+                                data = readin("solutions/$anl_idx/$sol_idx.csv")
+                                t = data[:,1]
+                                x = data[:,2]
+
+                                # Plot the timeseries
                                 lines!(top_axes[anl_idx], t, x, color = (:black,0.125), linewidth = 1.0)
                         end
                 end
 
                 # Format axes of the figure
-                top_axes[anl_idx].limits = (0,10000,-1.1,1.1)
-                bottom_axes[anl_idx].limits = (0,10000,0,1)
+                top_axes[anl_idx].limits = (0,20000,-1.1,1.1)
+                bottom_axes[anl_idx].limits = (0,20000,0,1)
 
                 # Perform and plot the statistical analysis on the ews
                 analysis(anl_idx)
