@@ -20,4 +20,4 @@ f(x, μ) = -μ - x^2                                        # Drift
 
 # Simulation parameters
 dt = 1e-1                                                 # Timestep size
-Ne = 1e+2                                                 # Number of particles
+Ne = 1e+3                                                 # Number of particles

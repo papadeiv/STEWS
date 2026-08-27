@@ -16,10 +16,58 @@ include("./scripts/figs.jl")
 function main()
         # Solve the ensemble problem
         x0 = [get_equilibria(f, μ0, domain=[-10,10]).stable[2], μ0]
-        ensemble = evolve(f, η, Λ, x0, endparameter=μf, stepsize=dt)
+        ensemble = evolve(f, η, Λ, x0, endparameter=μf, stepsize=dt, particles=Ne)
         t = ensemble.time
         μ = ensemble.parameter
         x = ensemble.state[1]
+
+        # -----------------------------#
+        #     Statistical analysis     #
+        # -----------------------------#
+         
+        sample_mean = Matrix{Real}(undef, convert(Integer, Ne), 3)
+        sample_std = Matrix{Real}(undef, convert(Integer, Ne), 3)
+        sample_skew = Matrix{Real}(undef, convert(Integer, Ne), 3)
+        @showprogress for (idx_sol, solution) in enumerate(ensemble.state)
+                # Compute the residuals
+                x1 = detrend(solution; alg = "mean").residuals
+                x2 = detrend(solution; alg = "linear", timestamps = t).residuals
+                x3 = detrend(solution; alg = "emd", n_modes = 0).residuals
+
+                # Compute the sample mean of the residuals
+                sample_mean[idx_sol, 1] = mean(x1)
+                sample_mean[idx_sol, 2] = mean(x2)
+                sample_mean[idx_sol, 3] = mean(x3)
+
+                # Compute the sample variance of the residuals
+                sample_std[idx_sol, 1] = std(x1)
+                sample_std[idx_sol, 2] = std(x2)
+                sample_std[idx_sol, 3] = std(x3)
+
+                # Compute the sample skewness of the residuals
+                sample_skew[idx_sol, 1] = skewness(x1)
+                sample_skew[idx_sol, 2] = skewness(x2)
+                sample_skew[idx_sol, 3] = skewness(x3)
+        end
+
+        # Compute the deviations from the OUP stationary density (relative errors)
+        xs = get_equilibria(f, μf, domain=[-10,10]).stable[2]
+        sample_mean = abs.(sample_mean .- transpose(0.0.*ones(3)))
+        sample_std = abs.(sample_std .- transpose(sqrt(σ^2/θ(xs)).*ones(3)))#./sqrt(σ^2/θ(xs))
+        sample_skew = abs.(sample_skew .- transpose(0.0.*ones(3)))
+
+        println("---------- k=1 (sample mean) ----------")
+        println("   centering: ($(minimum(sample_mean[:,1])), $(mean(sample_mean[:,1])), $(maximum(sample_mean[:,1])))")
+        println("  linear fit: ($(minimum(sample_mean[:,2])), $(mean(sample_mean[:,2])), $(maximum(sample_mean[:,2])))")
+        println("         EMD: ($(minimum(sample_mean[:,3])), $(mean(sample_mean[:,3])), $(maximum(sample_mean[:,3])))")
+        println("-------- k=2 (sample variance) --------")
+        println("   centering: ($(minimum(sample_std[:,1])), $(mean(sample_std[:,1])), $(maximum(sample_std[:,1])))")
+        println("  linear fit: ($(minimum(sample_std[:,2])), $(mean(sample_std[:,2])), $(maximum(sample_std[:,2])))")
+        println("         EMD: ($(minimum(sample_std[:,3])), $(mean(sample_std[:,3])), $(maximum(sample_std[:,3])))")
+        println("-------- k=3 (sample skewness) --------")
+        println("   centering: ($(minimum(sample_skew[:,1])), $(mean(sample_skew[:,1])), $(maximum(sample_skew[:,1])))")
+        println("  linear fit: ($(minimum(sample_skew[:,2])), $(mean(sample_skew[:,2])), $(maximum(sample_skew[:,2])))")
+        println("         EMD: ($(minimum(sample_skew[:,3])), $(mean(sample_skew[:,3])), $(maximum(sample_skew[:,3])))")
 
         # Compute the optimal number of bins (Scott's rule, 1985)
         Nt = length(t)
@@ -42,7 +90,6 @@ function main()
         barplot!(ax4, bins, pdf, color = (:red,0.5), strokecolor = :black, strokewidth = 1)
         # Compute and plot the stationary OUP distribution
         domain = LinRange(-0.12,0.12,1000)
-        xs = get_equilibria(f, μf, domain=[-10,10]).stable[2]
         lines!(ax4, domain, [p(x,xs) for x in domain], color = :red, linewidth = 3.0)
         # Format the axes
         ax1.limits = (t[1],t[end],0.95*minimum(x),1.05*maximum(x))

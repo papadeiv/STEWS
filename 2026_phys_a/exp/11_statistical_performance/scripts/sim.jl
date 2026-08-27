@@ -9,7 +9,7 @@ Nh = 150                                                  # Number of grid point
 Ns = Nh^2                                                 # Number of simulations
 dt = exp10.(range(log10(0.1), log10(0.01), length = Nh))  # Timestep size
 Nt = round.(Integer, exp10.(range(3, 4, length = Nh)))    # Number of timesteps
-Ne = 5e2                                                  # Number of particles
+Ne = 1e3                                                  # Number of particles
 
 # System parameters
 μ_set = [1.1, 1.2, 1.3]                                   # Set of bifurcation parameter values

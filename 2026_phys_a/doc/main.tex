@@ -1,8 +1,9 @@
 \documentclass[a4paper,fleqn]{cas-sc}
 
+\usepackage{mathtools} 
 \usepackage[numbers]{natbib} 
 \usepackage[ruled]{algorithm2e}
-\usepackage[pagewise]{lineno}
+\usepackage[pagewise,mathlines]{lineno}
 \usepackage{amsmath}
 
 \DeclareMathOperator*{\argmin}{\arg\,min} 
@@ -15,8 +16,7 @@
 \newcommand{\fref}[1]{Figure~\ref{#1}}
 \newcommand{\tref}[1]{Table~\ref{#1}}
 
-\newcommand{\rone}[1]{\textcolor{red}{\textit{#1}}}
-\newcommand{\rtwo}[1]{\textcolor{blue}{\textit{#1}}}
+\newcommand{\rev}[1]{\textcolor{red}{\textit{#1}}}
 
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
 \tsc{DP}
@@ -242,7 +242,8 @@ Based on the above, we introduce our modified escape EWS
 %
 where $\mu=\mu_c$ denotes the parameter value at which a SN bifurcation between the stable state $x=a$ and the unstable saddle $x=b$ occurs.
 Notice that \eqref{eq:escape_ews} is obtained from \eqref{eq:kramer_escape_formula} by removing the curvature-depending prefactor $\sqrt{|V''(b)|V''(a)}/2\pi$ and setting $D=1$ in the argument of the exponential.
-The modified formulation \eqref{eq:escape_ews} of Kramer's escape rate \eqref{eq:kramer_escape_formula} retains all the information that is necessary for predicting B-tipping while at the same time reducing the uncertainty with respect to its approximation (see \aref{appendix_a} for a detailed discussion).
+\rev{Specifically, removing the prefactor from Kramer's escape rate \eqref{eq:kramer_escape_formula} guarantees that the modified formulation \eqref{eq:escape_ews} increases monotonically as B-tipping is approached.
+On the other hand, setting $D=1$ guarantees that the modified formulation is not late in detecting the proximity of B-tipping when the underlying noisy fluctuations are small, i.e. when $D\to0$} (see \aref{appendix_a} for a detailed discussion).
 
 The boundedness of \eqref{eq:escape_ews} in $(0,1]$ solves the interpretability problem we outlined above.
 As opposed to the variance (and higher-order moments), a numerical value of the modified escape formula provides direct interpretation of the likelihood of a B-tipping event without the need for a baseline value to refer to.
@@ -440,7 +441,7 @@ That is, we solve the minimization problem
         \BlankLine 
         %
         \Input{sample $\mathcal{X}=\{X_0,X_1,\dots,X_N\}$ (timeseries)}
-        \Output{likelihood of B-tipping in the near future}
+        \Output{\rev{estimated proximity of B-tipping}}
         %
         \BlankLine 
         \hrule
@@ -527,6 +528,8 @@ We will demonstrate the efficacy of the proposed modified escape EWS \eqref{eq:e
      \item $1-$dimensional observable of a $2-$dimensional formulation of the thermohaline circulation in the North Atlantic driven by increasing freshwater forcing \cite{Stommel1961}.
 \end{itemize}
 %
+\rev{In all of these tests, the modified escape EWS will be estimated by applying Algorithm~\ref{alg:modified_ews} to sliding windows of the slowly ramped solutions.}
+%
 \subsection{Slowly ramped SN normal form}\label{subsec:SN_normal_form}
 We follow the same setup outlined in \cite{Kuehn2011}.
 A slow-fast framework of the form \eqref{eq:fast_slow_sde} is adopted for a SN normal norm
@@ -594,9 +597,10 @@ This is a highly desirable property of the proposed method as it minimizes the c
 Furthermore, alongside interpretability, the modified escape EWS is also \textit{``earlier''} in the upward trend compared to the increase in variance which also shows non-monotonicity at the very onset of the B-tipping event.
 
 Compared to the increase in variance however, the modified escape EWS estimated from the sample paths does have, on average, a larger standard deviation.
-This becomes more evident when we allow the bifurcation parameter to vary slowly and apply the same methodology described above to detrended residuals of the solutions using the Empirical Mode Decomposition \cite{Huang1998}, as depicted in \fref{fig:ramped_SN_EWS}.
+This becomes more evident when we allow the bifurcation parameter to vary slowly and apply the same methodology described above to detrended residuals of the solutions, as depicted in \fref{fig:ramped_SN_EWS}.
 The source of this is embedded in the large dimensionality of the search space $\mathbb{R}^{3}\ni\theta$, correlations in the estimated coefficients and other well-known issues regarding the stability of the method (e.g. ill-conditioning of the Vandermonde matrix).
 Regularization of the solutions using penalizers (e.g. Tikhonov regularizations) can alleviate numerical instabilities in the LLS method and while it reduces the spread of the solutions it also introduces biases that effectively bring the mean solution further away from the ground truth.
+\rev{Furthermore, optimal choices of the penalizers are currently available a-posteriori (e.g. Marozov's discrepancy principle \cite{Nair2009}), meaning that prior knowledge of the underlying system is necessary in order for regularization to be effective.}
 See Appendix \ref{appendix_b} for a detailed discussion on the effects of regularization on LLS solutions.
 %
 \subsection{Ecosystem collapse}\label{subsec:ecosystem}
@@ -719,14 +723,168 @@ Equivalently to the previous cases, we then compute the ensemble averages of tim
 Remarkably, the modified escape EWS reconstructed from the MLE of the cubic potential retains its upward trend close to the bifurcation even though the underlying system \eqref{eq:stommel_model} does not have a confining potential (\fref{fig:ramped_stommel_ews} (b)).
 We conclude that the modified escape EWS provides a much more confident indication for the tipping of the AMOC to its weakened state than the traditional increase in variance (\fref{fig:ramped_stommel_ews} (a)), at least for the conceptual, $2$-box model considered in this paper.
 %
+\section{Performance analysis}\label{sec:analysis}
+The three test cases of \sref{sec:applications} demonstrate that the modified escape EWS can be estimated from slowly varying timeseries following the MLE of the potential discussed in \sref{sec:mle}.
+While those examples show the applicability of Algorithm~\ref{alg:modified_ews} to different systems approaching B-tipping, they all refer to similar level of rates of change $0<\varepsilon\ll1$, noise intesity $0<\sigma<1$, sampling frequency $0<\Delta T<1$ and timeseries length $N\to\infty$.
+In the following section we investigate how the performance of the proposed inference method is affected by varying these parameters.
+We thus perform statistical analysis of the relevant quantities involved in the estimation of the modified escape EWS following Algorithm~\ref{alg:modified_ews}.
+As a representative example, we consider a one-dimensional, slow-fast system of the form
+%
+\begin{equation}
+        \begin{aligned}\label{eq:bistable_model}
+                dX_t &= (-\mu + 4x - 4x^3)dt + \sigma dW_t\,,\\ 
+                d\mu &= \varepsilon dt\,,
+        \end{aligned}
+\end{equation}
+%
+where the bistable drift $f(x,\mu)= -\mu + 4x - 4x^3$ undergoes a SN bifurcation at $\mu_c\approx1.53$.
+The deterministic, linear ramp of the bifurcation parameter is written explicitly as the evolution law $\mu(t) = \mu_0 + \varepsilon\,t$ to emphasize the dependence on the starting value $\mu_0 \ll \mu_c$.
+Generically, for given sampling frequency $\Delta T$ and timeseries length $N$, the end timestep $T=N\Delta T$ uniquely identifies the parameter value at the end of the ramp $\mu(T)=\mu_0+\varepsilon\,N\Delta T$ for a specific rate $\varepsilon$. 
+%
+\subsection{Robustness of the residuals}\label{subsec:residuals}
+One of the assumptions of the MLE of the modified escape EWS is that the underlying distribution of the sample path is stationary.
+However, solutions $\mathcal{X} = \{X_0,\dots,X_N\}$ of slowly ramped systems, such as \eqref{eq:bistable_model}, only satisfy this condition in the singular limit $\varepsilon\to0$ and for long enough time horizons $N\to\infty$.
+For strictly positive rates $\varepsilon>0$ the deterministic drift $f$ is nonautonomous and thus the FPE of the system does not admit a Boltzmann-like stationary solution \eqref{eq:invariant_pdf}.
+Nonetheless, by considering slow-fast regimes for which $0<\varepsilon\ll1$, we can obtain a quasi-stationary sample $\overline{\mathcal{X}}=\{\overline{X}_1,\dots,\overline{X}_N\}$ by removing the underlying trend in the ramped sample path $\mathcal{X}$.
+The detrending of non-stationary timeseries (see step 1. in Algorithm~\ref{alg:modified_ews}) is a fundamental pre-processing stage in the derivation and analysis of EWS as the quality of the extracted quasi-stationary residuals can affect the performace of the estimation.
+%
+\begin{figure}[t]
+    \centering 
+    \includegraphics[keepaspectratio, width=\textwidth]{./figures/residuals_distribution.pdf}
+    \caption{Comparison of detrending techniques for a solution $\mathcal{X}$ of \eqref{eq:bistable_model} with $\mu_0=0$, $\varepsilon=5\cdot10^{-4}$ and $\sigma=0.1$; the simulation stops at the parameter value $\mu(T)=0.2$.
+            Panels (a1-a3): different trends for the same ramped timeseries (black curves) are computed using the sample mean (red curve), linear fit (green curve) and EMD (blue).
+            Panels (b1-b3): comparison between the stationary density of the OUP approximating $\mathcal{X}$ (colored curves) and the empirical distribution of the residuals obtained by sample mean removal (red histogram), linear fit (green histogram) and EMD (blue histogram).}
+    \label{fig:residuals_distribution}
+\end{figure}
+
+In the test cases considered throughout \sref{sec:applications} we obtained the residuals by employing the Empirical Mode Decomposition (EMD) which is a data-driven technique that extracts the underlying trend of a timeseries through a sifting procedure.
+Specifically, EMD iteratively decomposes a timeseries in so-called Implicit Mode Functions (IMFs), each capturing the different scales of fluctuations in the timeseries.
+The trend of a sample path $\mathcal{X}$ thus corresponds to the IMF with the largest scale of fluctuation (see \cite{Huang1998} for details) and the residuals $\overline{\mathcal{X}}$ are obtained by removing the leading IMF from the sample path.
+
+A desirable property of the EMD is that it does not require fine calibrations as the IMFs are extractred through the envelopes of the timeseries.
+This makes the application of EMD particularly suitable in the computation of quasi-stationary residuals $\overline{\mathcal{X}}$ as it readly extends to univariate timeseries with generic trends without the need of fine-tuning additional parameters.
+Similar data-driven techniques, often used in applications, are centering (i.e. removal of the sample mean from the timeseries) and linear fit (i.e. removal of the slope from the timeseries).
+
+We simulate an ensemble of $1{,}000$ sample paths of \eqref{eq:bistable_model} ramped between $\mu_0=0.0$ and $\mu(T)=0.2$ with $\varepsilon=5\cdot10^{-4}$; for each of those sample paths we apply the above detrending techniques and obtain the residuals.
+In order to assess the quality of the obtained residuals with respect to the stationary assumption, an OUP, approximating the slowly ramped sample paths, is constructed with coefficients $\alpha=f'(x=a)$ and $a$ being evaluated at $\mu(T)=0.2$ (see Eq.~\eqref{eq:oup}).
+
+\fref{fig:residuals_distribution} shows a representative example of this experiment where a sample path of the simulated ensemble (black curves in panels (a1-a3)) is detrended by centering (red curve, panel (a1)), linear fit (green curve, panel (a2)) and EMD (blue curve, panel (a3)).
+The distribution of the quasi-stationary residuals (histograms in panels (b1-b3)) are then compared to the stationary distribution of the OUP (see Eq.~\eqref{eq:oup_density}).
+To quantify the deviation of the residuals from the stationary assumption we compute the relative error between the residuals' statistics $\overline{q}_k$ and the central moment $q_k$ of the OUP
+%
+\begin{equation}\label{eq:relative_error}
+        E_k\coloneqq \frac{|\overline{q}_k - q_k|}{|q_k|}\,,
+\end{equation}
+%
+where $k=1,2,3$ denote the first (mean), second (variance) and third (skewness) moment of the distribution.
+The results of this experiment, compiled in Table~\ref{tab:relative_error}, show that, within the slow ramp regime $0<\varepsilon\ll1$, the three detrending techniques largely preserve the stationary assumption in their residuals with average relative errors well within $10\%$.
+%
+\begin{table}[width=\textwidth,cols=10,pos=t]
+        \caption{Relative errors statistics \eqref{eq:relative_error} of an ensemble of $1,000$ residuals obtained by different detrending techniques.}
+    \label{tab:relative_error}
+    \begin{tabular*}{\tblwidth}{@{} LLLLLLLLLL @{}}
+    \toprule
+    & \multicolumn{3}{c}{Centering}
+    & \multicolumn{3}{c}{Linear fit}
+    & \multicolumn{3}{c}{EMD} \\
+    \cmidrule(lr){2-4}
+    \cmidrule(lr){5-7}
+    \cmidrule(lr){8-10}
+    & min & mean & max & min & mean & max & min & mean & max \\
+    \midrule
+            $E_1$ & $5\cdot10^{-19}$ & $4\cdot10^{-17}$ & $4\cdot10^{-16}$ & $5\cdot10^{-19}$ & $1\cdot10^{-16}$ & $6\cdot10^{-16}$ & $2\cdot10^{-6}$ & $3\cdot10^{-4}$ & $2\cdot10^{-3}$ \\
+            $E_2$ & $0.02$ & $0.03$ & $0.05$ & $0.03$ & $0.04$ & $0.05$ & $0.03$ & $0.04$ & $0.05$ \\
+            $E_3$ & $2\cdot10^{-5}$ & $0.03$ & $0.16$ & $6\cdot10^{-5}$ & $0.03$ & $0.19$ & $1\cdot10^{-4}$ & $0.03$ & $0.18$ \\
+    \bottomrule
+    \end{tabular*}
+\end{table}
+
+\subsection{Accuracy and sensitivity}\label{subsec:sensitivity}
+In the singular limit, the MLE of the modified escape EWS converges, in mean, to the ground truth as the underlying system is driven closer to B-tipping (see \fref{fig:stationary_SN_ews}).
+Specifically, as $N\to\infty$, the LLS solutions of the potential estimation are normally distributed with their standard deviations decreasing as the bifurcation parameter $\mu$ approaches the SN bifurcation $\mu_c$ (see \fref{fig:lls_solutions}).
+The statistical properties of the LLS solutions are prescribed by the normally distributed uncertainties $\Xi\sim\mathcal{N}(0,\sigma^2/\Delta t)$ in the first-order increments (see Eq.~\eqref{eq:increments}).
+As a result, the accuracy of the LLS solutions, and hence the MLE of the modified escape EWS, are reflected by the specific choices of additive noise intensity $\sigma$ and sampling frequency $\Delta t$.
+Furthermore, it is reasonable to expect that shorter (i.e. smaller $N$) and faster (i.e. larger $\varepsilon$) timeseries would produce significantly different residuals and thus hinder the stationary assumption discussed above. 
+
+We investigate the sensitivity of the MLE of the modified escape EWS when the above constraints (long and slow timeseries with small noise and large sampling frequency) are relaxed.
+Specifically, we test the accuracy of Algorithm~\ref{alg:modified_ews} in two different settings:
+%
+\begin{itemize}
+     \item by varying the timeseries length $N$ and sampling frequency $\Delta t$ in the singular limit $\varepsilon\to0$ and in a regime of small noise $\sigma\to0$ and;
+     \item by varying the parameter's rate of change $\varepsilon$ and noise level $\sigma$ with fixed timeseries length $N$ and sampling frequency $\Delta t$.
+\end{itemize}
+%
+In both cases we run an ensemble simulation of $1{,}000$ sample paths of \eqref{eq:bistable_model} and evaluate the accuracy of the proposed method by computing the a-posteriori relative error (see Eq.~\eqref{eq:relative_error}) between the estimated modified escape EWS and the ground truth.
+In order to assess whether the convergence in mean persists in different regimes, we compare the relative errors at different parameter values as the system is driven closer to B-tipping (i.e. as $\mu\to\mu_c$).
+ 
+The results of this experiment are depicted in \fref{fig:statistical_performance}.
+%
+\begin{figure}[t]
+    \centering 
+    \includegraphics[keepaspectratio, width=\textwidth]{./figures/statistical_performance.pdf}
+    \caption{Sensitivity of the relative error of the MLE modified escape EWS under different regimes.
+            Each pixel in the heatmap corresponds to the ensemble mean relative error of $1{,}000$ sample paths of \eqref{eq:bistable_model}.
+            Panels (a1-a3): in the stationary case ($\varepsilon=0$) and with fixed small noise ($\sigma=0.05$) longer timeseries, sampled at larger frequencies, yield a more accurate estimation of the modified escape EWS.
+            Panels (b1-b3): in the slow-fast regime, for fixed timeseries length $N=10{,}000$ and sampling frequency $\Delta t = 0.1$, the accuracy of the estimated modified escape EWS depends, non-trivially, from the level of additive noise in the system with smaller noise seemingly yielding less accurate estimations.}
+    \label{fig:statistical_performance}
+\end{figure}
+%
+In the stationary case (panels (a1-a3)) we observe that the modified escape EWS estimate is more accurate for longer timeseries $N\to10^4$ and larger sampling frequencies $\Delta t\to10^{-1}$.
+This is not surprising considering that the uncertainty in the LLS regression is inversely proportional to $\Delta t$.
+Furthermore, we notice that the increase in accuracy close to B-tipping is preserved for varying $N$ and $\Delta t$ as the mean relative error for the system far from the SN bifurcation $\mu=1.1$ (panel (a1)) is overall larger than the one for the system closer to the SN bifurcation $\mu=1.3$ (panel (a3)).
+In the slow-fast regime (panels (b1-b3)) we keep the timeseries length $N=10^4$ and sampling frequency $\Delta t=10^{-1}$ fixed while we generate solutions of \eqref{eq:bistable_model} at varying rates $\varepsilon$ and noise intensities $\sigma$.
+For each $\varepsilon$ we keep $\mu(T)$ fixed and adjust $\mu_0$ so that each sample path contains exactly $N=10^4$ realizations.
+In particular $\mu(T)\in\{1.1,1.2,1.3\}$ in panels (b1), (b2) and (b3) respectively; these parameter values are then used to compute the ground truth of the modified escape EWS.
+Intuitively, we observe that faster rates $\varepsilon\to10^{-3}$ yield overall less accurate estimations due to the residuals deviating further from the stationary assumption (as discussed in the previous section).
+Similarly, the estimations become less accurate for smaller noise levels $\sigma\to10^{-3}$.
+We notice that, the relative error seems to decay non-trivialy when both $\varepsilon$ and $\sigma$ are varied, meaning that slower and less noisy timeseries do not necessarly yield better estimates.
+This emphasizes the fact that the MLE of the modified escape EWS is sensitive to perturbations in slowly forced systems and specifically that the enforcement of the $0<\sigma\ll\sqrt{\varepsilon}<1$ condition remains a constraint for applications.
+
+\subsection{Statistical significance}\label{subsec:significance}
+\begin{figure}[t]
+    \centering 
+    \includegraphics[keepaspectratio, width=\textwidth]{./figures/statistical_significance.pdf}
+    \caption{Time-varying estimations of the modified escape EWS for an enseble $1{,}000$ slowly ramped (panels (a1)-(b1)) and stationary (panels (a2-a3)-(b2-b3)) solutions of \eqref{eq:bistable_model}.
+            In the ramped case the parameter varies between $\mu_0=-1.6$ to $\mu(T)=1.6$ with rate $\varepsilon=1\cdot10^{-5}$. 
+            The sample paths, shown by the black curves in panel (a1), follow the upper stable branch of the bifurcation diagram (blue curve) of the frozen system before tipping across the unstable branch (red curve).
+            The earliest tipping in the ensemble is indicated by the vertical dashed line.
+            In the stationary cases the system is in the singular limit $\varepsilon\to0$ and thus the solutions, shown by the black curves in panels (a2-a3), are confined around the stable equilibrium (blue line) and do not tip across the unstable equilibrium (red curve) within the simulated time horizon.
+            The stationary cases are simulated at parameter values $\mu=0$ (panel (a2)) and $\mu=1$ (panel (a3)).
+            In all cases, a rolling window of $10\%$ the length of the sample paths, is used to estimate the modified escape EWS of the entire ensemble (panels (b1-b3)).
+            The ensemble envelope (i.e. maximum and minimum values) of the estimations are depicted by the blue shaded regions, whereas the interquartile range is depicted by the green shaded regions. 
+            The ensemble mean is shown by the red curves and it is compared with the ground truth of the frozen system, depicted by the black curves.}
+    \label{fig:statistical_significance}
+\end{figure}
+%
+The convergence in mean of the estimated modified escape EWS guarantees accurate warnings when an ensemble of sample paths is available.
+In real-world applications however, this is rarely the case as access to i.i.d. samples of a given system is limited by physical and technical constraints.
+We therefore investigate how significant the upward trend for the estimated modified escape EWS is for individual realizations of \eqref{eq:bistable_model}.
+In particular, we are interested in establishing whether the estimations from single sample paths can lead to missed allarms (i.e. false negatives) and/or spurious warnings (i.e. false positives).
+
+To do so we perform an ensemble simulation of $1{,}000$ sample paths ramped from $\mu_0=-1.6$ to $\mu(T)=\mu_c$ with $\varepsilon=1\cdot10^{-5}$.
+We then use Algorithm~\ref{alg:modified_ews} to estimate the modified escape EWS across a sliding window containing $N=10^4$ realizations of each sample path.
+We repeat the same procedure for stationary simulations of \eqref{eq:bistable_model} at parameter values $\mu_1=0$ (i.e. at a safe distance from B-tipping) and $\mu_2=1$ (closer to B-tipping but still at a safe distance).
+We report the results of this analysis in \fref{fig:statistical_significance}.
+The sample paths (black curves in panels (a1-a3)) are computed across a time horizon $T=3.2\cdot10^5$. 
+For the slowly ramped case (panel (a1)), the timeseries will all tip, from the drifting stable equilibrium (blue curves), across the unstable threshold (red curve), within the prescribed time horizon; this provides a sample of positive tipping events.
+For the stationary cases (panels (a2-a3)) the solutions will stay bounded around a small region of the stable equilibrium (blue line) and they will not tip across the unstable threshold (red line) within the time horizon (red line); this provides a sample of negative tipping events.
+In the ramped case, the estimated ensemble mean of the modified escape EWS (red curve, panel (b1)) overestimates the proximity to B-tipping given by the ground truth (black curve); notice that the familiar convergence in mean, as $\mu\to\mu_c$, implies that the overestimation bias vanishes close to B-tipping.
+Furthermore, while the interquartile range (green shaded region) shows a reasonable bounded region for the estimated signal, the outliers in the ensemble (blue shaded region) deviate significantly from the mean.
+This feature of the MLE of the modified escape EWS is also observed in the stationary cases with the deviations reducing as the system is driven closer to B-tipping.
+
+We conclude that, the overestimation bias in the ensemble mean, and the large deviations of the outliers from such mean can lead to spurious warnings when a single trajectory is considered.
+However, considering that the interquartile range provides a considerably smaller region around the mean, and that such deviation vanish as $\mu\to\mu_c$, we can also conclude that the overall trends of the estimations become more significant as the system approaches B-tipping, which minimizes the occurence of missed allarms from single trajectories.
+
 \section{Discussion}\label{sec:discussion}
 In this manuscript we have introduced a new EWS for critical transitions in complex systems.
 This EWS is a modified version of Kramer's formula, used in statistical mechanics to quantify the rate of escapes of particles across potential barriers.
 
 The proposed measure has the advantageous property of increasing monotonically in the bounded range $(0,1]$: values close to $0$ indicate strong potential confinement (small likelihood of B-tipping in the near future); values close to $1$ indicate weak potential confinement (large likelihood of B-tipping in the near future).
 Furthermore, the modified escape EWS introduced in this manuscript is system-independent, meaning that the monotonic increase from $0$ to $1$ is registered for any low-dimensional complex system provided that it has a gradient structure and that its stochastic fluctuations are state-independent (i.e. additive noise).
+\rev{While Kramer's formula is still valid for regimes of state-dependent fluctuations (i.e. multiplicative noise), the exponential decay no longer depends exclusively from the potential barrier, which further complicates the extraction of a plausible and interpretable EWS.}
 We remark that the modified escape EWS shows an earlier upward trend and consistent range of values for different systems (\fref{fig:ews_comparison} (b1-b3)), contrary to the canonical increase in timeseries variance which has different ranges for different systems (\fref{fig:ews_comparison} (a1-a3)).
 Due to these properties we argue that the proposed modified escape EWS is a more reliable precursor of B-tipping than the traditional diagnostics of increasing sample variance.
+%
 \begin{figure}[t]
     \centering 
     \includegraphics[keepaspectratio, width=\textwidth]{./figures/ews_comparison.pdf}
@@ -746,7 +904,7 @@ The emphasis of these efforts is to generalize precursors of B-tipping events (e
         Aggregations of the spatial information into mean-field approximations is likely to inhibit important mechanisms that drive the tipping.
         One proposed methodology has been the choice of optimal, one-dimensioal observables of these spatially-extended systems that still retains sufficient information to capture the precursors \cite{Lohmann2025b}.
         It is not clear at this stage how reliable traditional temporal, spatial and spatio-temporal indicators should perform in generic high-dimensional systems \cite{Robinson2025}.
-In this paper we obtain evidence that applications of the proposed methodology to one-dimensional reductions of higher-dimensional systems can yield confident results, provided an adequate choice of the monitored observable.
+        \rev{In this paper we obtain evidence that applications of the proposed methodology to one-dimensional reductions of higher-dimensional systems can yield confident results, provided an adequate choice of the monitored observable.}
 
 Further investigation in improving the accuracy of the technique is required however, as the reconstructed signal from empirical samples seem to be subject to higher uncertanties than the statistical moments counterparts.
 While this falls outside the scope of the current manuscript, which instead shows a proof-of-concept of the methodology, as well as introducing a novel and interpretable EWS to the literature, we speculate that refinements of the MLE framework for this problem could enhance its accuracy.
