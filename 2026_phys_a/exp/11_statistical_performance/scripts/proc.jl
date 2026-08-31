@@ -84,7 +84,7 @@ function analysis()
         # Parameter sweep loop
         local sim_hm
         local sys_hm
-        cmap = :balance
+        cmap = :viridis
         @showprogress for (idx_μ, μ) in enumerate(μ_set)
                 # Transformation of the coordinate axes in logscale so that it does not interpolate negative values
                 logedges(v) = (l = log10.(v); exp10.([l[1] - (l[2]-l[1])/2;
@@ -100,6 +100,11 @@ function analysis()
                 x, y = logedges(σ), logedges(ε)
                 error_map = reshape(system_error[:,idx_μ], length(σ), length(ε))
                 sys_hm = heatmap!(bottom_axes[idx_μ], x, y, error_map, colorrange = (sys_err_min, sys_err_max), colormap = cmap)
+
+                # Plot the N-tipping threshold
+                threshold = Point2d.(sqrt.(y), y)
+                lines!(bottom_axes[idx_μ], threshold, color = :red, linewidth = 3.0)
+                pathtext!(ax, path; text = L"\sigma = \sqrt{\varepsilon}", fontsize = 18, align = (:center, :bottom), offset = 6)
         end
 
         # Add the colorbar 
