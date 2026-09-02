@@ -1,22 +1,18 @@
 \documentclass[a4paper,fleqn]{cas-sc}
 
-\usepackage{mathtools} 
-\usepackage[numbers]{natbib} 
+\usepackage{comment}
+\usepackage{mathtools}
+\usepackage[numbers]{natbib}
 \usepackage[ruled]{algorithm2e}
-\usepackage[pagewise,mathlines]{lineno}
 \usepackage{amsmath}
 
 \DeclareMathOperator*{\argmin}{\arg\,min} 
 \DeclareMathOperator*{\argmax}{\arg\,max} 
 
-\linenumbers
-
 \newcommand{\aref}[1]{Appendix~\ref{#1}}
 \newcommand{\sref}[1]{Section~\ref{#1}}
 \newcommand{\fref}[1]{Figure~\ref{#1}}
 \newcommand{\tref}[1]{Table~\ref{#1}}
-
-\newcommand{\rev}[1]{\textcolor{red}{\textit{#1}}}
 
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
 \tsc{DP}
@@ -56,6 +52,8 @@
         We showcase its applicability by assessing its performance using models of ecosystems and ocean circulation collapse.
 \end{abstract}
 
+\begin{comment}
+     
 \thispagestyle{empty}
 \noindent
 Dear Editor,
@@ -90,6 +88,8 @@ Department of Mathematics, University of Auckland
         \item Maximum-likelihood estimation can be used to extract the early-warning signal from timeseries. 
         \item The early-warning provides consistent detection of tipping in three different systems. 
 \end{highlights}
+
+\end{comment}
 
 \begin{keywords}
 Early warning signals \sep 
@@ -127,7 +127,7 @@ Early-warning signals (EWS) are (often statistical) quantities that can be extra
 These precursors often rely on mechanistic features of the system approaching B-tipping of which \textit{critical slowing down} (CSD) has been the most widely studied \cite{VanNes2007, Dakos2008}.
 
 CSD quantifies slower recovery to equilibrium from perturbations as the leading eigenvalue of the linearized system approaches the imaginary axis.
-\rev{This property is remarkably generic as it has been shown that CSD can be detected in models of ecosystem collapse \cite{Scheffer2009,Dakos2012}, ocean circulation \cite{Boers2021a,Boers2021b}, climate and whether extreme events \cite{Lenton2012,Prettyman2019}, biological and physiological systems \cite{Donovan2015}, traffic flow \cite{Chattopadhyay2026} and many others.}
+This property is remarkably generic as it has been shown that CSD can be detected in models of ecosystem collapse \cite{Scheffer2009,Dakos2012}, ocean circulation \cite{Boers2021a,Boers2021b}, climate and weather extreme events \cite{Lenton2012,Prettyman2019}, biological and physiological systems \cite{Donovan2015}, traffic flow \cite{Chattopadhyay2026} and many others.
 Among the many proposed indicators, one of the most widely used methods to capture CSD is by detecting the increase in timeseries variance of the sample paths as the system is driven closer to B-tipping.
 
 Despite the many efforts, EWS are still largely plagued by a general lack of interpretability \cite{Ditlevsen2010, Donovan2026}, unknown generalization to high-dimensional systems \cite{Robinson2025} and relative difficulty in assessing their robustness to real-world data \cite{Dakos2012, Ashwin2025}.
@@ -140,8 +140,8 @@ To answer this question we would need to compare the computed variance to a base
 Moreover, different systems have different baseline values which makes the sample variance even more limiting as an EWS.
 This limitation is especially significant if one only has access to limited data and no ensemble of timeseries is available, which is usually the case in the monitoring of real-world systems.
 
-\rev{While in some, case-specific applications, interpretable EWS can be obtained, as demonstrated by studies for animal population collapse \cite{Drake2010}, disease emergence and resurgence \cite{Brett2020,Harris2020} and large scale ocean circulations \cite{Rodal2022}, a lack of universally interpretable, system-agnostic EWS still persists.
-        Specifically, the interpretability provided by these decision rules rely either on existing statistical indicators of proximity to B-tipping \cite{Drake2010,Harris2020} or on training datasets that can only generalize to similar systems \cite{Brett2020}.}
+While in some case-specific applications interpretable EWS can be obtained, as demonstrated by studies for animal population collapse \cite{Drake2010}, disease emergence and resurgence \cite{Brett2020,Harris2020} and large scale ocean circulations \cite{Rodal2022}, a lack of universally interpretable, system-agnostic EWS still persists.
+Specifically, the interpretability provided by these decision rules rely either on existing statistical indicators of proximity to B-tipping \cite{Drake2010,Harris2020} or on training datasets that can only generalize to similar systems \cite{Brett2020}.
 
 In this paper we introduce a novel EWS that solves this issue. 
 We achieve this by reframing the problem of detecting critical transitions in timeseries through the lens of statistical mechanics, leveraging known results from large deviations theory such as Kramer's formula.
@@ -153,7 +153,7 @@ This manuscript is organised in the following structure: in \sref{sec:escape_rat
 in \sref{sec:mle} we discuss numerical strategies to extract the proposed EWS from timeseries data based on maximum likelihood estimators; 
 this is followed in \sref{sec:applications} by comparisons of the performance of the proposed EWS with respect to the canonical increase in variance.
 Applications in this section include a well-known model of vegetation biomass collapse in ecosystems, when subject to increasing harvesting, and an equally popular model of the Atlantic Meridional Overturning Circulation collapse under increasing freshwater forcing in the North Atlantic. 
-\rev{In \sref{sec:analysis} we analyse the accuracy, sensitivity and statistical significance of the proposed estimator under relaxations of its working assumptions.}
+In \sref{sec:analysis} we analyse the accuracy, sensitivity and statistical significance of the proposed estimator under relaxations of its working assumptions.
 We conclude the paper with further discussions and future directions based on the presented technique in \sref{sec:discussion}.
 %
 \section{Escape rate across a potential barrier}\label{sec:escape_rate}
@@ -196,8 +196,8 @@ If the process is stationary (i.e. $\varepsilon=0$) then, for a given configurat
 For simplicity of exposition, let us consider the $1-$dimensional case of Eq.~\eqref{eq:langevin} for which we are always guaranteed to have a potential $V$ whose gradient reconstructs the dynamics $f$ in Eq.~\eqref{eq:fast_slow_sde}.
 Examples of potentials $V$ are shown in \fref{fig:double_well_potential} (a1-a3).
 By restricting ourselves to model single-parameter SN critical transitions (i.e. the parameter space is $\mathbb{R}$), we will consider the case of a bistable system with at least one stable equilibrium for any $\mu$.
-\rev{We note that higher-dimensional systems will generically undergo a SN bifurcation, and that it is in principle possible to change to a coordinate frame (aligning with the center manifold) in which \eqref{eq:langevin} describes the relevant bifurcating dynamics. 
-In practice the appropriate coordinate transformation is unknown, and an open problem is to determine optimal observables of high-dimensional systems.}
+We note that higher-dimensional systems will generically undergo a SN bifurcation, and that it is in principle possible to change to a coordinate frame (aligning with the center manifold) in which \eqref{eq:langevin} describes the relevant bifurcating dynamics. 
+In practice the appropriate coordinate transformation is unknown, and an open problem is to determine optimal observables of high-dimensional systems \cite{Lohmann2025b}.
 
 The bistability region of our system is characterized by a subset $\mu_1 < \mu < \mu_2$ of the parameter space for which two stable equilibria coexist alongside a single unstable equilibrium.
 The bistability region is bounded by two SN bifurcations at $\mu=\mu_1$ and $\mu=\mu_2$.
@@ -252,9 +252,9 @@ Based on the above, we introduce our modified escape EWS
 %
 where $\mu=\mu_c$ denotes the parameter value at which a SN bifurcation between the stable state $x=a$ and the unstable saddle $x=b$ occurs.
 Notice that \eqref{eq:escape_ews} is obtained from \eqref{eq:kramer_escape_formula} by removing the curvature-dependent prefactor $\sqrt{|V''(b)|V''(a)}/2\pi$ and setting $D=1$ in the argument of the exponential.
-\rev{Removing the prefactor from Kramer's escape rate \eqref{eq:kramer_escape_formula} guarantees that the modified formulation \eqref{eq:escape_ews} increases monotonically as B-tipping is approached (with the prefactor in \eqref{eq:kramer_escape_formula} initially increasing away from $0$ before returning to it near the bifurcation).
-Setting $D=1$ guarantees that the modified formulation is not late in detecting the proximity of B-tipping when the underlying noisy fluctuations are small, i.e. when $D\to0$}  (see \aref{appendix_a} for a detailed discussion).
-\rev{Furthermore, the true value of $D$ is generally not known for real systems and, while estimation is possible it inflates the dimensionality of the problem without providing significant advantages to the underlying EWS.}
+Removing the prefactor from Kramer's escape rate \eqref{eq:kramer_escape_formula} guarantees that the modified formulation \eqref{eq:escape_ews} increases monotonically as B-tipping is approached (whereas with the prefactor in \eqref{eq:kramer_escape_formula} included, as the bifurcation is approached, Kramer's formula will initially increase away from zero, before reaching a maximum and then decreasing back to zero at the bifurcation).
+Setting $D=1$ guarantees that the modified formulation is not late in detecting the proximity of B-tipping when the underlying noisy fluctuations are small, i.e. when $D\to0$  (see \aref{appendix_a} for a detailed discussion).
+Furthermore, the true value of $D$ is generally not known for real systems and, while estimation is possible it inflates the dimensionality of the problem without providing significant advantages to the underlying EWS, as shown in \fref{fig:kramers_formula}(a) in \aref{appendix_a}.
 
 The boundedness of \eqref{eq:escape_ews} in $(0,1]$ solves the interpretability problem we outlined above.
 As opposed to the variance (and higher-order moments), a numerical value of the modified escape formula provides direct interpretation of the likelihood of a B-tipping event without the need for a baseline value to refer to.
@@ -452,7 +452,7 @@ That is, we solve the minimization problem
         \BlankLine 
         %
         \Input{sample $\mathcal{X}=\{X_0,X_1,\dots,X_N\}$ (a single timeseries)}
-        \Output{\rev{estimated proximity to B-tipping}}
+        \Output{estimated proximity to B-tipping}
         %
         \BlankLine 
         \hrule
@@ -528,7 +528,7 @@ With the fluctuations around the stable equilibrium $x=a$ increasing in range, t
 As a consequence, the realizations $\mathcal{X} = \{X_0,\dots,X_N\}$ of the gradient system will capture the local shape of the confining potential in an increasingly better fashion as the system is driven closer to B-tipping, which translates in more accurate solutions of the LLS regression \eqref{eq:lls_solution}.
 
 We conclude that, on top of its interpretability, the estimation of the escape EWS \eqref{eq:escape_ews}, as detailed in Algorithm \ref{alg:modified_ews}, becomes more trusthworty as B-tipping is approached, yielding a decreasing rate of false negatives.
-\rev{For a more detailed and formal treatment of false negatives detection, and the temporal interpretation of proximity to B-tipping of CSD-based indicators, such as the one estimated by Algorithm~\ref{alg:modified_ews} we refer interested readers to \cite{Ashwin2025}.}
+For a more detailed and formal treatment of false negatives detection, and the temporal interpretation of proximity to B-tipping of CSD-based indicators, such as the one estimated by Algorithm~\ref{alg:modified_ews}, we refer interested readers to \cite{Ashwin2025}.
 
 \section{Applications}\label{sec:applications}
 We are now ready to extract the modified escape EWS \eqref{eq:escape_ews} from timeseries data by approximating the local shape of the confining potential using the likelihood estimator described in the \sref{subsec:euler}.
@@ -540,8 +540,8 @@ We will demonstrate the efficacy of the proposed modified escape EWS \eqref{eq:e
      \item $1-$dimensional observable of a $2-$dimensional formulation of the thermohaline circulation in the North Atlantic driven by increasing freshwater forcing \cite{Stommel1961}.
 \end{itemize}
 %
-\rev{In all of these tests, the modified escape EWS will be estimated by applying Algorithm~\ref{alg:modified_ews} to sliding windows of the slowly ramped solutions.
-The windowed timeseries are then detrended using standard, parameter free techniques and the obtained quasi-stationary residuals retain similar statistical properties (see \sref{sec:analysis} for more details).}
+In all of these tests, the modified escape EWS will be estimated by applying Algorithm~\ref{alg:modified_ews} to sliding windows of the slowly ramped solutions.
+The windowed timeseries are then detrended using standard, parameter free techniques and the obtained quasi-stationary residuals retain similar statistical properties (see \sref{sec:analysis} for more details).
 %
 \subsection{Slowly ramped SN normal form}\label{subsec:SN_normal_form}
 We follow the same setup outlined in \cite{Kuehn2011}.
@@ -587,7 +587,8 @@ In \eqref{eq:stationary_SN_variance}, $\mathbb{E}[X_{t};\mu] = \int_{-\sqrt{-\mu
 
 We first show that the modified escape EWS reconstructed from the MLE of the confining potential converges, in some sense, to its analytical value in the large number of samples limit.
 \fref{fig:stationary_SN_ews} shows the result of a simulation of an ensemble of $100$ sample paths of Eq.~\eqref{eq:slow_fast_SN} for fixed values of the bifurcation parameter (i.e. with $\varepsilon=0$);
-\rev{specifically, here and throughout the rest of the section, we apply Algorithm~\ref{alg:modified_ews} to estimated the modified escape EWS to individual timeseries of an ensemble of identically distributed and independent solutions of the nonlinear, slowly ramped SDEs.}
+specifically, here and throughout the rest \sref{sec:applications}, we apply Algorithm~\ref{alg:modified_ews} to estimate the modified escape EWS for individual timeseries, and then analyse the statistics of an ensemble of timeseries realizations.
+In doing so, we are able to say what is the typical and expected behavior of the EWS.
 For each value of $\mu$ in the parameter sweep of the $(-1,0)$ interval and for each sample path in the ensemble, we solve the LLS problem \eqref{eq:lls_solution} of a fitting polynomial potential and compute the modified escape EWS \eqref{eq:escape_ews} (see Algorithm \ref{alg:modified_ews}).
 This results in a distribution of modified escape EWS whose median we then compare to the ground truth, i.e. the analytical value of \eqref{eq:escape_ews} when evaluated using the true potential $V(x;\mu)=\mu x + \frac{x^3}{3}$. 
 We do the same for the ensemble variance by computing \eqref{eq:stationary_SN_variance} via numerical approximation, using it as the \textit{``ground truth''}, and compare it against the median sample variance computed out of the solutions of \eqref{eq:slow_fast_SN}.
@@ -614,7 +615,7 @@ Compared to the increase in variance however, the modified escape EWS estimated 
 This becomes more evident when we allow the bifurcation parameter to vary slowly and apply the same methodology described above to detrended residuals of the solutions, as depicted in \fref{fig:ramped_SN_EWS}.
 The source of this is embedded in the large dimensionality of the search space $\mathbb{R}^{3}\ni\theta$, correlations in the estimated coefficients and other well-known issues regarding the stability of the method (e.g. ill-conditioning of the Vandermonde matrix).
 Regularization of the solutions using penalizers (e.g. Tikhonov regularizations) can alleviate numerical instabilities in the LLS method and while it reduces the spread of the solutions it also introduces biases that effectively bring the mean solution further away from the ground truth.
-\rev{Furthermore, optimal choices of the penalizers are currently available a-posteriori (e.g. Morozov's discrepancy principle \cite{Nair2009}), meaning that prior knowledge of the underlying system is necessary in order for regularization to be effective.}
+Furthermore, optimal choices of the penalizers are currently available a-posteriori (e.g. Morozov's discrepancy principle \cite{Nair2009}), meaning that prior knowledge of the underlying system is necessary in order for regularization to be effective.
 See Appendix \ref{appendix_b} for a detailed discussion on the effects of regularization on LLS solutions.
 %
 \subsection{Ecosystem collapse}\label{subsec:ecosystem}
@@ -737,9 +738,9 @@ Equivalently to the previous cases, we then compute the ensemble averages of tim
 Remarkably, the modified escape EWS reconstructed from the MLE of the cubic potential retains its upward trend close to the bifurcation even though the underlying system \eqref{eq:stommel_model} does not have a confining potential (\fref{fig:ramped_stommel_ews} (b)).
 We conclude that the modified escape EWS provides a much more confident indication for the tipping of the AMOC to its weakened state than the traditional increase in variance (\fref{fig:ramped_stommel_ews} (a)), at least for the conceptual, $2$-box model considered in this paper.
 %
-\section{\textcolor{red}{Performance analysis}}\label{sec:analysis}
+\section{Performance analysis}\label{sec:analysis}
 The three test cases of \sref{sec:applications} demonstrate that the modified escape EWS can be estimated from slowly varying timeseries following the MLE of the potential discussed in \sref{sec:mle}.
-While those examples show the applicability of Algorithm~\ref{alg:modified_ews} to different systems approaching B-tipping, they all refer to similar values of the rate of change parameter $0<\varepsilon\ll1$, noise intesities $0<\sigma<1$, sampling frequencies $0<\Delta T<1$ and timeseries lengths $N\to\infty$.
+While those examples show the applicability of Algorithm~\ref{alg:modified_ews} to different systems approaching B-tipping, they all refer to similar values of the rate of change parameter $0<\varepsilon\ll1$, noise intensities $0<\sigma<1$, sampling frequencies $0<\Delta T<1$ and timeseries lengths $N\to\infty$.
 In the following section we investigate how the performance of the proposed inference method is affected by varying these parameters.
 We thus perform statistical analysis of the relevant quantities involved in the estimation of the modified escape EWS following Algorithm~\ref{alg:modified_ews}.
 As a representative example, we consider a one-dimensional, slow-fast system of the form
@@ -854,7 +855,7 @@ In the slow-fast regime (panels (b1-b3)) we keep the timeseries length $N=10^4$ 
 For each $\varepsilon$ we keep $\mu(T)$ fixed and adjust $\mu_0$ so that each sample path contains exactly $N=10^4$ realizations.
 In particular $\mu(T)\in\{1.1,1.2,1.3\}$ in panels (b1), (b2) and (b3) respectively; these parameter values are then used to compute the ground truth of the modified escape EWS.
 Intuitively, we observe that faster rates $\varepsilon\to10^{-3}$ yield overall less accurate estimations due to the residuals deviating further from the stationary assumption (as discussed in the previous section).
-On the other hand, the estimations become less accurate for smaller noise levels $\sigma\to10^{-3}$; while Kramer's law holds in regimes of small noise, the LLS estimation of the confining potential requires larger excursions around the stable equilibrium to infer better local reconstructions of the basin of attraction.
+On the other hand, the estimations become less accurate for smaller noise levels $\sigma\to10^{-3}$; while Kramer's law holds in regimes of small noise, the LLS estimation of the confining potential requires larger excursions around the stable equilibrium to better infer the local shape of the basin of attraction.
 In particular, we notice that the non-trivial decay of the relative error shows a complex relationship modelling the interplay of $\varepsilon$ and $\sigma$ in different regimes, meaning that slower and less noisy timeseries do not necessarly yield better estimates.
 This emphasizes the fact that the MLE of the modified escape EWS is sensitive to perturbations in forced systems and in particular how the threshold $\sigma=\sqrt{\varepsilon}$ (red curves in panels (b1-b3)), separating regimes of slow passage through B-tipping from N-tipping dominated events, provides an actionable guideline for applications.
 
@@ -897,7 +898,7 @@ Notice that, variability in the outliers of the estimated EWS can be alleviated 
 \section{Discussion}\label{sec:discussion}
 In this manuscript we have introduced a new EWS for critical transitions in complex systems.
 This EWS is a modified version of Kramer's formula, used in statistical mechanics to quantify the rate of escapes of particles across potential barriers.
-\rev{The main aim of this EWS is to be universally interpretable for the estimation of proximity of B-tipping in natural and human systems. 
+The main aim of this EWS is to be universally interpretable for the estimation of proximity of B-tipping in natural and human systems. 
 %
 \begin{figure}[t]
     \centering 
@@ -909,11 +910,11 @@ This EWS is a modified version of Kramer's formula, used in statistical mechanic
     \label{fig:ews_comparison}
 \end{figure}
 %
-This extends the work of previous, case-specific interpretable EWS such as the $2-$sigma criterion \cite{Drake2010} and Kendall-$\tau$ trend \cite{Harris2020} of statistical indicators, the classifier score calibrated on training data \cite{Brett2020} and the generalisation of autocorrelation estimators \cite{Rodal2022}.}
+This extends the work of previous, case-specific interpretable EWS such as the $2-$sigma criterion \cite{Drake2010} and Kendall-$\tau$ trend \cite{Harris2020} of statistical indicators, the classifier score calibrated on training data \cite{Brett2020} and the generalisation of autocorrelation estimators \cite{Rodal2022}.
 
 The proposed measure has the advantageous property of increasing monotonically in the bounded range $(0,1]$: values close to $0$ indicate strong potential confinement (safe distance from B-tipping); values close to $1$ indicate weak potential confinement (close proximity to B-tipping).
 Furthermore, the modified escape EWS introduced in this manuscript is system-independent, meaning that the monotonic increase from $0$ to $1$ is registered for any low-dimensional complex system provided that it has a gradient structure and that its stochastic fluctuations are state-independent (i.e. additive noise).
-\rev{While Kramer's formula is still valid for regimes of state-dependent fluctuations (i.e. multiplicative noise), the exponential decay no longer depends exclusively from the potential barrier, which further complicates the extraction of a plausible and interpretable EWS.}
+While Kramer's formula is still valid for regimes of state-dependent fluctuations (i.e. multiplicative noise), the exponential decay no longer depends exclusively from the potential barrier, which further complicates the extraction of a plausible and interpretable EWS.
 We remark that the modified escape EWS shows an earlier upward trend and consistent range of values for different systems (\fref{fig:ews_comparison} (b1-b3)), contrary to the canonical increase in timeseries variance which has different ranges for different systems (\fref{fig:ews_comparison} (a1-a3)).
 Due to these properties we argue that the proposed modified escape EWS is a more reliable precursor of B-tipping than the traditional diagnostics of increasing sample variance.
  
@@ -921,12 +922,12 @@ Additionally, in the present paper we derived a MLE method to extract the modifi
 We showcased how a simple LLS regression from the given sample can yield accurate enough approximations of the modified escape EWS given its convergence in mean in the limit of large number of samples.
 We observed that the approximation becomes more accurate as the system is driven closer to B-tipping, thereby providing a consistent prevention against false negatives.
 
-Extensions to multivariate signals is also a subject of high interest among the various communities trying to unlock EWS of high-dimensional systems using spatio-temporal information.
+Extensions to multivariate signals is also a subject of high interest among the various communities trying to unlock EWS of high-dimensional systems using spatio-temporal information \cite{Donovan2015,Rodal2022,Lohmann2024,Dijkstra2026}.
 The emphasis of these efforts is to generalize precursors of B-tipping events (e.g. CSD) to spatially-extended models.
         Aggregations of the spatial information into mean-field approximations is likely to inhibit important mechanisms that drive the tipping.
         One proposed methodology has been the choice of optimal, one-dimensioal observables of these spatially-extended systems that still retains sufficient information to capture the precursors \cite{Lohmann2025b}.
         It is not clear at this stage how reliable traditional temporal, spatial and spatio-temporal indicators should perform in generic high-dimensional systems \cite{Robinson2025}.
-        \rev{In this paper we obtain evidence that applications of the proposed methodology to one-dimensional reductions of higher-dimensional systems can yield confident results, provided an adequate choice of the monitored observable.}
+        In this paper we obtain evidence that applications of the proposed methodology to one-dimensional reductions of higher-dimensional systems can yield confident results, provided an adequate choice of the monitored observable.
 
 Further investigation in improving the accuracy of the technique is required however, as the reconstructed signal from empirical samples seem to be subject to higher uncertanties than the statistical moments counterparts.
 While this falls outside the scope of the current manuscript, which instead shows a proof-of-concept of the methodology, as well as introducing a novel and interpretable EWS to the literature, we speculate that refinements of the MLE framework for this problem could enhance its accuracy.
