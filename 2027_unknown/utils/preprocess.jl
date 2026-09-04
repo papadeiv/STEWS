@@ -44,18 +44,19 @@ function detrend(timeseries; alg = "exact", timestamps = Float64[], qse = Float6
                )
 end
 
-function build_window(Nt::Int64, width::Float64)
-        # Compute the size Nw of the window
-        Nw = convert(Int64, floor(width*Nt))
+# Converts the sliding window problem into an ensemble one 
+function build_window(timestamps, timeseries, width)
+        # Compute the number of strides
+        strides = (length(timestamps) - width) + 1
 
-        # Compute the number Ns of subseries (the number of strides is Ns - 1)
-        Ns = (Nt - Nw) + 1::Int64
+        timesteps = [@view timestamps[n:(n+width-1)] for n in 1:strides]
+        ensemble = [@view timeseries[n:(n+width-1)] for n in 1:strides]
 
-        # Return the window parameters
+        # Export the ensemble problem 
         return (
-                size = Nw, 
-                strides = Ns 
-               )
+                timesteps = timesteps,
+                trajectories = ensemble 
+               ) 
 end
 
 # Truncate a timeseries once it crosses a threshold

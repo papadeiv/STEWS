@@ -41,3 +41,17 @@ function estimate_parameters(timeseries, dt; α = 0.0)
         θ = (A'*A + α.*I(size(A,2)))\(A'*Y)
         return θ 
 end
+
+# Estimate the tipping time of a system by linear extrapolation of the return rate
+function estimate_tipping_time(timestamps, timeseries)
+        # Assemble the model matrix
+        X = hcat(ones(length(timestamps)), timestamps)
+
+        # Solve the least-squares problem
+        c = X\timeseries
+        #trend = X*c
+
+        # Return the solution
+        #return trend 
+        return c 
+end

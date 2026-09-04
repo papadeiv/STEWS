@@ -33,8 +33,50 @@ ax1 = Axis(fig[1,1],
            yticklabelsize = labels,
           )
 
-# Early-warning signal 
+# Early-warning signal from LLS 
 ax2 = Axis(fig[2,1], 
+           spinewidth = border,
+           xgridvisible = false,
+           ygridvisible = false,
+           xlabelvisible = false,
+           ylabelvisible = true,
+           xticklabelsvisible = false,
+           yticklabelsvisible = true,
+           xtickalign = 1,
+           ytickalign = 1,
+           xtickwidth = border,
+           ytickwidth = border,
+           xlabel = L"t",
+           ylabel = L"\alpha(t)",
+           xlabelsize = labels,
+           ylabelsize = labels,
+           xticklabelsize = labels,
+           yticklabelsize = labels,
+          )
+
+# Early-warning signal from AC1 
+ax3 = Axis(fig[3,1], 
+           spinewidth = border,
+           xgridvisible = false,
+           ygridvisible = false,
+           xlabelvisible = false,
+           ylabelvisible = true,
+           xticklabelsvisible = false,
+           yticklabelsvisible = true,
+           xtickalign = 1,
+           ytickalign = 1,
+           xtickwidth = border,
+           ytickwidth = border,
+           xlabel = L"t",
+           ylabel = L"\alpha(t)",
+           xlabelsize = labels,
+           ylabelsize = labels,
+           xticklabelsize = labels,
+           yticklabelsize = labels,
+          )
+
+# Early-warning signal from OUP
+ax4 = Axis(fig[4,1], 
            spinewidth = border,
            xgridvisible = false,
            ygridvisible = false,

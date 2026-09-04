@@ -19,6 +19,6 @@ include("../utils/output.jl")
 
 # Export namespaces
 export build_window, detrend, find_tipping
-export estimate_parameters, estimate_return_rate
+export estimate_parameters, estimate_return_rate, estimate_tipping_time
 
 end # module
