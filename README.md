@@ -39,7 +39,6 @@ Projects at the _Preliminary investigation_ stage are in early development, mean
 - [Rate-induced tipping in a feedback-controlled, game-theoretic model](./preliminary_projects/game_theory/).
 - [Characterisation of rate-induced tipping on parameteric families of parameter shifts](./preliminary_projects/r_tipping/).
 - [Nonlinear neural reduced manifold reconstruction of parametrised hyperbolic PDEs](./preliminary_projects/nonlinear_pod/).
-- [Just a bunch of uncategorised tests](./preliminary_projects/tests/).
 
 # 👀 Why this repository?
 
